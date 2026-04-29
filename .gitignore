@@ -1,0 +1,8 @@
+/vendor/
+/node_modules/
+/.env
+/.codex
+/.codex/
+/storage/logs/*.log
+.DS_Store
+Thumbs.db
