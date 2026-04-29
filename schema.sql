@@ -161,7 +161,7 @@ CREATE TABLE skill_proficiency_levels (
   updated_at TIMESTAMP NULL DEFAULT NULL,
 
   CONSTRAINT chk_skill_proficiency_level_value
-    CHECK (level_value BETWEEN 1 AND 5)
+    CHECK (level_value BETWEEN 1 AND 10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE certificate_names (
@@ -413,13 +413,68 @@ INSERT INTO genders (name) VALUES
   ('Other'),
   ('Prefer not to say');
 
+INSERT INTO countries (name) VALUES
+  ('Vietnam'),
+  ('Laos'),
+  ('Cambodia'),
+  ('Thailand'),
+  ('Singapore'),
+  ('Malaysia'),
+  ('Japan'),
+  ('South Korea'),
+  ('Australia'),
+  ('United States');
+
+INSERT INTO cities (country_id, name)
+SELECT id, 'Hanoi' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Ho Chi Minh City' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Da Nang' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Can Tho' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Hai Phong' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Hue' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Nha Trang' FROM countries WHERE name = 'Vietnam'
+UNION ALL SELECT id, 'Vientiane' FROM countries WHERE name = 'Laos'
+UNION ALL SELECT id, 'Phnom Penh' FROM countries WHERE name = 'Cambodia'
+UNION ALL SELECT id, 'Bangkok' FROM countries WHERE name = 'Thailand'
+UNION ALL SELECT id, 'Singapore' FROM countries WHERE name = 'Singapore'
+UNION ALL SELECT id, 'Kuala Lumpur' FROM countries WHERE name = 'Malaysia'
+UNION ALL SELECT id, 'Tokyo' FROM countries WHERE name = 'Japan'
+UNION ALL SELECT id, 'Seoul' FROM countries WHERE name = 'South Korea'
+UNION ALL SELECT id, 'Sydney' FROM countries WHERE name = 'Australia'
+UNION ALL SELECT id, 'New York' FROM countries WHERE name = 'United States';
+
+INSERT INTO districts (city_id, name)
+SELECT cities.id, 'Ba Dinh' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi'
+UNION ALL SELECT cities.id, 'Hoan Kiem' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi'
+UNION ALL SELECT cities.id, 'Cau Giay' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi'
+UNION ALL SELECT cities.id, 'Dong Da' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi'
+UNION ALL SELECT cities.id, 'District 1' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'
+UNION ALL SELECT cities.id, 'District 3' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'
+UNION ALL SELECT cities.id, 'Binh Thanh' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'
+UNION ALL SELECT cities.id, 'Thu Duc' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'
+UNION ALL SELECT cities.id, 'Hai Chau' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Da Nang'
+UNION ALL SELECT cities.id, 'Thanh Khe' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Da Nang'
+UNION ALL SELECT cities.id, 'Ninh Kieu' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Can Tho'
+UNION ALL SELECT cities.id, 'Cai Rang' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Can Tho'
+UNION ALL SELECT cities.id, 'Chanthabouly' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Laos' AND cities.name = 'Vientiane'
+UNION ALL SELECT cities.id, 'Sikhottabong' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Laos' AND cities.name = 'Vientiane'
+UNION ALL SELECT cities.id, 'Chamkarmon' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Cambodia' AND cities.name = 'Phnom Penh'
+UNION ALL SELECT cities.id, 'Daun Penh' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Cambodia' AND cities.name = 'Phnom Penh'
+UNION ALL SELECT cities.id, 'Pathum Wan' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Thailand' AND cities.name = 'Bangkok'
+UNION ALL SELECT cities.id, 'Watthana' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Thailand' AND cities.name = 'Bangkok'
+UNION ALL SELECT cities.id, 'Central Area' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Singapore' AND cities.name = 'Singapore'
+UNION ALL SELECT cities.id, 'Jurong East' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Singapore' AND cities.name = 'Singapore';
+
 INSERT INTO cv_categories (name) VALUES
   ('Software Development'),
   ('Data Science'),
   ('Finance & Accounting'),
   ('Marketing'),
   ('Education'),
-  ('Design & Creative');
+  ('Design & Creative'),
+  ('Business & Management'),
+  ('Law & Legal Services'),
+  ('General Labor');
 
 INSERT INTO degree_levels (name, sort_order) VALUES
   ('High School', 1),
@@ -428,6 +483,175 @@ INSERT INTO degree_levels (name, sort_order) VALUES
   ('Master Degree', 4),
   ('Doctorate', 5);
 
+INSERT INTO majors (name) VALUES
+  ('Computer Science'),
+  ('Software Engineering'),
+  ('Information Systems'),
+  ('Information Technology'),
+  ('Cybersecurity'),
+  ('Data Science'),
+  ('Artificial Intelligence'),
+  ('Business Administration'),
+  ('International Business'),
+  ('Marketing'),
+  ('Digital Marketing'),
+  ('Finance'),
+  ('Banking'),
+  ('Accounting'),
+  ('Auditing'),
+  ('Economics'),
+  ('Human Resource Management'),
+  ('Logistics and Supply Chain Management'),
+  ('Law'),
+  ('Business Law'),
+  ('English Language'),
+  ('Education'),
+  ('Graphic Design'),
+  ('Architecture'),
+  ('Civil Engineering'),
+  ('Electrical Engineering'),
+  ('Mechanical Engineering'),
+  ('Medicine'),
+  ('Pharmacy'),
+  ('Nursing'),
+  ('Tourism and Hospitality Management'),
+  ('Agriculture'),
+  ('Food Technology'),
+  ('Public Relations'),
+  ('Media and Communication');
+
+INSERT INTO institutions (name) VALUES
+  ('Academy of Finance'),
+  ('An Giang University'),
+  ('Bac Lieu University'),
+  ('Banking Academy of Vietnam'),
+  ('Banking University of Ho Chi Minh City'),
+  ('Binh Duong Economics and Technology University'),
+  ('Binh Duong University'),
+  ('British University of Vietnam'),
+  ('Can-Tho University'),
+  ('Danang College of Technology'),
+  ('Dong Nai Technology University'),
+  ('Eastern International University'),
+  ('Electric Power University'),
+  ('Foreign Trade University'),
+  ('FPT University'),
+  ('Gia Dinh University'),
+  ('Hai Duong University'),
+  ('Hanoi Financial and Banking University'),
+  ('Hanoi Medical University'),
+  ('Hanoi National Economics University'),
+  ('Hanoi Open University'),
+  ('Hanoi University'),
+  ('Hanoi University of Architecture'),
+  ('Hanoi University of Business And Technology'),
+  ('Hanoi University of Civil Engineering'),
+  ('Hanoi University of Industry'),
+  ('Hanoi University of Mining and Geology'),
+  ('Hanoi University of Science'),
+  ('Hanoi University of Science & Technology'),
+  ('Hcmc University of Technology & Education'),
+  ('Hoa Sen University'),
+  ('Ho Chi Minh City Open University'),
+  ('Ho Chi Minh City University of Agriculture and Forestry'),
+  ('Ho Chi Minh City University of Architecture'),
+  ('Ho Chi Minh City University of Economics'),
+  ('Hochiminh City University of Food Industry'),
+  ('Ho Chi Minh City University of Foreign Languages and Information Technology'),
+  ('Ho Chi Minh City University of Law'),
+  ('Ho Chi Minh City University of Medicine and Pharmacy'),
+  ('Ho Chi Minh City University of Natural Sciences'),
+  ('Ho Chi Minh City University of Pedagogics'),
+  ('Ho Chi Minh City University of Social Sciences and Humanities'),
+  ('Ho Chi Minh City University of Technology'),
+  ('Ho Chi Minh City University Of Technology (HUTECH)'),
+  ('Ho Chi Minh City University of Transport'),
+  ('Hong Bang University International'),
+  ('Hue College of Economics'),
+  ('Hue University'),
+  ('Hue University of Agriculture and Forestry'),
+  ('Hung Vuong University Ho Chi Minh City'),
+  ('Industrial University of Ho Chi Minh City'),
+  ('Institute of Finance'),
+  ('Lac Hong University'),
+  ('Military Academy of Logistics'),
+  ('Nha Trang University'),
+  ('Phenikaa University'),
+  ('Phuong Dong University'),
+  ('Posts & Telecommunications Institute of Technology'),
+  ('RMIT International University Vietnam'),
+  ('Saigon Technology University'),
+  ('Saigon University'),
+  ('Tay Nguyen University'),
+  ('Thainguyen University of Agriculture and Forestry'),
+  ('Thuongmai University'),
+  ('Trade Union University'),
+  ('Tra Vinh University'),
+  ('UNETI University'),
+  ('University of Da Lat'),
+  ('University of Da Nang'),
+  ('University of Finance and Marketing'),
+  ('University of Labour and Social Affairs'),
+  ('University of Technical Education Ho Chi Minh City'),
+  ('University of Transport and Communications'),
+  ('Van Lang University'),
+  ('Vietnam Maritime University'),
+  ('Vietnam National University Hanoi'),
+  ('Vietnam National University Ho Chi Minh City'),
+  ('Vietnam National University of Agriculture'),
+  ('Vinh University'),
+  ('Water Resources University');
+
+INSERT INTO job_titles (name) VALUES
+  ('Software Engineer'),
+  ('Frontend Developer'),
+  ('Backend Developer'),
+  ('Full Stack Developer'),
+  ('Mobile App Developer'),
+  ('DevOps Engineer'),
+  ('QA Engineer'),
+  ('UI/UX Designer'),
+  ('Graphic Designer'),
+  ('Product Designer'),
+  ('Data Analyst'),
+  ('Data Scientist'),
+  ('Machine Learning Engineer'),
+  ('Business Analyst'),
+  ('Project Manager'),
+  ('Product Manager'),
+  ('Sales Executive'),
+  ('Account Executive'),
+  ('Customer Service Representative'),
+  ('Human Resources Officer'),
+  ('Recruiter'),
+  ('Administrative Assistant'),
+  ('Office Administrator'),
+  ('Accountant'),
+  ('Auditor'),
+  ('Financial Analyst'),
+  ('Bank Teller'),
+  ('Marketing Executive'),
+  ('Digital Marketing Specialist'),
+  ('Content Writer'),
+  ('Social Media Specialist'),
+  ('SEO Specialist'),
+  ('Teacher'),
+  ('Teaching Assistant'),
+  ('Academic Advisor'),
+  ('Legal Assistant'),
+  ('Paralegal'),
+  ('Legal Officer'),
+  ('Lawyer'),
+  ('Warehouse Worker'),
+  ('Factory Worker'),
+  ('Delivery Driver'),
+  ('Security Guard'),
+  ('Cleaner'),
+  ('Cashier'),
+  ('Waiter/Waitress'),
+  ('Cook'),
+  ('Receptionist');
+
 INSERT INTO employment_types (name) VALUES
   ('Full-time'),
   ('Part-time'),
@@ -435,12 +659,193 @@ INSERT INTO employment_types (name) VALUES
   ('Internship'),
   ('Freelance');
 
+INSERT INTO industries (name) VALUES
+  ('Information Technology'),
+  ('Software Development'),
+  ('Data & Analytics'),
+  ('Cybersecurity'),
+  ('Telecommunications'),
+  ('Banking'),
+  ('Finance'),
+  ('Accounting'),
+  ('Insurance'),
+  ('Marketing & Advertising'),
+  ('Media & Communications'),
+  ('Education'),
+  ('Higher Education'),
+  ('Healthcare'),
+  ('Pharmaceuticals'),
+  ('Legal Services'),
+  ('Business Consulting'),
+  ('Human Resources'),
+  ('Real Estate'),
+  ('Architecture'),
+  ('Construction'),
+  ('Manufacturing'),
+  ('Logistics & Supply Chain'),
+  ('Transportation'),
+  ('Retail'),
+  ('Wholesale'),
+  ('Hospitality'),
+  ('Food & Beverage'),
+  ('Tourism'),
+  ('Agriculture'),
+  ('Energy'),
+  ('Utilities'),
+  ('Government'),
+  ('Non-Profit'),
+  ('Design & Creative Services'),
+  ('E-commerce'),
+  ('Customer Service'),
+  ('Security Services'),
+  ('Cleaning Services'),
+  ('General Labor');
+
+INSERT INTO skills (name) VALUES
+  ('PHP'),
+  ('Laravel'),
+  ('JavaScript'),
+  ('TypeScript'),
+  ('HTML'),
+  ('CSS'),
+  ('React'),
+  ('Vue.js'),
+  ('Node.js'),
+  ('MySQL'),
+  ('PostgreSQL'),
+  ('Git'),
+  ('REST API Development'),
+  ('Database Design'),
+  ('UI/UX Design'),
+  ('Figma'),
+  ('Adobe Photoshop'),
+  ('Adobe Illustrator'),
+  ('Data Analysis'),
+  ('Microsoft Excel'),
+  ('Power BI'),
+  ('Python'),
+  ('Machine Learning'),
+  ('Financial Analysis'),
+  ('Accounting'),
+  ('Auditing'),
+  ('Bookkeeping'),
+  ('Digital Marketing'),
+  ('SEO'),
+  ('Content Writing'),
+  ('Social Media Marketing'),
+  ('Market Research'),
+  ('Teaching'),
+  ('Curriculum Design'),
+  ('Public Speaking'),
+  ('Academic Writing'),
+  ('Business Analysis'),
+  ('Project Management'),
+  ('Product Management'),
+  ('Sales'),
+  ('Customer Service'),
+  ('Recruitment'),
+  ('Human Resource Management'),
+  ('Legal Research'),
+  ('Contract Drafting'),
+  ('Legal Writing'),
+  ('Communication'),
+  ('Teamwork'),
+  ('Problem Solving'),
+  ('Time Management'),
+  ('Leadership'),
+  ('Critical Thinking'),
+  ('Inventory Management'),
+  ('Warehouse Operations'),
+  ('Cash Handling'),
+  ('Food Preparation'),
+  ('Cleaning'),
+  ('Security Monitoring'),
+  ('Driving'),
+  ('Basic Computer Skills');
+
 INSERT INTO skill_proficiency_levels (name, level_value) VALUES
-  ('Beginner', 1),
-  ('Elementary', 2),
-  ('Intermediate', 3),
-  ('Advanced', 4),
-  ('Expert', 5);
+  ('Level 1 - Beginner', 1),
+  ('Level 2 - Basic', 2),
+  ('Level 3 - Elementary', 3),
+  ('Level 4 - Developing', 4),
+  ('Level 5 - Intermediate', 5),
+  ('Level 6 - Competent', 6),
+  ('Level 7 - Proficient', 7),
+  ('Level 8 - Advanced', 8),
+  ('Level 9 - Expert', 9),
+  ('Level 10 - Master', 10);
+
+INSERT INTO certificate_names (name) VALUES
+  ('TOEIC'),
+  ('IELTS'),
+  ('TOEFL'),
+  ('Google Data Analytics Professional Certificate'),
+  ('Google Project Management Professional Certificate'),
+  ('Google UX Design Professional Certificate'),
+  ('Microsoft Office Specialist'),
+  ('Microsoft Certified: Azure Fundamentals'),
+  ('AWS Certified Cloud Practitioner'),
+  ('AWS Certified Solutions Architect - Associate'),
+  ('Cisco Certified Network Associate'),
+  ('CompTIA A+'),
+  ('CompTIA Security+'),
+  ('Oracle Certified Professional Java Programmer'),
+  ('Meta Front-End Developer Professional Certificate'),
+  ('Meta Back-End Developer Professional Certificate'),
+  ('IBM Data Science Professional Certificate'),
+  ('Certified Public Accountant'),
+  ('ACCA'),
+  ('CFA Level I'),
+  ('Project Management Professional'),
+  ('Certified ScrumMaster'),
+  ('HubSpot Content Marketing Certification'),
+  ('Google Ads Certification'),
+  ('Google Analytics Certification'),
+  ('Facebook Blueprint Certification'),
+  ('TESOL Certificate'),
+  ('TEFL Certificate'),
+  ('Teaching Certificate'),
+  ('Legal Practice Certificate'),
+  ('Occupational Safety and Health Certificate'),
+  ('Food Safety Certificate'),
+  ('Forklift Operator Certificate'),
+  ('Driving License');
+
+INSERT INTO issuing_organizations (name) VALUES
+  ('ETS'),
+  ('British Council'),
+  ('IDP Education'),
+  ('Educational Testing Service'),
+  ('Google'),
+  ('Microsoft'),
+  ('Amazon Web Services'),
+  ('Cisco'),
+  ('CompTIA'),
+  ('Oracle'),
+  ('Meta'),
+  ('IBM'),
+  ('ACCA Global'),
+  ('CFA Institute'),
+  ('Project Management Institute'),
+  ('Scrum Alliance'),
+  ('HubSpot Academy'),
+  ('Google Skillshop'),
+  ('Google Analytics Academy'),
+  ('Facebook Blueprint'),
+  ('Cambridge Assessment English'),
+  ('TESOL International Association'),
+  ('International TEFL Academy'),
+  ('Ministry of Education and Training'),
+  ('Ministry of Labour, Invalids and Social Affairs'),
+  ('Ministry of Health'),
+  ('Vietnam Bar Federation'),
+  ('Vietnam Chamber of Commerce and Industry'),
+  ('Directorate for Roads of Vietnam'),
+  ('Vietnam Register'),
+  ('Occupational Safety and Health Administration'),
+  ('Local Vocational Training Center'),
+  ('University Training Center'),
+  ('Professional Training Institute');
 
 INSERT INTO cv_templates (name) VALUES
   ('Modern'),
