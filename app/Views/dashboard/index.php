@@ -17,7 +17,7 @@ use App\Core\View;
             <?php elseif ($user['role'] === 'employer'): ?>
                 <a class="secondary-button" href="<?= View::url('/search') ?>">Search CVs</a>
             <?php elseif ($user['role'] === 'admin'): ?>
-                <a class="secondary-button" href="<?= View::url('/admin/users') ?>">Admin Users</a>
+                <a class="secondary-button" href="<?= View::url('/admin/overview') ?>">Admin Console</a>
             <?php endif; ?>
 
             <form method="post" action="<?= View::url('/logout') ?>">

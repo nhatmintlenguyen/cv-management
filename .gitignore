@@ -3,6 +3,7 @@
 /.env
 /.codex
 /.codex/
+/ui-design/
 /storage/logs/*.log
 .DS_Store
 Thumbs.db

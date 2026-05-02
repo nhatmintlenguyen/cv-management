@@ -120,7 +120,11 @@ class AuthController extends Controller
 
         $this->loginUser((int) $user['id']);
         $this->flash('success', 'Welcome back.');
-        $this->redirect('/dashboard');
+        if ($role['name'] === 'admin') {
+            $this->redirect('/admin/overview');
+        } else {
+            $this->redirect('/dashboard');
+        }
     }
 
     public function logout(): void

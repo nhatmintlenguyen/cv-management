@@ -407,6 +407,13 @@ INSERT INTO roles (name) VALUES
   ('employer'),
   ('admin');
 
+INSERT INTO users (role_id, full_name, email, password_hash, status) VALUES
+  ((SELECT id FROM roles WHERE name = 'admin'), 'Admin User', 'admin@gmail.com', '$2y$10$q58vc1yIj2e48FvsoYPn2eZvc0thAbfGevkgD3EgKH/y7wUbCigVi', 'active'),
+  ((SELECT id FROM roles WHERE name = 'job_seeker'), 'Minh Nguyen', 'minh@gmail.com', '$2y$10$q58vc1yIj2e48FvsoYPn2eZvc0thAbfGevkgD3EgKH/y7wUbCigVi', 'active'),
+  ((SELECT id FROM roles WHERE name = 'job_seeker'), 'Linh Tran', 'linh@gmail.com', '$2y$10$q58vc1yIj2e48FvsoYPn2eZvc0thAbfGevkgD3EgKH/y7wUbCigVi', 'active'),
+  ((SELECT id FROM roles WHERE name = 'employer'), 'An Pham', 'an@gmail.com', '$2y$10$q58vc1yIj2e48FvsoYPn2eZvc0thAbfGevkgD3EgKH/y7wUbCigVi', 'active'),
+  ((SELECT id FROM roles WHERE name = 'employer'), 'Hoa Le', 'hoa@gmail.com', '$2y$10$q58vc1yIj2e48FvsoYPn2eZvc0thAbfGevkgD3EgKH/y7wUbCigVi', 'active');
+
 INSERT INTO genders (name) VALUES
   ('Male'),
   ('Female'),
