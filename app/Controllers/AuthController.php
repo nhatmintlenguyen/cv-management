@@ -74,8 +74,9 @@ class AuthController extends Controller
 
     public function login(): void
     {
-        $data = $this->only(['email', 'password']);
+        $data = $this->only(['email', 'password', 'role']);
         $errors = [];
+        $allowedRoles = ['job_seeker', 'employer', 'admin'];
 
         if (empty($data['email']) || ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Please enter a valid email address.';
@@ -85,22 +86,35 @@ class AuthController extends Controller
             $errors[] = 'Please enter your password.';
         }
 
+        if (empty($data['role']) || ! in_array($data['role'], $allowedRoles, true)) {
+            $errors[] = 'Please choose a valid access role.';
+        }
+
         if ($errors !== []) {
             $this->flash('errors', $errors);
-            $this->old(['email' => $data['email'] ?? '']);
+            $this->old([
+                'email' => $data['email'] ?? '',
+                'role' => $data['role'] ?? 'job_seeker',
+            ]);
             $this->redirect('/login');
         }
 
         $userModel = new User();
         $user = $userModel->findByEmail(strtolower($data['email']));
+        $role = $user === null ? null : $userModel->getRole((int) $user['id']);
 
         if (
             $user === null
             || $user['status'] !== 'active'
+            || $role === null
+            || $role['name'] !== $data['role']
             || ! password_verify($data['password'], $user['password_hash'])
         ) {
-            $this->flash('errors', ['Invalid email or password.']);
-            $this->old(['email' => $data['email'] ?? '']);
+            $this->flash('errors', ['Invalid email, password, or selected role.']);
+            $this->old([
+                'email' => $data['email'] ?? '',
+                'role' => $data['role'] ?? 'job_seeker',
+            ]);
             $this->redirect('/login');
         }
 

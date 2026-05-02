@@ -3,6 +3,7 @@
 use App\Core\View;
 
 $old = $_SESSION['_old'] ?? [];
+$selectedRole = $old['role'] ?? 'job_seeker';
 ?>
 <main class="auth-page">
     <section class="auth-shell">
@@ -46,6 +47,49 @@ $old = $_SESSION['_old'] ?? [];
             </div>
 
             <form class="auth-form" method="post" action="<?= View::url('/login') ?>">
+                <fieldset class="role-grid role-grid-three">
+                    <legend>Access Role</legend>
+
+                    <label class="role-option">
+                        <input
+                            type="radio"
+                            name="role"
+                            value="job_seeker"
+                            <?= $selectedRole === 'job_seeker' ? 'checked' : '' ?>
+                        >
+                        <span>
+                            <strong>Job Seeker</strong>
+                            <small>Manage CV</small>
+                        </span>
+                    </label>
+
+                    <label class="role-option">
+                        <input
+                            type="radio"
+                            name="role"
+                            value="employer"
+                            <?= $selectedRole === 'employer' ? 'checked' : '' ?>
+                        >
+                        <span>
+                            <strong>Employer</strong>
+                            <small>Search CVs</small>
+                        </span>
+                    </label>
+
+                    <label class="role-option">
+                        <input
+                            type="radio"
+                            name="role"
+                            value="admin"
+                            <?= $selectedRole === 'admin' ? 'checked' : '' ?>
+                        >
+                        <span>
+                            <strong>Admin</strong>
+                            <small>Manage data</small>
+                        </span>
+                    </label>
+                </fieldset>
+
                 <label>
                     <span>Email</span>
                     <input

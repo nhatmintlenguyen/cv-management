@@ -223,6 +223,10 @@ input {
   grid-template-columns: 1fr 1fr;
 }
 
+.role-grid-three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .role-grid legend {
   grid-column: 1 / -1;
 }
@@ -366,6 +370,10 @@ input {
   }
 
   .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-grid-three {
     grid-template-columns: 1fr;
   }
 
