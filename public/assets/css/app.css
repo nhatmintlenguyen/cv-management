@@ -1,0 +1,375 @@
+:root {
+  --background: #f7f9fb;
+  --surface: #ffffff;
+  --surface-muted: #eceef0;
+  --surface-strong: #e0e3e5;
+  --text: #191c1e;
+  --muted: #5d6672;
+  --primary: #001a38;
+  --primary-soft: #d5e3ff;
+  --primary-mid: #002e5d;
+  --danger: #ba1a1a;
+  --danger-soft: #ffdad6;
+  --success: #11693a;
+  --success-soft: #d7f6df;
+  --border: #c4c6d1;
+  --shadow: 0 24px 80px rgba(25, 28, 30, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.auth-page,
+.dashboard-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.auth-shell {
+  width: min(100%, 1080px);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.auth-brand {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 56px;
+  color: #ffffff;
+  background:
+    linear-gradient(rgba(0, 26, 56, 0.72), rgba(0, 46, 93, 0.88)),
+    url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80") center/cover;
+}
+
+.brand-content {
+  position: relative;
+  max-width: 420px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: currentColor;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.66;
+}
+
+.auth-brand h1,
+.dashboard-card h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.brand-copy {
+  max-width: 360px;
+  margin: 18px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.brand-points {
+  display: grid;
+  gap: 20px;
+  margin-top: 48px;
+}
+
+.brand-point {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 800;
+}
+
+.brand-point strong,
+.brand-point span {
+  display: block;
+}
+
+.brand-point span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.875rem;
+}
+
+.auth-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px;
+  background: var(--surface);
+}
+
+.auth-heading h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.auth-heading p {
+  margin: 10px 0 0;
+  color: var(--muted);
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 32px 0;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.auth-tabs a {
+  padding: 11px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.auth-tabs a.active {
+  color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 8px 18px rgba(25, 28, 30, 0.08);
+}
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+}
+
+.auth-form label,
+.role-grid {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.auth-form label span,
+.role-grid legend {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-form input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: 0;
+  padding: 0 14px;
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.auth-form input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(0, 26, 56, 0.12);
+}
+
+.role-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.role-grid legend {
+  grid-column: 1 / -1;
+}
+
+.role-option {
+  position: relative;
+  min-height: 74px;
+  display: block;
+  cursor: pointer;
+}
+
+.role-option input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.role-option span {
+  height: 100%;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 14px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--surface-muted);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.role-option input:checked + span {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.role-option strong {
+  color: var(--primary);
+  font-size: 0.92rem;
+}
+
+.role-option small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 22px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primary-button {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-mid));
+  box-shadow: 0 14px 28px rgba(0, 26, 56, 0.18);
+}
+
+.secondary-button {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.inline-button {
+  margin-top: 20px;
+}
+
+.flash-stack {
+  position: fixed;
+  z-index: 20;
+  top: 18px;
+  right: 18px;
+  width: min(360px, calc(100vw - 36px));
+  display: grid;
+  gap: 10px;
+}
+
+.flash {
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(25, 28, 30, 0.12);
+}
+
+.flash-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.flash-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.dashboard-card {
+  width: min(100%, 720px);
+  border-radius: 8px;
+  padding: 42px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-card p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+@media (max-width: 860px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .auth-brand {
+    display: none;
+  }
+
+  .auth-panel {
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-page,
+  .dashboard-page {
+    padding: 16px;
+  }
+
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    padding: 28px 22px;
+  }
+}
