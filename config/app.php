@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'name' => 'CV Management',
+    'name' => 'OneCV',
     'env' => 'local',
 ];

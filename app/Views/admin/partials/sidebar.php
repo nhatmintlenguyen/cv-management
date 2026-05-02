@@ -6,7 +6,7 @@ $activeTab = $activeTab ?? '';
 ?>
 <aside class="admin-sidebar">
     <div class="admin-brand">
-        <h1>CV Management</h1>
+        <h1>OneCV</h1>
         <p>Admin Console</p>
     </div>
 

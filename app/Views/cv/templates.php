@@ -3,8 +3,8 @@
 
 <main class="job-page">
     <section class="job-page-heading">
-        <p class="eyebrow">CV Preview</p>
-        <h1>Your Online CV</h1>
-        <p>Preview your CV using available presentation templates.</p>
+        <p class="eyebrow">Templates</p>
+        <h1>Choose a CV Template</h1>
+        <p>Preview Modern, Classic, and Minimal layouts using the same CV data.</p>
     </section>
 </main>

@@ -11,7 +11,7 @@ $selectedRole = $old['role'] ?? 'job_seeker';
             <div class="brand-overlay"></div>
             <div class="brand-content">
                 <p class="eyebrow">Curating Careers</p>
-                <h1>CV Management</h1>
+                <h1>OneCV</h1>
                 <p class="brand-copy">
                     Structured CV tools for job seekers, employers, and administrators.
                 </p>

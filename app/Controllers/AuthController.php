@@ -122,8 +122,9 @@ class AuthController extends Controller
         $this->flash('success', 'Welcome back.');
         if ($role['name'] === 'admin') {
             $this->redirect('/admin/overview');
-        } else {
-            $this->redirect('/dashboard');
+        } 
+        else if ($role['name'] === 'job_seeker') {
+            $this->redirect('/cv/templates');
         }
     }
 

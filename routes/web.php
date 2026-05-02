@@ -2,7 +2,9 @@
 
 use App\Controllers\AuthController;
 use App\Controllers\AdminController;
+use App\Controllers\CVController;
 use App\Controllers\DashboardController;
+use App\Controllers\ProfileController;
 use App\Core\View;
 
 $router->get('/', function (): void {
@@ -18,6 +20,12 @@ $router->post('/register', [AuthController::class, 'register']);
 
 $router->post('/logout', [AuthController::class, 'logout']);
 $router->get('/dashboard', [DashboardController::class, 'index']);
+
+$router->get('/cv/create', [CVController::class, 'create']);
+$router->get('/cv/edit', [CVController::class, 'edit']);
+$router->get('/cv/show', [CVController::class, 'show']);
+$router->get('/cv/templates', [CVController::class, 'templates']);
+$router->get('/profile', [ProfileController::class, 'show']);
 
 $router->get('/admin', function (): void {
     header('Location: ' . View::url('/admin/overview'));
