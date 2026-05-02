@@ -1,10 +1,65 @@
-<?php $activeJobSeekerTab = 'templates'; ?>
+<?php
+
+use App\Core\View;
+
+$activeJobSeekerTab = 'templates';
+$templates = $templates ?? [];
+$selectedTemplate = $selectedTemplate ?? array_key_first($templates);
+$selected = $templates[$selectedTemplate] ?? [];
+?>
 <?php require dirname(__DIR__) . '/job-seeker/partials/topbar.php'; ?>
 
-<main class="job-page">
-    <section class="job-page-heading">
-        <p class="eyebrow">Templates</p>
-        <h1>Choose a CV Template</h1>
-        <p>Preview Modern, Classic, and Minimal layouts using the same CV data.</p>
+<main class="job-page template-page">
+    <section class="template-hero">
+        <div>
+            <h1>Curate Your Identity</h1>
+            <p>Select a layout that mirrors your professional narrative. Each template is structured for clean presentation and consistent CV data.</p>
+        </div>
+
+        <div class="template-actions">
+            <button class="secondary-button" type="button">
+                <span class="template-action-icon">download</span>
+                Export PDF
+            </button>
+            <button class="primary-button" type="button">
+                <span class="template-action-icon">save</span>
+                Save Draft
+            </button>
+        </div>
+    </section>
+
+    <section class="template-workspace">
+        <aside class="template-sidebar">
+            <section class="template-panel">
+                <h2>
+                    <span class="template-panel-icon">grid_view</span>
+                    Layout Engine
+                </h2>
+
+                <div class="template-choice-list">
+                    <?php foreach ($templates as $key => $template): ?>
+                        <a
+                            class="template-choice <?= $selectedTemplate === $key ? 'active' : '' ?>"
+                            href="<?= View::url('/cv/templates?template=' . $key) ?>"
+                        >
+                            <span class="template-choice-icon"><?= $key === 'modern' ? 'architecture' : ($key === 'classic' ? 'menu_book' : 'view_quilt') ?></span>
+                            <span>
+                                <strong><?= View::e($template['name']) ?></strong>
+                                <small><?= View::e($template['description']) ?></small>
+                            </span>
+                            <?php if ($selectedTemplate === $key): ?>
+                                <span class="template-check">check_circle</span>
+                            <?php endif; ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        </aside>
+
+        <section class="template-preview-stage">
+            <div class="template-preview-frame">
+                <img src="<?= View::e($selected['image'] ?? '') ?>" alt="<?= View::e($selected['name'] ?? 'CV Template') ?> preview">
+            </div>
+        </section>
     </section>
 </main>
