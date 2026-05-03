@@ -2,9 +2,9 @@
 
 use App\Core\View;
 
-$activeJobSeekerTab = 'profile';
+$activeSiteTab = 'profile';
 ?>
-<?php require dirname(__DIR__) . '/job-seeker/partials/topbar.php'; ?>
+<?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="job-page">
     <section class="job-page-heading">

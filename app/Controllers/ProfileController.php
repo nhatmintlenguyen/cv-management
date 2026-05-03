@@ -10,7 +10,7 @@ class ProfileController extends Controller
 {
     public function show(): void
     {
-        if (($_SESSION['user']['role'] ?? null) !== 'job_seeker') {
+        if (! isset($_SESSION['user'])) {
             $this->redirect('/login');
         }
 

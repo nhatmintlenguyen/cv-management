@@ -126,6 +126,8 @@ class AuthController extends Controller
         else if ($role['name'] === 'job_seeker') {
             $this->redirect('/cv/templates');
         }
+
+        $this->redirect('/find-cvs');
     }
 
     public function logout(): void
@@ -148,7 +150,7 @@ class AuthController extends Controller
         session_destroy();
         session_start();
         $this->flash('success', 'You have been logged out.');
-        $this->redirect('/login');
+        $this->redirect('/');
     }
 
     private function validateRegistration(array $data): array

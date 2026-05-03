@@ -52,6 +52,10 @@ class View
 
     public static function asset(string $path): string
     {
-        return self::url('/assets/' . ltrim($path, '/'));
+        $path = ltrim($path, '/');
+        $publicPath = dirname(__DIR__, 2) . '/public/assets/' . $path;
+        $version = file_exists($publicPath) ? '?v=' . filemtime($publicPath) : '';
+
+        return self::url('/assets/' . $path) . $version;
     }
 }

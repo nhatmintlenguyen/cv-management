@@ -4,13 +4,13 @@ use App\Controllers\AuthController;
 use App\Controllers\AdminController;
 use App\Controllers\CVController;
 use App\Controllers\DashboardController;
+use App\Controllers\HomeController;
 use App\Controllers\ProfileController;
+use App\Controllers\SearchController;
 use App\Core\View;
 
-$router->get('/', function (): void {
-    header('Location: ' . View::url('/login'));
-    exit;
-});
+$router->get('/', [HomeController::class, 'index']);
+$router->get('/home', [HomeController::class, 'index']);
 
 $router->get('/login', [AuthController::class, 'showLogin']);
 $router->post('/login', [AuthController::class, 'login']);
@@ -26,6 +26,8 @@ $router->get('/cv/edit', [CVController::class, 'edit']);
 $router->get('/cv/show', [CVController::class, 'show']);
 $router->get('/cv/templates', [CVController::class, 'templates']);
 $router->get('/profile', [ProfileController::class, 'show']);
+$router->get('/profiles', [ProfileController::class, 'show']);
+$router->get('/find-cvs', [SearchController::class, 'index']);
 
 $router->get('/admin', function (): void {
     header('Location: ' . View::url('/admin/overview'));
