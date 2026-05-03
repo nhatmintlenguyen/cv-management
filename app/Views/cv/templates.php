@@ -6,6 +6,7 @@ $activeJobSeekerTab = 'templates';
 $templates = $templates ?? [];
 $selectedTemplate = $selectedTemplate ?? array_key_first($templates);
 $selected = $templates[$selectedTemplate] ?? [];
+$mockCv = $mockCv ?? [];
 ?>
 <?php require dirname(__DIR__) . '/job-seeker/partials/topbar.php'; ?>
 
@@ -58,7 +59,7 @@ $selected = $templates[$selectedTemplate] ?? [];
 
         <section class="template-preview-stage">
             <div class="template-preview-frame">
-                <img src="<?= View::e($selected['image'] ?? '') ?>" alt="<?= View::e($selected['name'] ?? 'CV Template') ?> preview">
+                <?php require __DIR__ . '/templates-' . $selectedTemplate . '.php'; ?>
             </div>
         </section>
     </section>

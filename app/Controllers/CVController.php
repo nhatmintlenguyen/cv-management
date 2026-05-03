@@ -59,7 +59,89 @@ class CVController extends Controller
             'title' => 'CV Templates',
             'templates' => $templates,
             'selectedTemplate' => $selected,
+            'mockCv' => $this->mockCvData(),
         ]);
+    }
+
+    private function mockCvData(): array
+    {
+        return [
+            'category' => 'Software Development',
+            'full_name' => 'Dang Ngoc Linh',
+            'headline' => 'Frontend Developer',
+            'date_of_birth' => '26/05/1998',
+            'gender' => 'Female',
+            'email' => 'linh.frontend@gmail.com',
+            'phone_number' => '(024) 6680 5588',
+            'country' => 'Vietnam',
+            'city' => 'Ho Chi Minh City',
+            'district' => 'District 1',
+            'street_address' => '12 Nguyen Hue Street',
+            'postal_code' => '700000',
+            'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+            'summary' => 'Frontend Developer with 4 years of experience building accessible, responsive web interfaces for SaaS products and career platforms. Strong in UI implementation, reusable components, and translating structured CV data into polished digital experiences.',
+            'educations' => [
+                [
+                    'institution' => 'FPT University',
+                    'degree_level' => 'Bachelor',
+                    'major' => 'Software Engineering',
+                    'start_year' => '2016',
+                    'end_year' => '2020',
+                    'description' => 'Graduated with distinction. Focused on web application development, database design, and user interface engineering.',
+                ],
+                [
+                    'institution' => 'Posts & Telecommunications Institute of Technology',
+                    'degree_level' => 'Certificate Program',
+                    'major' => 'UX/UI Design',
+                    'start_year' => '2021',
+                    'end_year' => '2021',
+                    'description' => 'Completed intensive coursework in design systems, layout hierarchy, and usability testing.',
+                ],
+            ],
+            'work_histories' => [
+                [
+                    'job_title' => 'Frontend Developer',
+                    'employment_type' => 'Full-time',
+                    'industry' => 'Information Technology',
+                    'company_name' => 'OneCV Labs',
+                    'start_year' => '2022',
+                    'end_year' => null,
+                    'is_current' => true,
+                    'job_description' => 'Built reusable PHP MVC views, responsive CV templates, and role-based dashboard screens. Improved form usability, implemented dynamic preview flows, and collaborated with backend developers to map form data into structured CV output.',
+                ],
+                [
+                    'job_title' => 'Web Developer',
+                    'employment_type' => 'Part-time',
+                    'industry' => 'Education',
+                    'company_name' => 'Bright Path Academy',
+                    'start_year' => '2020',
+                    'end_year' => '2022',
+                    'is_current' => false,
+                    'job_description' => 'Maintained course landing pages, created admin data-entry forms, and optimized frontend performance for high-traffic enrollment campaigns.',
+                ],
+            ],
+            'certificates' => [
+                [
+                    'certificate_name' => 'Google UX Design Certificate',
+                    'issuing_organization' => 'Google',
+                    'year_issued' => '2023',
+                    'description' => 'Covered user research, wireframing, prototyping, and usability testing for digital products.',
+                ],
+                [
+                    'certificate_name' => 'Responsive Web Design',
+                    'issuing_organization' => 'freeCodeCamp',
+                    'year_issued' => '2022',
+                    'description' => 'Validated responsive layout skills using semantic HTML, CSS Grid, Flexbox, and accessible design patterns.',
+                ],
+            ],
+            'skills' => [
+                ['skill' => 'HTML/CSS', 'proficiency' => 'Expert', 'level' => 9],
+                ['skill' => 'JavaScript', 'proficiency' => 'Advanced', 'level' => 8],
+                ['skill' => 'PHP MVC', 'proficiency' => 'Advanced', 'level' => 8],
+                ['skill' => 'Database Design', 'proficiency' => 'Intermediate', 'level' => 7],
+                ['skill' => 'UI Implementation', 'proficiency' => 'Expert', 'level' => 9],
+            ],
+        ];
     }
 
     private function requireJobSeeker(): void
