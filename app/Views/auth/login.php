@@ -4,6 +4,8 @@ use App\Core\View;
 
 $old = $_SESSION['_old'] ?? [];
 $selectedRole = $old['role'] ?? 'job_seeker';
+$redirectPath = $redirect ?? $old['redirect'] ?? '';
+$redirectQuery = $redirectPath !== '' ? '?redirect=' . rawurlencode($redirectPath) : '';
 ?>
 <main class="auth-page">
     <section class="auth-shell">
@@ -42,11 +44,15 @@ $selectedRole = $old['role'] ?? 'job_seeker';
             </div>
 
             <div class="auth-tabs">
-                <a class="active" href="<?= View::url('/login') ?>">Login</a>
-                <a href="<?= View::url('/register') ?>">Register</a>
+                <a class="active" href="<?= View::url('/login' . $redirectQuery) ?>">Login</a>
+                <a href="<?= View::url('/register' . $redirectQuery) ?>">Register</a>
             </div>
 
             <form class="auth-form" method="post" action="<?= View::url('/login') ?>">
+                <?php if ($redirectPath !== ''): ?>
+                    <input type="hidden" name="redirect" value="<?= View::e($redirectPath) ?>">
+                <?php endif; ?>
+
                 <fieldset class="role-grid role-grid-three">
                     <legend>Access Role</legend>
 

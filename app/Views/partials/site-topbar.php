@@ -3,11 +3,11 @@
 use App\Core\View;
 
 $activeSiteTab = $activeSiteTab ?? 'home';
-$siteTopbarVariant = $siteTopbarVariant ?? 'app';
 $user = $_SESSION['user'] ?? null;
 $initials = strtoupper(substr($user['full_name'] ?? 'U', 0, 1));
+$authRedirectQuery = $activeSiteTab === 'home' ? '?redirect=' . rawurlencode('/') : '';
 
-$tabs = $siteTopbarVariant === 'marketing'
+$tabs = $user === null
     ? [
         'home' => ['label' => 'Home', 'url' => '/'],
         'templates' => ['label' => 'Templates', 'url' => '/cv/templates'],
@@ -42,8 +42,8 @@ $tabs = $siteTopbarVariant === 'marketing'
 
         <div class="job-topbar-actions">
             <?php if ($user === null): ?>
-                <a class="site-login-link" href="<?= View::url('/login') ?>">Login</a>
-                <a class="site-register-link" href="<?= View::url('/register') ?>">Register</a>
+                <a class="site-login-link" href="<?= View::url('/login' . $authRedirectQuery) ?>">Login</a>
+                <a class="site-register-link" href="<?= View::url('/register' . $authRedirectQuery) ?>">Register</a>
             <?php else: ?>
                 <button class="job-icon-button" type="button" aria-label="Notifications">
                     <span>notifications</span>

@@ -28,8 +28,6 @@ class CVController extends Controller
 
     public function templates(): void
     {
-        $this->requireJobSeeker();
-
         $templates = [
             'modern' => [
                 'name' => 'Modern Executive',

@@ -3,7 +3,6 @@
 use App\Core\View;
 
 $activeSiteTab = 'home';
-$siteTopbarVariant = 'marketing';
 ?>
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
@@ -21,7 +20,7 @@ $siteTopbarVariant = 'marketing';
                     choose a premium layout, and let OneCV generate a polished resume instantly.
                 </p>
                 <div class="marketing-actions">
-                    <a class="marketing-primary-action" href="<?= View::url('/login') ?>">
+                    <a class="marketing-primary-action" href="<?= View::url('/cv/templates') ?>">
                         Create Your CV Now
                         <span>arrow_forward</span>
                     </a>
@@ -145,7 +144,7 @@ $siteTopbarVariant = 'marketing';
         <div class="marketing-cta-card">
             <h2>Ready to Land Your Next Role?</h2>
             <p>Fill in your details, pick your template, and export a beautiful CV today.</p>
-            <a class="marketing-primary-action" href="<?= View::url('/login') ?>">Start Building Now</a>
+            <a class="marketing-primary-action" href="<?= View::url('/cv/templates') ?>">Start Building Now</a>
         </div>
     </section>
 </main>

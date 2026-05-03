@@ -12,29 +12,36 @@ class AuthController extends Controller
 {
     public function showLogin(): void
     {
+        $redirect = $this->safeRedirectPath($this->input('redirect'));
+
         if ($this->authenticated()) {
-            $this->redirect('/dashboard');
+            $this->redirect($redirect ?? '/dashboard');
         }
 
         $this->view('auth/login', [
             'title' => 'Login',
+            'redirect' => $redirect,
         ]);
     }
 
     public function showRegister(): void
     {
+        $redirect = $this->safeRedirectPath($this->input('redirect'));
+
         if ($this->authenticated()) {
-            $this->redirect('/dashboard');
+            $this->redirect($redirect ?? '/dashboard');
         }
 
         $this->view('auth/register', [
             'title' => 'Register',
+            'redirect' => $redirect,
         ]);
     }
 
     public function register(): void
     {
-        $data = $this->only(['full_name', 'email', 'password', 'password_confirmation', 'role']);
+        $data = $this->only(['full_name', 'email', 'password', 'password_confirmation', 'role', 'redirect']);
+        $redirect = $this->safeRedirectPath($data['redirect'] ?? null);
         $errors = $this->validateRegistration($data);
 
         if ($errors !== []) {
@@ -43,8 +50,9 @@ class AuthController extends Controller
                 'full_name' => $data['full_name'] ?? '',
                 'email' => $data['email'] ?? '',
                 'role' => $data['role'] ?? 'job_seeker',
+                'redirect' => $redirect ?? '',
             ]);
-            $this->redirect('/register');
+            $this->redirect('/register' . $this->redirectQuery($redirect));
         }
 
         $role = (new Role())->findByName($data['role']);
@@ -55,8 +63,9 @@ class AuthController extends Controller
                 'full_name' => $data['full_name'] ?? '',
                 'email' => $data['email'] ?? '',
                 'role' => $data['role'] ?? 'job_seeker',
+                'redirect' => $redirect ?? '',
             ]);
-            $this->redirect('/register');
+            $this->redirect('/register' . $this->redirectQuery($redirect));
         }
 
         $userId = (new User())->createUser([
@@ -69,12 +78,17 @@ class AuthController extends Controller
 
         $this->loginUser($userId);
         $this->flash('success', 'Your account has been created.');
+        if ($redirect !== null) {
+            $this->redirect($redirect);
+        }
+
         $this->redirect('/dashboard');
     }
 
     public function login(): void
     {
-        $data = $this->only(['email', 'password', 'role']);
+        $data = $this->only(['email', 'password', 'role', 'redirect']);
+        $redirect = $this->safeRedirectPath($data['redirect'] ?? null);
         $errors = [];
         $allowedRoles = ['job_seeker', 'employer', 'admin'];
 
@@ -95,8 +109,9 @@ class AuthController extends Controller
             $this->old([
                 'email' => $data['email'] ?? '',
                 'role' => $data['role'] ?? 'job_seeker',
+                'redirect' => $redirect ?? '',
             ]);
-            $this->redirect('/login');
+            $this->redirect('/login' . $this->redirectQuery($redirect));
         }
 
         $userModel = new User();
@@ -114,12 +129,17 @@ class AuthController extends Controller
             $this->old([
                 'email' => $data['email'] ?? '',
                 'role' => $data['role'] ?? 'job_seeker',
+                'redirect' => $redirect ?? '',
             ]);
-            $this->redirect('/login');
+            $this->redirect('/login' . $this->redirectQuery($redirect));
         }
 
         $this->loginUser((int) $user['id']);
         $this->flash('success', 'Welcome back.');
+        if ($redirect !== null) {
+            $this->redirect($redirect);
+        }
+
         if ($role['name'] === 'admin') {
             $this->redirect('/admin/overview');
         } 
@@ -203,5 +223,23 @@ class AuthController extends Controller
     private function authenticated(): bool
     {
         return isset($_SESSION['user']['id']);
+    }
+
+    private function safeRedirectPath(mixed $path): ?string
+    {
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        if (! str_starts_with($path, '/') || str_starts_with($path, '//')) {
+            return null;
+        }
+
+        return $path;
+    }
+
+    private function redirectQuery(?string $redirect): string
+    {
+        return $redirect === null ? '' : '?redirect=' . rawurlencode($redirect);
     }
 }
