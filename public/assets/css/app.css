@@ -1357,9 +1357,9 @@ input {
 }
 
 .builder-step.completed > span {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-fixed);
+  border-color: #16a34a;
+  color: #ffffff;
+  background: #16a34a;
 }
 
 .builder-step strong,
@@ -1596,6 +1596,26 @@ input {
 .builder-secondary-button {
   color: var(--primary);
   background: var(--secondary-container);
+}
+
+.js-add-dynamic-row {
+  border: 1px solid var(--secondary-container);
+  color: var(--primary);
+  background: rgba(210, 225, 250, 0.32);
+  box-shadow: none;
+  transition: opacity 160ms ease, transform 160ms ease, background 160ms ease;
+}
+
+.js-add-dynamic-row:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--secondary-container);
+}
+
+.js-add-dynamic-row:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  transform: none;
+  box-shadow: none;
 }
 
 .builder-primary-button {

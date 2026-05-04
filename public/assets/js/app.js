@@ -98,7 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const addButton = dynamicBuilderForm.querySelector(`.js-add-dynamic-row[data-target="${list.dataset.dynamicList}"]`);
 
         if (addButton) {
-          addButton.hidden = items.length >= maxItems;
+          addButton.disabled = items.length >= maxItems;
+          addButton.setAttribute(
+            'aria-label',
+            items.length >= maxItems
+              ? `Maximum ${maxItems} items reached`
+              : addButton.dataset.defaultLabel || addButton.textContent.trim()
+          );
         }
       }
     };
@@ -129,6 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
+    dynamicBuilderForm.querySelectorAll('.js-add-dynamic-row').forEach((button) => {
+      button.dataset.defaultLabel = button.textContent.trim();
+    });
+
     dynamicBuilderForm.querySelectorAll('[data-dynamic-list]').forEach((list) => {
       const type = list.dataset.dynamicList;
       const prefix = prefixes[type];
@@ -143,6 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dynamicBuilderForm.querySelectorAll('.js-add-dynamic-row').forEach((button) => {
       button.addEventListener('click', () => {
+        if (button.disabled) {
+          return;
+        }
+
         const type = button.dataset.target;
         const list = dynamicBuilderForm.querySelector(`[data-dynamic-list="${type}"]`);
         const prefix = prefixes[type];
