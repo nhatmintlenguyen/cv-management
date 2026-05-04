@@ -56,6 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     syncLocationFields();
   }
 
+  document.querySelectorAll('.flash').forEach((flash) => {
+    window.setTimeout(() => {
+      flash.classList.add('is-hiding');
+      window.setTimeout(() => flash.remove(), 220);
+    }, 3200);
+  });
+
   const modal = document.querySelector('#reference-edit-modal');
 
   if (!modal) {
