@@ -69,10 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const prefixes = {
       education: 'educations',
       work: 'work_histories',
+      certificate: 'certificates',
+      skill: 'skills',
     };
 
     const updateList = (list, prefix) => {
       const items = Array.from(list.querySelectorAll('[data-dynamic-item]'));
+      const maxItems = Number.parseInt(list.dataset.maxItems || '0', 10);
 
       items.forEach((item, index) => {
         const number = item.querySelector('[data-item-number]');
@@ -90,6 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
           removeButton.disabled = items.length === 1;
         }
       });
+
+      if (maxItems > 0) {
+        const addButton = dynamicBuilderForm.querySelector(`.js-add-dynamic-row[data-target="${list.dataset.dynamicList}"]`);
+
+        if (addButton) {
+          addButton.hidden = items.length >= maxItems;
+        }
+      }
     };
 
     const resetItem = (item) => {

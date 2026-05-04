@@ -1,1 +1,1 @@
-<?php require __DIR__ . '/edit-personal-information.php'; ?>
+<?php require __DIR__ . '/edit-personal-info.php'; ?>

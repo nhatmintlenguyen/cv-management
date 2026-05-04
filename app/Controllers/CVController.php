@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Models\CertificateName;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\CV;
+use App\Models\CVCertificate;
 use App\Models\CVCategory;
 use App\Models\CVEducation;
+use App\Models\CVSkill;
 use App\Models\CVWorkHistory;
 use App\Models\DegreeLevel;
 use App\Models\District;
@@ -17,8 +20,11 @@ use App\Models\EmploymentType;
 use App\Models\Gender;
 use App\Models\Industry;
 use App\Models\Institution;
+use App\Models\IssuingOrganization;
 use App\Models\JobTitle;
 use App\Models\Major;
+use App\Models\Skill;
+use App\Models\SkillProficiencyLevel;
 use Throwable;
 
 class CVController extends Controller
@@ -46,6 +52,12 @@ class CVController extends Controller
         $this->view('cv/edit-academic', $this->builderStepTwoViewData());
     }
 
+    public function editQualifications(): void
+    {
+        $this->requireJobSeeker();
+        $this->view('cv/edit-qualifications', $this->builderStepThreeViewData());
+    }
+
     public function saveIdentity(): void
     {
         $this->requireJobSeeker();
@@ -63,6 +75,7 @@ class CVController extends Controller
             'postal_code',
             'cv_category_id',
             'summary',
+            'next_step',
         ]);
 
         $errors = $this->validateIdentity($data);
@@ -98,6 +111,10 @@ class CVController extends Controller
         }
 
         $this->flash('success', 'Your personal information has been saved.');
+        if (($data['next_step'] ?? '') === 'academic') {
+            $this->redirect('/cv/edit/academic');
+        }
+
         $this->redirect('/cv/edit/personal-info');
     }
 
@@ -131,7 +148,44 @@ class CVController extends Controller
         (new CVWorkHistory())->replaceForCv((int) $cv['id'], $workHistories);
 
         $this->flash('success', 'Your education and work history have been saved.');
+        if (($_POST['next_step'] ?? '') === 'qualifications') {
+            $this->redirect('/cv/edit/qualifications');
+        }
+
         $this->redirect('/cv/edit/academic');
+    }
+
+    public function saveQualifications(): void
+    {
+        $this->requireJobSeeker();
+
+        $cv = $this->currentUserCv();
+        if ($cv === null) {
+            $this->flash('errors', ['Please save your personal information before adding qualifications and skills.']);
+            $this->redirect('/cv/edit/personal-info');
+        }
+
+        $certificateRows = $this->postedRows('certificates');
+        $skillRows = $this->postedRows('skills');
+        $errors = [];
+
+        $certificates = $this->sanitizeCertificates($certificateRows, $errors);
+        $skills = $this->sanitizeSkills($skillRows, $errors);
+
+        if ($errors !== []) {
+            $this->flash('errors', $errors);
+            $this->old([
+                'certificates' => $certificateRows,
+                'skills' => $skillRows,
+            ]);
+            $this->redirect('/cv/edit/qualifications');
+        }
+
+        (new CVCertificate())->replaceForCv((int) $cv['id'], $certificates);
+        (new CVSkill())->replaceForCv((int) $cv['id'], $skills);
+
+        $this->flash('success', 'Your certificates and skills have been saved.');
+        $this->redirect('/cv/edit/qualifications');
     }
 
     public function show(): void
@@ -301,6 +355,35 @@ class CVController extends Controller
             'jobTitles' => $this->safeLookup(fn (): array => (new JobTitle())->all('name')),
             'employmentTypes' => $this->safeLookup(fn (): array => (new EmploymentType())->all('name')),
             'industries' => $this->safeLookup(fn (): array => (new Industry())->all('name')),
+        ];
+    }
+
+    private function builderStepThreeViewData(): array
+    {
+        $cv = $this->currentUserCv();
+
+        if ($cv === null) {
+            return [
+                'title' => 'Qualifications & Skills',
+                'cv' => null,
+                'certificates' => [],
+                'cvSkills' => [],
+                'certificateNames' => [],
+                'issuingOrganizations' => [],
+                'skills' => [],
+                'proficiencyLevels' => [],
+            ];
+        }
+
+        return [
+            'title' => 'Qualifications & Skills',
+            'cv' => $cv,
+            'certificates' => $this->safeLookup(fn (): array => (new CVCertificate())->findByCvId((int) $cv['id'])),
+            'cvSkills' => $this->safeLookup(fn (): array => (new CVSkill())->findByCvId((int) $cv['id'])),
+            'certificateNames' => $this->safeLookup(fn (): array => (new CertificateName())->all('name')),
+            'issuingOrganizations' => $this->safeLookup(fn (): array => (new IssuingOrganization())->all('name')),
+            'skills' => $this->safeLookup(fn (): array => (new Skill())->all('name')),
+            'proficiencyLevels' => $this->safeLookup(fn (): array => (new SkillProficiencyLevel())->ordered()),
         ];
     }
 
@@ -494,6 +577,86 @@ class CVController extends Controller
                 'is_current' => $isCurrent ? 1 : 0,
                 'job_description' => $jobDescription,
                 'display_order' => $index,
+            ];
+        }
+
+        return $errors === [] ? $items : [];
+    }
+
+    private function sanitizeCertificates(array $rows, array &$errors): array
+    {
+        if ($rows === []) {
+            $errors[] = 'Please add at least one certificate entry.';
+            return [];
+        }
+
+        $items = [];
+
+        foreach ($rows as $index => $row) {
+            $label = 'Certificate #' . ($index + 1);
+            $certificateNameId = (int) ($row['certificate_name_id'] ?? 0);
+            $issuingOrganizationId = (int) ($row['issuing_organization_id'] ?? 0);
+            $yearIssued = (int) ($row['year_issued'] ?? 0);
+
+            if ($certificateNameId <= 0 || ! (new CertificateName())->exists($certificateNameId)) {
+                $errors[] = "{$label}: please choose a valid certificate name.";
+            }
+
+            if ($issuingOrganizationId <= 0 || ! (new IssuingOrganization())->exists($issuingOrganizationId)) {
+                $errors[] = "{$label}: please choose a valid issuing organization.";
+            }
+
+            if (! $this->validYear($yearIssued)) {
+                $errors[] = "{$label}: please enter a valid issued year.";
+            }
+
+            $items[] = [
+                'certificate_name_id' => $certificateNameId,
+                'issuing_organization_id' => $issuingOrganizationId,
+                'year_issued' => $yearIssued,
+                'description' => trim((string) ($row['description'] ?? '')) ?: null,
+                'display_order' => $index,
+            ];
+        }
+
+        return $errors === [] ? $items : [];
+    }
+
+    private function sanitizeSkills(array $rows, array &$errors): array
+    {
+        if ($rows === []) {
+            $errors[] = 'Please add at least one skill.';
+            return [];
+        }
+
+        if (count($rows) > 5) {
+            $errors[] = 'A CV can have at most 5 strongest skills.';
+        }
+
+        $items = [];
+        $skillIds = [];
+
+        foreach ($rows as $index => $row) {
+            $label = 'Skill #' . ($index + 1);
+            $skillId = (int) ($row['skill_id'] ?? 0);
+            $proficiencyLevelId = (int) ($row['proficiency_level_id'] ?? 0);
+
+            if ($skillId <= 0 || ! (new Skill())->exists($skillId)) {
+                $errors[] = "{$label}: please choose a valid skill.";
+            }
+
+            if ($proficiencyLevelId <= 0 || ! (new SkillProficiencyLevel())->exists($proficiencyLevelId)) {
+                $errors[] = "{$label}: please choose a valid proficiency level.";
+            }
+
+            if ($skillId > 0 && in_array($skillId, $skillIds, true)) {
+                $errors[] = "{$label}: duplicate skills are not allowed.";
+            }
+
+            $skillIds[] = $skillId;
+            $items[] = [
+                'skill_id' => $skillId,
+                'proficiency_level_id' => $proficiencyLevelId,
             ];
         }
 

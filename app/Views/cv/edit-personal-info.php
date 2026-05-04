@@ -186,10 +186,10 @@ $isSelected = static fn (string $field, mixed $value): string => (string) ($old[
 
                 <div>
                     <button class="builder-secondary-button" type="submit">Save Progress</button>
-                    <a class="builder-primary-button" href="<?= View::url('/cv/edit/academic') ?>">
+                    <button class="builder-primary-button" type="submit" name="next_step" value="academic">
                         Next Step
                         <span>arrow_forward</span>
-                    </a>
+                    </button>
                 </div>
             </div>
         </form>
