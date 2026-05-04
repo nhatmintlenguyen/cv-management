@@ -23,6 +23,7 @@ $router->get('/dashboard', [DashboardController::class, 'index']);
 
 $router->get('/cv/create', [CVController::class, 'create']);
 $router->get('/cv/edit', [CVController::class, 'edit']);
+$router->post('/cv/identity', [CVController::class, 'saveIdentity']);
 $router->get('/cv/show', [CVController::class, 'show']);
 $router->get('/cv/templates', [CVController::class, 'templates']);
 $router->get('/profile', [ProfileController::class, 'show']);

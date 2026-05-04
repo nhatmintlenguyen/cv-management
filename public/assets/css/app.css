@@ -1163,6 +1163,319 @@ input {
   line-height: 1.65;
 }
 
+.builder-page {
+  width: min(100%, 1024px);
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.builder-heading {
+  margin-bottom: 40px;
+}
+
+.builder-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.builder-breadcrumb strong {
+  color: var(--primary);
+}
+
+.builder-symbol,
+.builder-section-title span,
+.builder-ghost-button span,
+.builder-primary-button span {
+  font-family: "Material Symbols Outlined";
+  font-feature-settings: "liga";
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  line-height: 1;
+}
+
+.builder-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.builder-heading h1 {
+  margin: 0;
+  color: var(--primary);
+  font-size: clamp(2.1rem, 4vw, 2.65rem);
+  line-height: 1.18;
+}
+
+.builder-heading p {
+  max-width: 640px;
+  margin: 10px 0 0;
+  color: var(--secondary);
+  line-height: 1.65;
+}
+
+.builder-progress-card {
+  flex: 0 0 auto;
+  border: 1px solid var(--secondary-container);
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: rgba(210, 225, 250, 0.32);
+}
+
+.builder-progress-card span,
+.builder-progress-card strong {
+  display: block;
+}
+
+.builder-progress-card span {
+  margin-bottom: 3px;
+  color: var(--on-secondary-container);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.builder-progress-card strong {
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.builder-shell {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 48px;
+}
+
+.builder-stepper {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 34px;
+}
+
+.builder-stepper::before {
+  display: none;
+}
+
+.builder-step {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  color: #94a3b8;
+}
+
+.builder-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 26px;
+  left: 12px;
+  width: 3px;
+  height: calc(100% + 34px);
+  border-radius: 999px;
+  background: #c4c6ce;
+  transform: translateX(-0.5px);
+  z-index: 0;
+}
+
+.builder-step > span {
+  position: relative;
+  z-index: 1;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--outline-variant);
+  border-radius: 50%;
+  color: #94a3b8;
+  background: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.builder-step.active > span {
+  border-color: var(--primary);
+  color: #fff;
+  background: var(--primary);
+  box-shadow: 0 0 0 4px #fff;
+}
+
+.builder-step strong,
+.builder-step small {
+  display: block;
+}
+
+.builder-step strong {
+  color: inherit;
+  font-size: 0.88rem;
+  line-height: 1.15;
+}
+
+.builder-step.active strong {
+  color: var(--primary);
+}
+
+.builder-step small {
+  margin-top: 6px;
+  color: var(--on-primary-container);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.builder-form-card {
+  display: grid;
+  gap: 48px;
+  border: 1px solid rgba(196, 198, 206, 0.5);
+  border-radius: 12px;
+  padding: 32px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(25, 28, 30, 0.04);
+}
+
+.builder-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.builder-section-title span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--primary);
+  background: var(--secondary-container);
+  font-size: 1.35rem;
+}
+
+.builder-section-title h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.25rem;
+}
+
+.builder-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.builder-form-grid-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.builder-field {
+  display: grid;
+  gap: 8px;
+}
+
+.builder-field-wide {
+  grid-column: 1 / -1;
+}
+
+.builder-field-two {
+  grid-column: span 2;
+}
+
+.builder-field > span {
+  margin-left: 4px;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.builder-field input,
+.builder-field select,
+.builder-field textarea {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 13px 16px;
+  color: var(--text);
+  background: var(--surface-container-highest);
+  outline: none;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.builder-field textarea {
+  resize: vertical;
+  min-height: 132px;
+}
+
+.builder-field input:focus,
+.builder-field select:focus,
+.builder-field textarea:focus {
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.builder-field input::placeholder,
+.builder-field textarea::placeholder {
+  color: #94a3b8;
+}
+
+.builder-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid rgba(196, 198, 206, 0.32);
+  padding-top: 32px;
+}
+
+.builder-form-actions > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.builder-ghost-button,
+.builder-secondary-button,
+.builder-primary-button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 22px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.builder-ghost-button {
+  color: var(--secondary);
+  background: transparent;
+}
+
+.builder-ghost-button:hover {
+  color: var(--primary);
+}
+
+.builder-secondary-button {
+  color: var(--primary);
+  background: var(--secondary-container);
+}
+
+.builder-primary-button {
+  color: #fff;
+  background: var(--primary);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
+}
+
 .home-page {
   width: min(100%, 1280px);
   margin: 0 auto;
@@ -2455,6 +2768,57 @@ input {
     right: 18px;
     bottom: 18px;
     width: min(250px, calc(100% - 36px));
+  }
+
+  .builder-heading-row,
+  .builder-form-actions,
+  .builder-form-actions > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .builder-progress-card {
+    width: 100%;
+  }
+
+  .builder-shell {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .builder-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .builder-stepper::before {
+    display: none;
+  }
+
+  .builder-step {
+    flex: 0 0 auto;
+    align-items: center;
+  }
+
+  .builder-step:not(:last-child)::after {
+    height: calc(100% + 24px);
+  }
+
+  .builder-form-grid,
+  .builder-form-grid-three {
+    grid-template-columns: 1fr;
+  }
+
+  .builder-field-two,
+  .builder-field-wide {
+    grid-column: auto;
+  }
+
+  .builder-form-card {
+    padding: 24px;
   }
 
   .template-hero,

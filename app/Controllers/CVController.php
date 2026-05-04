@@ -5,19 +5,81 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Models\City;
+use App\Models\Country;
+use App\Models\CV;
+use App\Models\CVCategory;
+use App\Models\District;
+use App\Models\Gender;
+use Throwable;
 
 class CVController extends Controller
 {
     public function create(): void
     {
         $this->requireJobSeeker();
-        $this->view('cv/create', ['title' => 'Create CV']);
+        $this->view('cv/create', $this->builderStepOneViewData('Create CV'));
     }
 
     public function edit(): void
     {
         $this->requireJobSeeker();
-        $this->view('cv/edit', ['title' => 'CV Builder']);
+        $this->view('cv/edit', $this->builderStepOneViewData('CV Builder'));
+    }
+
+    public function saveIdentity(): void
+    {
+        $this->requireJobSeeker();
+
+        $data = $this->only([
+            'full_name',
+            'date_of_birth',
+            'gender_id',
+            'email',
+            'phone_number',
+            'country_id',
+            'city_id',
+            'district_id',
+            'street_address',
+            'postal_code',
+            'cv_category_id',
+            'summary',
+        ]);
+
+        $errors = $this->validateIdentity($data);
+
+        if ($errors !== []) {
+            $this->flash('errors', $errors);
+            $this->old($data);
+            $this->redirect('/cv/edit');
+        }
+
+        $payload = [
+            'cv_category_id' => (int) $data['cv_category_id'],
+            'gender_id' => (int) $data['gender_id'],
+            'country_id' => (int) $data['country_id'],
+            'city_id' => (int) $data['city_id'],
+            'district_id' => ($data['district_id'] ?? '') === '' ? null : (int) $data['district_id'],
+            'full_name' => trim((string) $data['full_name']),
+            'date_of_birth' => $data['date_of_birth'],
+            'email' => strtolower(trim((string) $data['email'])),
+            'phone_number' => trim((string) $data['phone_number']),
+            'street_address' => trim((string) $data['street_address']),
+            'postal_code' => trim((string) ($data['postal_code'] ?? '')) ?: null,
+            'summary' => trim((string) ($data['summary'] ?? '')) ?: null,
+        ];
+
+        $cvModel = new CV();
+        $userId = (int) $_SESSION['user']['id'];
+
+        if ($cvModel->findByUserId($userId) === null) {
+            $cvModel->createForUser($userId, $payload);
+        } else {
+            $cvModel->updateForUser($userId, $payload);
+        }
+
+        $this->flash('success', 'Your personal information has been saved.');
+        $this->redirect('/cv/edit');
     }
 
     public function show(): void
@@ -142,6 +204,87 @@ class CVController extends Controller
                 ['skill' => 'UI Implementation', 'proficiency' => 'Expert', 'level' => 9],
             ],
         ];
+    }
+
+    private function builderStepOneViewData(string $title): array
+    {
+        $cv = (new CV())->findByUserId((int) ($_SESSION['user']['id'] ?? 0));
+
+        return [
+            'title' => $title,
+            'cv' => $cv,
+            'genders' => $this->safeLookup(fn (): array => (new Gender())->all('name')),
+            'countries' => $this->safeLookup(fn (): array => (new Country())->all('name')),
+            'cities' => $this->safeLookup(fn (): array => (new City())->all('name')),
+            'districts' => $this->safeLookup(fn (): array => (new District())->all('name')),
+            'categories' => $this->safeLookup(fn (): array => (new CVCategory())->all('name')),
+        ];
+    }
+
+    private function safeLookup(callable $loader): array
+    {
+        try {
+            return $loader();
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
+    private function validateIdentity(array $data): array
+    {
+        $errors = [];
+
+        if (trim((string) ($data['full_name'] ?? '')) === '') {
+            $errors[] = 'Full name is required.';
+        }
+
+        if (empty($data['date_of_birth']) || strtotime((string) $data['date_of_birth']) === false) {
+            $errors[] = 'A valid date of birth is required.';
+        }
+
+        if (empty($data['email']) || ! filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'A valid email address is required.';
+        }
+
+        if (trim((string) ($data['phone_number'] ?? '')) === '') {
+            $errors[] = 'Phone number is required.';
+        }
+
+        if (trim((string) ($data['street_address'] ?? '')) === '') {
+            $errors[] = 'Street address is required.';
+        }
+
+        $genderId = (int) ($data['gender_id'] ?? 0);
+        $countryId = (int) ($data['country_id'] ?? 0);
+        $cityId = (int) ($data['city_id'] ?? 0);
+        $districtId = (int) ($data['district_id'] ?? 0);
+        $categoryId = (int) ($data['cv_category_id'] ?? 0);
+
+        if ($genderId <= 0 || ! (new Gender())->exists($genderId)) {
+            $errors[] = 'Please choose a valid gender.';
+        }
+
+        if ($countryId <= 0 || ! (new Country())->exists($countryId)) {
+            $errors[] = 'Please choose a valid country.';
+        }
+
+        $city = $cityId > 0 ? (new City())->find($cityId) : null;
+        if ($city === null || (int) $city['country_id'] !== $countryId) {
+            $errors[] = 'Please choose a valid city/province for the selected country.';
+        }
+
+        if ($districtId > 0) {
+            $district = (new District())->find($districtId);
+            if ($district === null || (int) $district['city_id'] !== $cityId) {
+                $errors[] = 'Please choose a valid district for the selected city.';
+            }
+        }
+
+        if ($categoryId <= 0 || ! (new CVCategory())->exists($categoryId)) {
+            $errors[] = 'Please choose a valid CV category.';
+        }
+
+        return $errors;
     }
 
     private function requireJobSeeker(): void
