@@ -25,6 +25,22 @@ class User extends Model
         return $this->create($data);
     }
 
+    public function updateProfile(int $userId, array $data): bool
+    {
+        return $this->update($userId, $data);
+    }
+
+    public function emailExistsForAnotherUser(string $email, int $userId): bool
+    {
+        return $this->first(
+            'SELECT 1
+             FROM `users`
+             WHERE `email` = :email AND `id` <> :user_id
+             LIMIT 1',
+            ['email' => $email, 'user_id' => $userId]
+        ) !== null;
+    }
+
     public function getRole(int $userId): ?array
     {
         return $this->first(

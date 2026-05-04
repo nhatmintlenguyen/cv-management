@@ -34,6 +34,7 @@ $router->post('/cv/finish', [CVController::class, 'finish']);
 $router->get('/cv/show', [CVController::class, 'show']);
 $router->get('/cv/templates', [CVController::class, 'templates']);
 $router->get('/profile', [ProfileController::class, 'show']);
+$router->post('/profile', [ProfileController::class, 'update']);
 $router->get('/profiles', [ProfileController::class, 'show']);
 $router->get('/find-cvs', [SearchController::class, 'index']);
 

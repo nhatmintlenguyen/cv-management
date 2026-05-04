@@ -512,7 +512,7 @@ class CVController extends Controller
             'district' => $cv['district_name'] ?? '',
             'street_address' => $cv['street_address'] ?? '',
             'postal_code' => $cv['postal_code'] ?? '',
-            'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+            'avatar' => $cv['avatar_url'] ?? 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
             'summary' => $cv['summary'] ?? '',
             'educations' => array_map(static fn (array $education): array => [
                 'institution' => $education['institution_name'] ?? '',

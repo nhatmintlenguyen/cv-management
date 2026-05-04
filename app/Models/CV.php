@@ -41,8 +41,10 @@ class CV extends Model
                     genders.name AS gender_name,
                     countries.name AS country_name,
                     cities.name AS city_name,
-                    districts.name AS district_name
+                    districts.name AS district_name,
+                    users.avatar_url
              FROM `cvs`
+             INNER JOIN `users` ON users.id = cvs.user_id
              INNER JOIN `cv_categories` ON cv_categories.id = cvs.cv_category_id
              INNER JOIN `genders` ON genders.id = cvs.gender_id
              INNER JOIN `countries` ON countries.id = cvs.country_id

@@ -50,7 +50,11 @@ $tabs = $user === null
                 </button>
 
                 <div class="job-avatar" title="<?= View::e($user['full_name'] ?? 'User') ?>">
-                    <?= View::e($initials) ?>
+                    <?php if (! empty($user['avatar_url'])): ?>
+                        <img src="<?= View::e($user['avatar_url']) ?>" alt="<?= View::e($user['full_name'] ?? 'User') ?> avatar">
+                    <?php else: ?>
+                        <?= View::e($initials) ?>
+                    <?php endif; ?>
                 </div>
 
                 <form method="post" action="<?= View::url('/logout') ?>">

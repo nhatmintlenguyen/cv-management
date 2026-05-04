@@ -63,6 +63,113 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3200);
   });
 
+  const profileForm = document.querySelector('.js-profile-form');
+  const profileAvatarInput = profileForm?.querySelector('.js-profile-avatar-input');
+  const profileEditToggle = profileForm?.querySelector('.js-profile-edit-toggle');
+  const profileSaveButton = profileForm?.querySelector('.js-profile-save-button');
+  const profileEditableFields = profileForm ? Array.from(profileForm.querySelectorAll('.js-profile-editable')) : [];
+  const profileCountrySelect = profileForm?.querySelector('[data-profile-country]');
+  const profileCitySelect = profileForm?.querySelector('[data-profile-city]');
+
+  const showProfileSaveButton = () => {
+    if (profileSaveButton) {
+      profileSaveButton.hidden = false;
+    }
+  };
+
+  const setProfileEditMode = (enabled) => {
+    if (!profileForm) {
+      return;
+    }
+
+    profileForm.classList.toggle('is-readonly', !enabled);
+    profileForm.classList.toggle('is-editing', enabled);
+    profileEditableFields.forEach((field) => {
+      if (field.tagName === 'SELECT') {
+        field.disabled = !enabled;
+        return;
+      }
+
+      field.readOnly = !enabled;
+    });
+
+    if (enabled) {
+      showProfileSaveButton();
+      profileEditableFields[0]?.focus();
+    }
+  };
+
+  profileEditToggle?.addEventListener('click', () => {
+    setProfileEditMode(true);
+  });
+
+  profileEditableFields.forEach((field) => {
+    field.addEventListener('input', showProfileSaveButton);
+    field.addEventListener('change', showProfileSaveButton);
+  });
+
+  const syncProfileCities = () => {
+    if (!profileCountrySelect || !profileCitySelect) {
+      return;
+    }
+
+    const countryId = profileCountrySelect.value || '';
+
+    Array.from(profileCitySelect.options).forEach((option) => {
+      if (option.value === '') {
+        option.hidden = false;
+        return;
+      }
+
+      option.hidden = countryId === '' || option.dataset.countryId !== countryId;
+    });
+
+    if (profileCitySelect.selectedOptions[0]?.hidden) {
+      profileCitySelect.value = '';
+    }
+  };
+
+  profileCountrySelect?.addEventListener('change', () => {
+    if (profileCitySelect) {
+      profileCitySelect.value = '';
+    }
+
+    syncProfileCities();
+  });
+
+  profileAvatarInput?.addEventListener('change', () => {
+    if (!profileAvatarInput.files || profileAvatarInput.files.length === 0) {
+      return;
+    }
+
+    const file = profileAvatarInput.files[0];
+    const previewContainer = profileForm?.querySelector('.profile-avatar-preview');
+
+    if (previewContainer && file.type.startsWith('image/')) {
+      const previewUrl = URL.createObjectURL(file);
+      let previewImage = previewContainer.querySelector('img');
+
+      if (!previewImage) {
+        previewContainer.textContent = '';
+        previewImage = document.createElement('img');
+        previewImage.className = 'js-profile-avatar-preview';
+        previewImage.alt = 'Selected avatar preview';
+        previewContainer.appendChild(previewImage);
+      }
+
+      previewImage.onload = () => URL.revokeObjectURL(previewUrl);
+      previewImage.src = previewUrl;
+    }
+
+    showProfileSaveButton();
+    setProfileEditMode(true);
+  });
+
+  if (profileForm) {
+    setProfileEditMode(false);
+    syncProfileCities();
+  }
+
   const dynamicBuilderForm = document.querySelector('.js-dynamic-builder-form');
 
   if (dynamicBuilderForm) {
