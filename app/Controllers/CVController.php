@@ -9,8 +9,16 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\CV;
 use App\Models\CVCategory;
+use App\Models\CVEducation;
+use App\Models\CVWorkHistory;
+use App\Models\DegreeLevel;
 use App\Models\District;
+use App\Models\EmploymentType;
 use App\Models\Gender;
+use App\Models\Industry;
+use App\Models\Institution;
+use App\Models\JobTitle;
+use App\Models\Major;
 use Throwable;
 
 class CVController extends Controller
@@ -23,8 +31,19 @@ class CVController extends Controller
 
     public function edit(): void
     {
+        $this->redirect('/cv/edit/personal-info');
+    }
+
+    public function editPersonalInformation(): void
+    {
         $this->requireJobSeeker();
-        $this->view('cv/edit', $this->builderStepOneViewData('CV Builder'));
+        $this->view('cv/edit-personal-info', $this->builderStepOneViewData('Personal Information'));
+    }
+
+    public function editAcademic(): void
+    {
+        $this->requireJobSeeker();
+        $this->view('cv/edit-academic', $this->builderStepTwoViewData());
     }
 
     public function saveIdentity(): void
@@ -51,7 +70,7 @@ class CVController extends Controller
         if ($errors !== []) {
             $this->flash('errors', $errors);
             $this->old($data);
-            $this->redirect('/cv/edit');
+            $this->redirect('/cv/edit/personal-info');
         }
 
         $payload = [
@@ -79,7 +98,40 @@ class CVController extends Controller
         }
 
         $this->flash('success', 'Your personal information has been saved.');
-        $this->redirect('/cv/edit');
+        $this->redirect('/cv/edit/personal-info');
+    }
+
+    public function saveAcademic(): void
+    {
+        $this->requireJobSeeker();
+
+        $cv = $this->currentUserCv();
+        if ($cv === null) {
+            $this->flash('errors', ['Please save your personal information before adding education and work history.']);
+            $this->redirect('/cv/edit/personal-info');
+        }
+
+        $educationRows = $this->postedRows('educations');
+        $workRows = $this->postedRows('work_histories');
+        $errors = [];
+
+        $educations = $this->sanitizeEducations($educationRows, $errors);
+        $workHistories = $this->sanitizeWorkHistories($workRows, $errors);
+
+        if ($errors !== []) {
+            $this->flash('errors', $errors);
+            $this->old([
+                'educations' => $educationRows,
+                'work_histories' => $workRows,
+            ]);
+            $this->redirect('/cv/edit/academic');
+        }
+
+        (new CVEducation())->replaceForCv((int) $cv['id'], $educations);
+        (new CVWorkHistory())->replaceForCv((int) $cv['id'], $workHistories);
+
+        $this->flash('success', 'Your education and work history have been saved.');
+        $this->redirect('/cv/edit/academic');
     }
 
     public function show(): void
@@ -208,17 +260,53 @@ class CVController extends Controller
 
     private function builderStepOneViewData(string $title): array
     {
-        $cv = (new CV())->findByUserId((int) ($_SESSION['user']['id'] ?? 0));
-
         return [
             'title' => $title,
-            'cv' => $cv,
+            'cv' => $this->currentUserCv(),
             'genders' => $this->safeLookup(fn (): array => (new Gender())->all('name')),
             'countries' => $this->safeLookup(fn (): array => (new Country())->all('name')),
             'cities' => $this->safeLookup(fn (): array => (new City())->all('name')),
             'districts' => $this->safeLookup(fn (): array => (new District())->all('name')),
             'categories' => $this->safeLookup(fn (): array => (new CVCategory())->all('name')),
         ];
+    }
+
+    private function builderStepTwoViewData(): array
+    {
+        $cv = $this->currentUserCv();
+
+        if ($cv === null) {
+            return [
+                'title' => 'Academic & Career Narrative',
+                'cv' => null,
+                'educations' => [],
+                'workHistories' => [],
+                'institutions' => [],
+                'degreeLevels' => [],
+                'majors' => [],
+                'jobTitles' => [],
+                'employmentTypes' => [],
+                'industries' => [],
+            ];
+        }
+
+        return [
+            'title' => 'Academic & Career Narrative',
+            'cv' => $cv,
+            'educations' => $this->safeLookup(fn (): array => (new CVEducation())->findByCvId((int) $cv['id'])),
+            'workHistories' => $this->safeLookup(fn (): array => (new CVWorkHistory())->findByCvId((int) $cv['id'])),
+            'institutions' => $this->safeLookup(fn (): array => (new Institution())->all('name')),
+            'degreeLevels' => $this->safeLookup(fn (): array => (new DegreeLevel())->ordered()),
+            'majors' => $this->safeLookup(fn (): array => (new Major())->all('name')),
+            'jobTitles' => $this->safeLookup(fn (): array => (new JobTitle())->all('name')),
+            'employmentTypes' => $this->safeLookup(fn (): array => (new EmploymentType())->all('name')),
+            'industries' => $this->safeLookup(fn (): array => (new Industry())->all('name')),
+        ];
+    }
+
+    private function currentUserCv(): ?array
+    {
+        return (new CV())->findByUserId((int) ($_SESSION['user']['id'] ?? 0));
     }
 
     private function safeLookup(callable $loader): array
@@ -285,6 +373,138 @@ class CVController extends Controller
         }
 
         return $errors;
+    }
+
+    private function postedRows(string $key): array
+    {
+        $rows = $_POST[$key] ?? [];
+
+        if (! is_array($rows)) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            $rows,
+            static fn (mixed $row): bool => is_array($row) && array_filter($row, static fn (mixed $value): bool => trim((string) $value) !== '') !== []
+        ));
+    }
+
+    private function sanitizeEducations(array $rows, array &$errors): array
+    {
+        if ($rows === []) {
+            $errors[] = 'Please add at least one education entry.';
+            return [];
+        }
+
+        $items = [];
+
+        foreach ($rows as $index => $row) {
+            $label = 'Education #' . ($index + 1);
+            $institutionId = (int) ($row['institution_id'] ?? 0);
+            $degreeLevelId = (int) ($row['degree_level_id'] ?? 0);
+            $majorId = (int) ($row['major_id'] ?? 0);
+            $startYear = (int) ($row['start_year'] ?? 0);
+            $endYear = (int) ($row['end_year'] ?? 0);
+
+            if ($institutionId <= 0 || ! (new Institution())->exists($institutionId)) {
+                $errors[] = "{$label}: please choose a valid institution.";
+            }
+
+            if ($degreeLevelId <= 0 || ! (new DegreeLevel())->exists($degreeLevelId)) {
+                $errors[] = "{$label}: please choose a valid degree level.";
+            }
+
+            if ($majorId <= 0 || ! (new Major())->exists($majorId)) {
+                $errors[] = "{$label}: please choose a valid major.";
+            }
+
+            if (! $this->validYear($startYear) || ! $this->validYear($endYear) || $endYear < $startYear) {
+                $errors[] = "{$label}: please enter a valid start year and end year.";
+            }
+
+            $items[] = [
+                'institution_id' => $institutionId,
+                'degree_level_id' => $degreeLevelId,
+                'major_id' => $majorId,
+                'start_year' => $startYear,
+                'end_year' => $endYear,
+                'description' => trim((string) ($row['description'] ?? '')) ?: null,
+                'display_order' => $index,
+            ];
+        }
+
+        return $errors === [] ? $items : [];
+    }
+
+    private function sanitizeWorkHistories(array $rows, array &$errors): array
+    {
+        if ($rows === []) {
+            $errors[] = 'Please add at least one work history entry.';
+            return [];
+        }
+
+        $items = [];
+
+        foreach ($rows as $index => $row) {
+            $label = 'Work history #' . ($index + 1);
+            $jobTitleId = (int) ($row['job_title_id'] ?? 0);
+            $employmentTypeId = (int) ($row['employment_type_id'] ?? 0);
+            $industryId = (int) ($row['industry_id'] ?? 0);
+            $companyName = trim((string) ($row['company_name'] ?? ''));
+            $startYear = (int) ($row['start_year'] ?? 0);
+            $endYear = (int) ($row['end_year'] ?? 0);
+            $isCurrent = ! empty($row['is_current']);
+            $jobDescription = trim((string) ($row['job_description'] ?? ''));
+
+            if ($jobTitleId <= 0 || ! (new JobTitle())->exists($jobTitleId)) {
+                $errors[] = "{$label}: please choose a valid job title.";
+            }
+
+            if ($employmentTypeId <= 0 || ! (new EmploymentType())->exists($employmentTypeId)) {
+                $errors[] = "{$label}: please choose a valid employment type.";
+            }
+
+            if ($industryId <= 0 || ! (new Industry())->exists($industryId)) {
+                $errors[] = "{$label}: please choose a valid industry.";
+            }
+
+            if ($companyName === '') {
+                $errors[] = "{$label}: company name is required.";
+            }
+
+            if (! $this->validYear($startYear)) {
+                $errors[] = "{$label}: please enter a valid start year.";
+            }
+
+            if (! $isCurrent && (! $this->validYear($endYear) || $endYear < $startYear)) {
+                $errors[] = "{$label}: please enter a valid end year or mark the role as current.";
+            }
+
+            if ($jobDescription === '') {
+                $errors[] = "{$label}: job description is required.";
+            }
+
+            $items[] = [
+                'job_title_id' => $jobTitleId,
+                'employment_type_id' => $employmentTypeId,
+                'industry_id' => $industryId,
+                'company_name' => $companyName,
+                'start_year' => $startYear,
+                'end_year' => $isCurrent ? null : $endYear,
+                'is_current' => $isCurrent ? 1 : 0,
+                'job_description' => $jobDescription,
+                'display_order' => $index,
+            ];
+        }
+
+        return $errors === [] ? $items : [];
+    }
+
+    private function validYear(int $year): bool
+    {
+        $currentYear = (int) date('Y') + 1;
+
+        return $year >= 1950 && $year <= $currentYear;
     }
 
     private function requireJobSeeker(): void

@@ -63,6 +63,122 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3200);
   });
 
+  const dynamicBuilderForm = document.querySelector('.js-dynamic-builder-form');
+
+  if (dynamicBuilderForm) {
+    const prefixes = {
+      education: 'educations',
+      work: 'work_histories',
+    };
+
+    const updateList = (list, prefix) => {
+      const items = Array.from(list.querySelectorAll('[data-dynamic-item]'));
+
+      items.forEach((item, index) => {
+        const number = item.querySelector('[data-item-number]');
+
+        if (number) {
+          number.textContent = String(index + 1);
+        }
+
+        item.querySelectorAll('[name]').forEach((field) => {
+          field.name = field.name.replace(new RegExp(`${prefix}\\[\\d+\\]`), `${prefix}[${index}]`);
+        });
+
+        const removeButton = item.querySelector('.js-remove-dynamic-row');
+        if (removeButton) {
+          removeButton.disabled = items.length === 1;
+        }
+      });
+    };
+
+    const resetItem = (item) => {
+      item.querySelectorAll('input, select, textarea').forEach((field) => {
+        if (field.type === 'checkbox') {
+          field.checked = false;
+          return;
+        }
+
+        field.value = '';
+        field.disabled = false;
+      });
+    };
+
+    const syncCurrentRole = (item) => {
+      const currentCheckbox = item.querySelector('input[name*="[is_current]"]');
+      const endYearInput = item.querySelector('input[name*="[end_year]"]');
+
+      if (!currentCheckbox || !endYearInput) {
+        return;
+      }
+
+      endYearInput.disabled = currentCheckbox.checked;
+      if (currentCheckbox.checked) {
+        endYearInput.value = '';
+      }
+    };
+
+    dynamicBuilderForm.querySelectorAll('[data-dynamic-list]').forEach((list) => {
+      const type = list.dataset.dynamicList;
+      const prefix = prefixes[type];
+
+      if (!prefix) {
+        return;
+      }
+
+      updateList(list, prefix);
+      list.querySelectorAll('[data-dynamic-item]').forEach(syncCurrentRole);
+    });
+
+    dynamicBuilderForm.querySelectorAll('.js-add-dynamic-row').forEach((button) => {
+      button.addEventListener('click', () => {
+        const type = button.dataset.target;
+        const list = dynamicBuilderForm.querySelector(`[data-dynamic-list="${type}"]`);
+        const prefix = prefixes[type];
+        const firstItem = list?.querySelector('[data-dynamic-item]');
+
+        if (!list || !prefix || !firstItem) {
+          return;
+        }
+
+        const item = firstItem.cloneNode(true);
+        resetItem(item);
+        list.appendChild(item);
+        updateList(list, prefix);
+      });
+    });
+
+    dynamicBuilderForm.addEventListener('click', (event) => {
+      const removeButton = event.target.closest('.js-remove-dynamic-row');
+
+      if (!removeButton) {
+        return;
+      }
+
+      const item = removeButton.closest('[data-dynamic-item]');
+      const list = item?.closest('[data-dynamic-list]');
+      const prefix = list ? prefixes[list.dataset.dynamicList] : null;
+
+      if (!item || !list || !prefix || list.querySelectorAll('[data-dynamic-item]').length <= 1) {
+        return;
+      }
+
+      item.remove();
+      updateList(list, prefix);
+    });
+
+    dynamicBuilderForm.addEventListener('change', (event) => {
+      if (!event.target.matches('input[name*="[is_current]"]')) {
+        return;
+      }
+
+      const item = event.target.closest('[data-dynamic-item]');
+      if (item) {
+        syncCurrentRole(item);
+      }
+    });
+  }
+
   const modal = document.querySelector('#reference-edit-modal');
 
   if (!modal) {

@@ -1239,6 +1239,7 @@ input {
 .builder-symbol,
 .builder-section-title span,
 .builder-ghost-button span,
+.builder-secondary-button span,
 .builder-primary-button span {
   font-family: "Material Symbols Outlined";
   font-feature-settings: "liga";
@@ -1355,6 +1356,12 @@ input {
   box-shadow: 0 0 0 4px #fff;
 }
 
+.builder-step.completed > span {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-fixed);
+}
+
 .builder-step strong,
 .builder-step small {
   display: block;
@@ -1394,6 +1401,17 @@ input {
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
+}
+
+.builder-section-title-row {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.builder-section-title-row > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .builder-section-title span {
@@ -1475,6 +1493,66 @@ input {
   color: #94a3b8;
 }
 
+.builder-helper-text {
+  margin: 0;
+  color: var(--secondary);
+  line-height: 1.65;
+}
+
+.builder-dynamic-list {
+  display: grid;
+  gap: 22px;
+}
+
+.builder-dynamic-item {
+  border: 1px solid rgba(196, 198, 206, 0.56);
+  border-radius: 10px;
+  padding: 22px;
+  background: var(--surface-container-lowest);
+}
+
+.builder-dynamic-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.builder-dynamic-heading strong {
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+.builder-remove-button {
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--danger);
+  background: var(--danger-soft);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.builder-remove-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.builder-check-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--secondary);
+  font-weight: 800;
+}
+
+.builder-check-field input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
 .builder-form-actions {
   display: flex;
   align-items: center;
@@ -1503,6 +1581,7 @@ input {
   padding: 0 22px;
   cursor: pointer;
   font-weight: 900;
+  text-decoration: none;
 }
 
 .builder-ghost-button {

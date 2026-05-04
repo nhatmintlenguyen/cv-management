@@ -13,7 +13,7 @@ use App\Core\View;
 
         <div class="dashboard-actions">
             <?php if ($user['role'] === 'job_seeker'): ?>
-                <a class="secondary-button" href="<?= View::url('/cv/edit') ?>">Manage CV</a>
+                <a class="secondary-button" href="<?= View::url('/cv/edit/personal-info') ?>">Manage CV</a>
             <?php elseif ($user['role'] === 'employer'): ?>
                 <a class="secondary-button" href="<?= View::url('/search') ?>">Search CVs</a>
             <?php elseif ($user['role'] === 'admin'): ?>
