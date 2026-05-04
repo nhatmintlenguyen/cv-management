@@ -110,10 +110,13 @@ $mockCv = $mockCv ?? [];
                             <span>arrow_back</span>
                             Back to Step 3
                         </a>
-                        <button class="builder-primary-button" type="button">
-                            Finish CV
-                            <span>check</span>
-                        </button>
+                        <form method="post" action="<?= View::url('/cv/finish') ?>">
+                            <input type="hidden" name="template" value="<?= View::e($selectedTemplate) ?>">
+                            <button class="builder-primary-button" type="submit">
+                                Finish CV
+                                <span>check</span>
+                            </button>
+                        </form>
                     </div>
                 </aside>
 

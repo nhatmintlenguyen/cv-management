@@ -30,6 +30,7 @@ $router->get('/cv/edit/review', [CVController::class, 'editReview']);
 $router->post('/cv/identity', [CVController::class, 'saveIdentity']);
 $router->post('/cv/academic', [CVController::class, 'saveAcademic']);
 $router->post('/cv/qualifications', [CVController::class, 'saveQualifications']);
+$router->post('/cv/finish', [CVController::class, 'finish']);
 $router->get('/cv/show', [CVController::class, 'show']);
 $router->get('/cv/templates', [CVController::class, 'templates']);
 $router->get('/profile', [ProfileController::class, 'show']);

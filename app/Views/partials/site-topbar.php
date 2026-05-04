@@ -15,7 +15,7 @@ $tabs = $user === null
     : [
         'home' => ['label' => 'Home', 'url' => '/'],
         'templates' => ['label' => 'Templates', 'url' => '/cv/templates'],
-        'builder' => ['label' => 'CV Builder', 'url' => '/cv/edit/personal-info'],
+        'builder' => ['label' => 'CV Builder', 'url' => '/cv/edit'],
         'find-cvs' => ['label' => 'Find CVs', 'url' => '/find-cvs'],
         'profile' => ['label' => 'Profiles', 'url' => '/profiles'],
     ];

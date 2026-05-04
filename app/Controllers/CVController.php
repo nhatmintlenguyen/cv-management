@@ -37,6 +37,15 @@ class CVController extends Controller
 
     public function edit(): void
     {
+        $this->requireJobSeeker();
+
+        $cv = $this->currentUserCv();
+        $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+
+        if ($this->completionErrors($fullCv) === []) {
+            $this->redirect('/cv/show');
+        }
+
         $this->redirect('/cv/edit/personal-info');
     }
 
@@ -198,10 +207,55 @@ class CVController extends Controller
         $this->redirect('/cv/edit/qualifications');
     }
 
+    public function finish(): void
+    {
+        $this->requireJobSeeker();
+
+        $templates = $this->templateOptions();
+        $selected = (string) ($_POST['template'] ?? $_SESSION['selected_cv_template'] ?? 'modern');
+
+        if (! array_key_exists($selected, $templates)) {
+            $selected = 'modern';
+        }
+
+        $cv = $this->currentUserCv();
+        $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+        $errors = $this->completionErrors($fullCv);
+
+        if ($errors !== []) {
+            $this->flash('errors', $errors);
+            $this->redirect('/cv/edit/review?template=' . $selected);
+        }
+
+        $_SESSION['selected_cv_template'] = $selected;
+        $_SESSION['cv_finished'] = true;
+
+        $this->flash('success', 'Your CV has been completed.');
+        $this->redirect('/cv/show');
+    }
+
     public function show(): void
     {
         $this->requireJobSeeker();
-        $this->view('cv/show', ['title' => 'CV Preview']);
+
+        $templates = $this->templateOptions();
+        $selected = (string) ($_SESSION['selected_cv_template'] ?? 'modern');
+
+        if (! array_key_exists($selected, $templates)) {
+            $selected = 'modern';
+        }
+
+        $cv = $this->currentUserCv();
+        $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+
+        $this->view('cv/show', [
+            'title' => 'Completed CV',
+            'cv' => $fullCv,
+            'templates' => $templates,
+            'selectedTemplate' => $selected,
+            'mockCv' => $fullCv === null ? [] : $this->presentableCv($fullCv),
+            'isFinished' => (bool) ($_SESSION['cv_finished'] ?? false),
+        ]);
     }
 
     public function templates(): void
@@ -490,6 +544,33 @@ class CVController extends Controller
                 'level' => (int) ($skill['level_value'] ?? 0),
             ], $cv['skills'] ?? []),
         ];
+    }
+
+    private function completionErrors(?array $cv): array
+    {
+        if ($cv === null) {
+            return ['Please save your personal information before finishing your CV.'];
+        }
+
+        $errors = [];
+
+        if (($cv['educations'] ?? []) === []) {
+            $errors[] = 'Please add at least one education entry before finishing your CV.';
+        }
+
+        if (($cv['work_histories'] ?? []) === []) {
+            $errors[] = 'Please add at least one work history entry before finishing your CV.';
+        }
+
+        if (($cv['certificates'] ?? []) === []) {
+            $errors[] = 'Please add at least one certificate before finishing your CV.';
+        }
+
+        if (($cv['skills'] ?? []) === []) {
+            $errors[] = 'Please add at least one skill before finishing your CV.';
+        }
+
+        return $errors;
     }
 
     private function currentUserCv(): ?array

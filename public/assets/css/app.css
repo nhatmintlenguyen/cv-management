@@ -1411,6 +1411,13 @@ input {
   min-width: 0;
 }
 
+.completed-cv-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 28px;
+  min-width: 0;
+}
+
 .builder-review-sidebar {
   display: grid;
   align-content: start;
@@ -1423,7 +1430,8 @@ input {
 }
 
 .builder-review-actions .builder-ghost-button,
-.builder-review-actions .builder-primary-button {
+.builder-review-actions .builder-primary-button,
+.builder-review-actions form {
   width: 100%;
 }
 
@@ -3005,6 +3013,10 @@ input {
   }
 
   .builder-review-card {
+    grid-template-columns: 1fr;
+  }
+
+  .completed-cv-layout {
     grid-template-columns: 1fr;
   }
 
