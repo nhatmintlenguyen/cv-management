@@ -200,7 +200,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
                     <div>
                         <button class="builder-secondary-button" type="submit">Save Progress</button>
-                        <button class="builder-primary-button" type="button">
+                        <button class="builder-primary-button" type="submit" name="next_step" value="review">
                             Next Step
                             <span>arrow_forward</span>
                         </button>

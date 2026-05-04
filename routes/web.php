@@ -26,6 +26,7 @@ $router->get('/cv/edit', [CVController::class, 'edit']);
 $router->get('/cv/edit/personal-info', [CVController::class, 'editPersonalInformation']);
 $router->get('/cv/edit/academic', [CVController::class, 'editAcademic']);
 $router->get('/cv/edit/qualifications', [CVController::class, 'editQualifications']);
+$router->get('/cv/edit/review', [CVController::class, 'editReview']);
 $router->post('/cv/identity', [CVController::class, 'saveIdentity']);
 $router->post('/cv/academic', [CVController::class, 'saveAcademic']);
 $router->post('/cv/qualifications', [CVController::class, 'saveQualifications']);

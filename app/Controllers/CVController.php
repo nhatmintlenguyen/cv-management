@@ -58,6 +58,12 @@ class CVController extends Controller
         $this->view('cv/edit-qualifications', $this->builderStepThreeViewData());
     }
 
+    public function editReview(): void
+    {
+        $this->requireJobSeeker();
+        $this->view('cv/edit-review', $this->builderStepFourViewData());
+    }
+
     public function saveIdentity(): void
     {
         $this->requireJobSeeker();
@@ -185,6 +191,10 @@ class CVController extends Controller
         (new CVSkill())->replaceForCv((int) $cv['id'], $skills);
 
         $this->flash('success', 'Your certificates and skills have been saved.');
+        if (($_POST['next_step'] ?? '') === 'review') {
+            $this->redirect('/cv/edit/review');
+        }
+
         $this->redirect('/cv/edit/qualifications');
     }
 
@@ -384,6 +394,101 @@ class CVController extends Controller
             'issuingOrganizations' => $this->safeLookup(fn (): array => (new IssuingOrganization())->all('name')),
             'skills' => $this->safeLookup(fn (): array => (new Skill())->all('name')),
             'proficiencyLevels' => $this->safeLookup(fn (): array => (new SkillProficiencyLevel())->ordered()),
+        ];
+    }
+
+    private function builderStepFourViewData(): array
+    {
+        $templates = $this->templateOptions();
+        $selected = (string) ($_GET['template'] ?? $_SESSION['selected_cv_template'] ?? 'modern');
+
+        if (! array_key_exists($selected, $templates)) {
+            $selected = 'modern';
+        }
+
+        $_SESSION['selected_cv_template'] = $selected;
+
+        $cv = $this->currentUserCv();
+        $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+
+        return [
+            'title' => 'Final Review',
+            'cv' => $fullCv,
+            'templates' => $templates,
+            'selectedTemplate' => $selected,
+            'mockCv' => $fullCv === null ? [] : $this->presentableCv($fullCv),
+        ];
+    }
+
+    private function templateOptions(): array
+    {
+        return [
+            'modern' => [
+                'name' => 'Modern Executive',
+                'description' => 'Asymmetric, bold typography',
+                'accent' => '#a94a4b',
+            ],
+            'classic' => [
+                'name' => 'Classic Editorial',
+                'description' => 'Serif, single column focus',
+                'accent' => '#574040',
+            ],
+            'minimal' => [
+                'name' => 'Senior Minimal',
+                'description' => 'Ultra-clean, high whitespace',
+                'accent' => '#000000',
+            ],
+        ];
+    }
+
+    private function presentableCv(array $cv): array
+    {
+        $firstWork = $cv['work_histories'][0] ?? null;
+
+        return [
+            'category' => $cv['category_name'] ?? '',
+            'full_name' => $cv['full_name'] ?? '',
+            'headline' => $firstWork['job_title_name'] ?? 'Job Seeker',
+            'date_of_birth' => $cv['date_of_birth'] ?? '',
+            'gender' => $cv['gender_name'] ?? '',
+            'email' => $cv['email'] ?? '',
+            'phone_number' => $cv['phone_number'] ?? '',
+            'country' => $cv['country_name'] ?? '',
+            'city' => $cv['city_name'] ?? '',
+            'district' => $cv['district_name'] ?? '',
+            'street_address' => $cv['street_address'] ?? '',
+            'postal_code' => $cv['postal_code'] ?? '',
+            'avatar' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+            'summary' => $cv['summary'] ?? '',
+            'educations' => array_map(static fn (array $education): array => [
+                'institution' => $education['institution_name'] ?? '',
+                'degree_level' => $education['degree_level_name'] ?? '',
+                'major' => $education['major_name'] ?? '',
+                'start_year' => $education['start_year'] ?? '',
+                'end_year' => $education['end_year'] ?? '',
+                'description' => $education['description'] ?? '',
+            ], $cv['educations'] ?? []),
+            'work_histories' => array_map(static fn (array $work): array => [
+                'job_title' => $work['job_title_name'] ?? '',
+                'employment_type' => $work['employment_type_name'] ?? '',
+                'industry' => $work['industry_name'] ?? '',
+                'company_name' => $work['company_name'] ?? '',
+                'start_year' => $work['start_year'] ?? '',
+                'end_year' => $work['end_year'] ?? '',
+                'is_current' => (bool) ($work['is_current'] ?? false),
+                'job_description' => $work['job_description'] ?? '',
+            ], $cv['work_histories'] ?? []),
+            'certificates' => array_map(static fn (array $certificate): array => [
+                'certificate_name' => $certificate['certificate_name'] ?? '',
+                'issuing_organization' => $certificate['issuing_organization_name'] ?? '',
+                'year_issued' => $certificate['year_issued'] ?? '',
+                'description' => $certificate['description'] ?? '',
+            ], $cv['certificates'] ?? []),
+            'skills' => array_map(static fn (array $skill): array => [
+                'skill' => $skill['skill_name'] ?? '',
+                'proficiency' => $skill['proficiency_name'] ?? '',
+                'level' => (int) ($skill['level_value'] ?? 0),
+            ], $cv['skills'] ?? []),
         ];
     }
 
