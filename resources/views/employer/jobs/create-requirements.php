@@ -35,7 +35,7 @@ $currentStep = 3;
     <div class="builder-shell">
         <?php require __DIR__ . '/partials/stepper.php'; ?>
 
-        <form class="builder-form-card" method="post" action="<?= View::url('/employer/jobs/create/requirements') ?>">
+        <form class="builder-form-card js-dynamic-builder-form" method="post" action="<?= View::url('/employer/jobs/create/requirements') ?>">
             <section class="builder-form-section">
                 <div class="builder-section-title">
                     <span>description</span>
@@ -95,20 +95,20 @@ $currentStep = 3;
                         <span>psychology</span>
                         <h2>Required Skills</h2>
                     </div>
-                    <button class="builder-secondary-button js-add-dynamic-row" type="button" data-target="#job-skill-list" data-max-items="5">
+                    <button class="builder-secondary-button js-add-dynamic-row" type="button" data-target="skill">
                         <span>add</span>
                         Add Skill
                     </button>
                 </div>
 
-                <p class="builder-helper-text">Placeholder dynamic form. The full implementation will clone rows with JavaScript and enforce the 5-skill limit on the UI.</p>
+                <p class="builder-helper-text">Add up to 5 required skills. The Add Skill button becomes disabled once the limit is reached.</p>
 
-                <div class="builder-dynamic-list" id="job-skill-list">
+                <div class="builder-dynamic-list" data-dynamic-list="skill" data-max-items="5">
                     <?php foreach (array_slice(array_pad($skillsDraft, 1, []), 0, 5) as $index => $skillDraft): ?>
-                        <div class="builder-dynamic-item">
+                        <article class="builder-dynamic-item" data-dynamic-item>
                             <div class="builder-dynamic-heading">
-                                <strong>Required Skill <?= $index + 1 ?></strong>
-                                <button class="builder-remove-button" type="button" <?= $index === 0 ? 'disabled' : '' ?>>Remove</button>
+                                <strong>Required Skill <span data-item-number><?= $index + 1 ?></span></strong>
+                                <button class="builder-remove-button js-remove-dynamic-row" type="button" <?= $index === 0 ? 'disabled' : '' ?>>Remove</button>
                             </div>
 
                             <div class="builder-form-grid">
@@ -132,7 +132,7 @@ $currentStep = 3;
                                     </select>
                                 </label>
                             </div>
-                        </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             </section>

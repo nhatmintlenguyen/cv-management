@@ -7,6 +7,7 @@ $draft = $draft ?? [];
 $value = static fn (string $field, mixed $default = ''): string => (string) ($draft[$field] ?? $default);
 $selected = static fn (string $field, mixed $id): string => (string) ($draft[$field] ?? '') === (string) $id ? 'selected' : '';
 $currentStep = 2;
+$companyAvatarUrl = trim((string) ($draft['company_avatar_url'] ?? ''));
 ?>
 <?php require dirname(__DIR__, 2) . '/partials/site-topbar.php'; ?>
 
@@ -34,7 +35,41 @@ $currentStep = 2;
     <div class="builder-shell">
         <?php require __DIR__ . '/partials/stepper.php'; ?>
 
-        <form class="builder-form-card" method="post" action="<?= View::url('/employer/jobs/create/location') ?>">
+        <form class="builder-form-card js-builder-identity-form" method="post" action="<?= View::url('/employer/jobs/create/location') ?>" enctype="multipart/form-data">
+            <section class="builder-form-section">
+                <div class="builder-section-title">
+                    <span>apartment</span>
+                    <h2>Company Profile</h2>
+                </div>
+
+                <div class="builder-form-grid">
+                    <label class="builder-field">
+                        <span>Company Name</span>
+                        <input type="text" name="company_name" value="<?= View::e($value('company_name')) ?>" placeholder="e.g. OneTech Labs" required>
+                    </label>
+
+                    <label class="builder-field">
+                        <span>Company Avatar</span>
+                        <input type="file" name="company_avatar" accept="image/jpeg,image/png,image/webp,image/gif">
+                    </label>
+
+                    <?php if ($companyAvatarUrl !== ''): ?>
+                        <div class="builder-field builder-field-wide">
+                            <span>Uploaded Avatar URL</span>
+                            <div class="job-review-value">
+                                <img class="company-avatar-preview" src="<?= View::e($companyAvatarUrl) ?>" alt="Company avatar preview">
+                                <span><?= View::e($companyAvatarUrl) ?></span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <label class="builder-field builder-field-wide">
+                        <span>Company Description</span>
+                        <textarea name="company_description" rows="5" placeholder="Briefly describe the company, team, product, or workplace culture." required><?= View::e($value('company_description')) ?></textarea>
+                    </label>
+                </div>
+            </section>
+
             <section class="builder-form-section">
                 <div class="builder-section-title">
                     <span>location_on</span>

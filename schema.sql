@@ -6,6 +6,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS job_vacancy_skills;
 DROP TABLE IF EXISTS job_vacancies;
+DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS cv_skills;
 DROP TABLE IF EXISTS cv_certificates;
 DROP TABLE IF EXISTS cv_work_histories;
@@ -423,9 +424,28 @@ CREATE TABLE cv_skills (
     ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE companies (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  employer_user_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(180) NOT NULL,
+  avatar_url VARCHAR(2048) NULL,
+  description TEXT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_companies_employer_name (employer_user_id, name),
+  KEY idx_companies_employer (employer_user_id),
+
+  CONSTRAINT fk_companies_employer
+    FOREIGN KEY (employer_user_id) REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE job_vacancies (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   employer_user_id BIGINT UNSIGNED NOT NULL,
+  company_id BIGINT UNSIGNED NOT NULL,
 
   job_title_id BIGINT UNSIGNED NOT NULL,
   job_category_id BIGINT UNSIGNED NOT NULL,
@@ -457,6 +477,7 @@ CREATE TABLE job_vacancies (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   KEY idx_job_vacancies_employer (employer_user_id),
+  KEY idx_job_vacancies_company (company_id),
   KEY idx_job_vacancies_status (status),
   KEY idx_job_vacancies_category (job_category_id),
   KEY idx_job_vacancies_location (country_id, city_id),
@@ -473,6 +494,10 @@ CREATE TABLE job_vacancies (
     FOREIGN KEY (employer_user_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
+  CONSTRAINT fk_job_vacancies_company
+    FOREIGN KEY (company_id) REFERENCES companies(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
   CONSTRAINT fk_job_vacancies_title
     FOREIGN KEY (job_title_id) REFERENCES job_titles(id)
     ON UPDATE CASCADE
@@ -1101,8 +1126,35 @@ INSERT INTO cv_templates (name) VALUES
   ('Classic'),
   ('Minimal');
 
+INSERT INTO companies (employer_user_id, name, avatar_url, description) VALUES
+  (
+    (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    'OneTech Labs',
+    'https://placehold.co/160x160/001a38/ffffff?text=OT',
+    'A product engineering studio building web platforms, internal tools, and data-driven digital products for growing teams.'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    'Insight Works',
+    'https://placehold.co/160x160/d5e3ff/001a38?text=IW',
+    'A business analytics team helping companies turn operational data into dashboards, reports, and practical decisions.'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    'FinCore Services',
+    'https://placehold.co/160x160/111827/ffffff?text=FC',
+    'A professional services company focused on accounting, auditing support, and financial operations for SMEs.'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    'Pixel Strategy Studio',
+    'https://placehold.co/160x160/e0e3e5/001a38?text=PS',
+    'A remote-first design studio creating product interfaces, design systems, and customer experience improvements.'
+  );
+
 INSERT INTO job_vacancies (
   employer_user_id,
+  company_id,
   job_title_id,
   job_category_id,
   employment_type_id,
@@ -1126,6 +1178,7 @@ INSERT INTO job_vacancies (
 ) VALUES
   (
     (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    (SELECT companies.id FROM companies JOIN users ON users.id = companies.employer_user_id WHERE users.email = 'an@gmail.com' AND companies.name = 'OneTech Labs'),
     (SELECT id FROM job_titles WHERE name = 'Frontend Developer'),
     (SELECT id FROM job_categories WHERE name = 'Software Development'),
     (SELECT id FROM employment_types WHERE name = 'Full-time'),
@@ -1149,6 +1202,7 @@ INSERT INTO job_vacancies (
   ),
   (
     (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    (SELECT companies.id FROM companies JOIN users ON users.id = companies.employer_user_id WHERE users.email = 'an@gmail.com' AND companies.name = 'Insight Works'),
     (SELECT id FROM job_titles WHERE name = 'Data Analyst'),
     (SELECT id FROM job_categories WHERE name = 'Data Science'),
     (SELECT id FROM employment_types WHERE name = 'Full-time'),
@@ -1172,6 +1226,7 @@ INSERT INTO job_vacancies (
   ),
   (
     (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    (SELECT companies.id FROM companies JOIN users ON users.id = companies.employer_user_id WHERE users.email = 'hoa@gmail.com' AND companies.name = 'FinCore Services'),
     (SELECT id FROM job_titles WHERE name = 'Accountant'),
     (SELECT id FROM job_categories WHERE name = 'Finance & Accounting'),
     (SELECT id FROM employment_types WHERE name = 'Full-time'),
@@ -1195,6 +1250,7 @@ INSERT INTO job_vacancies (
   ),
   (
     (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    (SELECT companies.id FROM companies JOIN users ON users.id = companies.employer_user_id WHERE users.email = 'hoa@gmail.com' AND companies.name = 'Pixel Strategy Studio'),
     (SELECT id FROM job_titles WHERE name = 'UI/UX Designer'),
     (SELECT id FROM job_categories WHERE name = 'Design & Creative'),
     (SELECT id FROM employment_types WHERE name = 'Contract'),

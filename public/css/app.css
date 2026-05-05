@@ -1220,6 +1220,183 @@ input {
   text-transform: uppercase;
 }
 
+.employer-job-board {
+  border-radius: 10px;
+  padding: 26px;
+  background: #ffffff;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.05);
+}
+
+.employer-job-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid rgba(196, 198, 206, 0.34);
+  padding-bottom: 22px;
+  margin-bottom: 22px;
+}
+
+.employer-job-board-header > span {
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: var(--primary);
+  background: var(--secondary-container);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.employer-job-list {
+  display: grid;
+  gap: 16px;
+}
+
+.employer-job-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) minmax(190px, auto);
+  gap: 22px;
+  align-items: center;
+  border: 1px solid rgba(196, 198, 206, 0.5);
+  border-radius: 10px;
+  padding: 18px;
+  background: #ffffff;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.employer-job-card:hover {
+  border-color: rgba(31, 71, 123, 0.24);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.employer-job-logo {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(196, 198, 206, 0.72);
+  border-radius: 10px;
+  color: #ffffff;
+  background: var(--primary);
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.employer-job-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.employer-job-main {
+  min-width: 0;
+}
+
+.employer-job-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.employer-job-title-row h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 1.18rem;
+  line-height: 1.25;
+}
+
+.employer-job-title-row p {
+  margin: 5px 0 0;
+  color: #475569;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.employer-job-status {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.employer-job-status.is-active {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.employer-job-status.is-inactive {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.employer-job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 16px;
+  color: #475569;
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.employer-job-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.employer-job-meta i {
+  color: var(--primary);
+  font-family: "Material Symbols Outlined";
+  font-feature-settings: "liga";
+  font-style: normal;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
+  font-size: 1rem;
+}
+
+.employer-job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.employer-job-tags span {
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #315f9f;
+  background: #e7efff;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.employer-job-side {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  color: #475569;
+  text-align: right;
+}
+
+.employer-job-side strong {
+  color: #047857;
+  font-size: 0.98rem;
+}
+
+.employer-job-side span {
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.employer-job-side small {
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
 .employer-load-more {
   display: flex;
   justify-content: center;
@@ -2557,6 +2734,60 @@ input {
 .builder-field input::placeholder,
 .builder-field textarea::placeholder {
   color: #94a3b8;
+}
+
+.job-review-value {
+  min-height: 48px;
+  width: 100%;
+  border: 1px solid rgba(116, 119, 126, 0.22);
+  border-radius: 8px;
+  padding: 13px 16px;
+  color: var(--text);
+  background: #fff;
+  line-height: 1.55;
+  cursor: default;
+}
+
+.job-review-long {
+  min-height: 104px;
+  white-space: normal;
+}
+
+.job-review-empty {
+  color: #94a3b8;
+}
+
+.company-avatar-preview {
+  width: 56px;
+  height: 56px;
+  display: inline-block;
+  border-radius: 12px;
+  object-fit: cover;
+  vertical-align: middle;
+}
+
+.company-avatar-preview + span {
+  margin-left: 12px;
+  word-break: break-all;
+}
+
+.job-review-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.job-review-skill-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid rgba(31, 71, 123, 0.16);
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: var(--primary);
+  background: var(--secondary-container);
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 .builder-helper-text {
@@ -4033,6 +4264,32 @@ input {
 
   .builder-form-card {
     padding: 24px;
+  }
+
+  .employer-job-board {
+    padding: 20px;
+  }
+
+  .employer-job-board-header,
+  .employer-job-card,
+  .employer-job-title-row {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .employer-job-board-header,
+  .employer-job-title-row {
+    flex-direction: column;
+  }
+
+  .employer-job-logo {
+    width: 84px;
+    height: 84px;
+  }
+
+  .employer-job-side {
+    justify-items: start;
+    text-align: left;
   }
 
   .builder-review-card {
