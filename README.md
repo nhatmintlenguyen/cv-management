@@ -26,11 +26,15 @@ app/
   Controllers/
   Core/
   Models/
-  Views/
 config/
 database/
 docs/
 public/
+  css/
+  js/
+  images/
+resources/
+  views/
 routes/
 storage/
 tests/
@@ -103,7 +107,7 @@ Important files:
 - `CVTemplate.php`: represents available CV presentation templates such as
   Modern, Classic, and Minimal.
 
-#### `app/Views/`
+#### `resources/views/`
 
 Views contain the HTML/PHP templates shown to users. Views should focus on
 displaying data, not database logic.
@@ -115,13 +119,16 @@ Important folders and files:
 - `auth/login.php`: login page.
 - `auth/register.php`: registration page.
 - `cv/create.php`: form for creating a CV.
-- `cv/edit.php`: form for editing an existing CV.
+- `cv/edit-personal-info.php`: Step 1 form for editing personal information.
+- `cv/edit-academic.php`: Step 2 form for education and work history.
+- `cv/edit-qualifications.php`: Step 3 form for certificates and skills.
+- `cv/edit-review.php`: Step 4 final review and template selection.
 - `cv/show.php`: structured read-only CV display.
 - `cv/templates-modern.php`: Modern CV presentation template.
 - `cv/templates-classic.php`: Classic CV presentation template.
 - `cv/templates-minimal.php`: Minimal CV presentation template.
 - `search/index.php`: employer search/filter form.
-- `search/results.php`: employer search results page.
+- `search/show.php`: employer read-only CV preview page.
 - `admin/users.php`: admin user management page.
 - `admin/reference-data.php`: admin reference data management page.
 - `errors/403.php`: forbidden access page.
@@ -168,11 +175,11 @@ Important files and folders:
 
 - `index.php`: application entry point. In an MVC app, all requests usually pass
   through this file first.
-- `assets/css/app.css`: main stylesheet.
-- `assets/js/app.js`: general JavaScript for the site.
-- `assets/js/cv-form.js`: JavaScript for dynamic CV forms such as Add Degree,
+- `css/app.css`: main stylesheet.
+- `js/app.js`: general JavaScript for the site.
+- `js/cv-form.js`: JavaScript for dynamic CV forms such as Add Degree,
   Add Work History, Add Certificate, and Add Skill.
-- `assets/images/`: stores public images used by the UI.
+- `images/`: stores public images used by the UI.
 
 #### `routes/`
 
@@ -226,7 +233,7 @@ Important root-level files:
 - Employer CV search and filtering: `app/Controllers/SearchController.php`
 - Admin user/reference data management: `app/Controllers/AdminController.php`
 - Lookup/reference tables: `app/Controllers/ReferenceDataController.php`
-- CV dynamic forms: `public/assets/js/cv-form.js`
+- CV dynamic forms: `public/js/cv-form.js`
 - Database schema: `schema.sql`
 
 ### Local Database Setup With XAMPP

@@ -136,18 +136,12 @@ class AuthController extends Controller
 
         $this->loginUser((int) $user['id']);
         $this->flash('success', 'Welcome back.');
-        if ($redirect !== null) {
+
+        if ($redirect !== null && $redirect !== '/') {
             $this->redirect($redirect);
         }
 
-        if ($role['name'] === 'admin') {
-            $this->redirect('/admin/overview');
-        } 
-        else if ($role['name'] === 'job_seeker') {
-            $this->redirect('/cv/templates');
-        }
-
-        $this->redirect('/find-cvs');
+        $this->redirect($this->defaultPathForRole((string) $role['name']));
     }
 
     public function logout(): void
@@ -224,6 +218,16 @@ class AuthController extends Controller
     private function authenticated(): bool
     {
         return isset($_SESSION['user']['id']);
+    }
+
+    private function defaultPathForRole(string $role): string
+    {
+        return match ($role) {
+            'admin' => '/admin/overview',
+            'job_seeker' => '/cv/templates',
+            'employer' => '/find-cvs',
+            default => '/dashboard',
+        };
     }
 
     private function safeRedirectPath(mixed $path): ?string

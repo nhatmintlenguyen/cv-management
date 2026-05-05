@@ -56,13 +56,13 @@ if ($user === null) {
                     <span>notifications</span>
                 </button>
 
-                <div class="job-avatar" title="<?= View::e($user['full_name'] ?? 'User') ?>">
+                <a class="job-avatar" href="<?= View::url('/profile') ?>" title="<?= View::e($user['full_name'] ?? 'User') ?>" aria-label="Open profile">
                     <?php if (! empty($user['avatar_url'])): ?>
                         <img src="<?= View::e($user['avatar_url']) ?>" alt="<?= View::e($user['full_name'] ?? 'User') ?> avatar">
                     <?php else: ?>
                         <?= View::e($initials) ?>
                     <?php endif; ?>
-                </div>
+                </a>
 
                 <form method="post" action="<?= View::url('/logout') ?>">
                     <button class="job-logout-button" type="submit">

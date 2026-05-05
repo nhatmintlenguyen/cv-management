@@ -8,7 +8,7 @@ class View
 {
     public static function render(string $view, array $data = [], ?string $layout = 'layouts/main'): void
     {
-        $viewPath = dirname(__DIR__) . '/Views/' . str_replace('.', '/', $view) . '.php';
+        $viewPath = dirname(__DIR__, 2) . '/resources/views/' . str_replace('.', '/', $view) . '.php';
 
         if (! file_exists($viewPath)) {
             http_response_code(500);
@@ -27,7 +27,7 @@ class View
             return;
         }
 
-        $layoutPath = dirname(__DIR__) . '/Views/' . str_replace('.', '/', $layout) . '.php';
+        $layoutPath = dirname(__DIR__, 2) . '/resources/views/' . str_replace('.', '/', $layout) . '.php';
 
         if (! file_exists($layoutPath)) {
             echo $content;
@@ -53,9 +53,17 @@ class View
     public static function asset(string $path): string
     {
         $path = ltrim($path, '/');
-        $publicPath = dirname(__DIR__, 2) . '/public/assets/' . $path;
+        $publicRoot = dirname(__DIR__, 2) . '/public/';
+        $publicPath = $publicRoot . $path;
+        $urlPath = $path;
+
+        if (! file_exists($publicPath)) {
+            $publicPath = $publicRoot . 'assets/' . $path;
+            $urlPath = 'assets/' . $path;
+        }
+
         $version = file_exists($publicPath) ? '?v=' . filemtime($publicPath) : '';
 
-        return self::url('/assets/' . $path) . $version;
+        return self::url('/' . $urlPath) . $version;
     }
 }
