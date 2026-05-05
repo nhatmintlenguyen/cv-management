@@ -68,7 +68,7 @@ $locationLabel = static function (array $job): string {
                     $companyName = (string) ($job['company_name'] ?? 'Company');
                     $isActive = ($job['status'] ?? '') === 'active';
                     ?>
-                    <article class="employer-job-card">
+                    <a class="employer-job-card" href="<?= View::url('/jobs/show?id=' . (int) $job['id']) ?>">
                         <div class="employer-job-logo">
                             <?php if (! empty($job['company_avatar_url'])): ?>
                                 <img src="<?= View::e($job['company_avatar_url']) ?>" alt="<?= View::e($companyName) ?> logo">
@@ -107,7 +107,7 @@ $locationLabel = static function (array $job): string {
                             <span><?= (int) ($job['number_of_openings'] ?? 1) ?> opening<?= (int) ($job['number_of_openings'] ?? 1) === 1 ? '' : 's' ?></span>
                             <small>Updated <?= View::e($formatDate($job['updated_at'] ?? null)) ?></small>
                         </aside>
-                    </article>
+                    </a>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>

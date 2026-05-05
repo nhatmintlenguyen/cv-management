@@ -5,6 +5,7 @@ use App\Core\View;
 $activeSiteTab = 'post-job';
 $draft = $draft ?? [];
 $currentStep = 4;
+$isEditing = ! empty($draft['editing_job_id']);
 $nameById = static function (array $rows, string $id, string $field = 'name'): string {
     foreach ($rows as $row) {
         if ((string) $row['id'] === (string) $id) {
@@ -171,7 +172,7 @@ $requiredSkillLabels = array_map(
 
                 <form method="post" action="<?= View::url('/employer/jobs/create/publish') ?>">
                     <button class="builder-primary-button" type="submit">
-                        Publish Job
+                        <?= $isEditing ? 'Update Job' : 'Publish Job' ?>
                         <span>check</span>
                     </button>
                 </form>

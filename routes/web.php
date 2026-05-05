@@ -41,8 +41,12 @@ $router->get('/profiles', [ProfileController::class, 'show']);
 $router->get('/find-cvs', [SearchController::class, 'index']);
 $router->get('/find-cvs/show', [SearchController::class, 'show']);
 $router->get('/jobs', [JobSearchController::class, 'index']);
+$router->get('/jobs/show', [JobSearchController::class, 'show']);
 
 $router->get('/employer/jobs', [JobVacancyController::class, 'index']);
+$router->get('/employer/jobs/edit', [JobVacancyController::class, 'edit']);
+$router->post('/employer/jobs/delete', [JobVacancyController::class, 'delete']);
+$router->post('/employer/jobs/toggle-status', [JobVacancyController::class, 'toggleStatus']);
 $router->get('/employer/jobs/create', [JobVacancyController::class, 'create']);
 $router->get('/employer/jobs/create/basics', [JobVacancyController::class, 'basics']);
 $router->post('/employer/jobs/create/basics', [JobVacancyController::class, 'saveBasics']);

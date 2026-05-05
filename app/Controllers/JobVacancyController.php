@@ -48,7 +48,78 @@ class JobVacancyController extends Controller
     public function create(): void
     {
         $this->requireEmployer();
+        unset($_SESSION['job_vacancy_draft']);
         $this->redirect('/employer/jobs/create/basics');
+    }
+
+    public function edit(): void
+    {
+        $this->requireEmployer();
+
+        $jobId = (int) ($_GET['id'] ?? 0);
+        $jobModel = new JobVacancy();
+        $job = $jobId > 0 ? $jobModel->findDetailed($jobId) : null;
+
+        if ($job === null || ! $jobModel->belongsToEmployer($jobId, (int) $_SESSION['user']['id'])) {
+            $this->flash('errors', ['This job vacancy could not be found or does not belong to your account.']);
+            $this->redirect('/employer/jobs');
+        }
+
+        $skills = array_map(
+            static fn (array $skill): array => [
+                'skill_id' => (int) $skill['skill_id'],
+                'minimum_proficiency_level_id' => (int) $skill['minimum_proficiency_level_id'],
+            ],
+            (new JobVacancySkill())->findByJobVacancyId($jobId)
+        );
+
+        $_SESSION['job_vacancy_draft'] = [
+            'editing_job_id' => $jobId,
+            'company_name' => $job['company_name'] ?? '',
+            'company_avatar_url' => $job['company_avatar_url'] ?? '',
+            'company_description' => $job['company_description'] ?? '',
+            'job_title_id' => $job['job_title_id'] ?? '',
+            'job_category_id' => $job['job_category_id'] ?? '',
+            'employment_type_id' => $job['employment_type_id'] ?? '',
+            'industry_id' => $job['industry_id'] ?? '',
+            'job_level_id' => $job['job_level_id'] ?? '',
+            'number_of_openings' => $job['number_of_openings'] ?? 1,
+            'country_id' => $job['country_id'] ?? '',
+            'city_id' => $job['city_id'] ?? '',
+            'district_id' => $job['district_id'] ?? '',
+            'work_arrangement_id' => $job['work_arrangement_id'] ?? '',
+            'salary_range_id' => $job['salary_range_id'] ?? '',
+            'salary_type_id' => $job['salary_type_id'] ?? '',
+            'benefits' => $job['benefits'] ?? '',
+            'responsibilities' => $job['responsibilities'] ?? '',
+            'required_qualifications' => $job['required_qualifications'] ?? '',
+            'preferred_skills' => $job['preferred_skills'] ?? '',
+            'additional_notes' => $job['additional_notes'] ?? '',
+            'minimum_degree_level_id' => $job['minimum_degree_level_id'] ?? '',
+            'minimum_years_experience' => $job['minimum_years_experience'] ?? 0,
+            'status' => $job['status'] ?? 'active',
+            'skills' => $skills === [] ? [[]] : $skills,
+        ];
+
+        $this->redirect('/employer/jobs/create/basics');
+    }
+
+    public function delete(): void
+    {
+        $this->requireEmployer();
+
+        $deleted = (new JobVacancy())->deleteForEmployer((int) ($_POST['id'] ?? 0), (int) $_SESSION['user']['id']);
+        $this->flash($deleted ? 'success' : 'errors', $deleted ? 'Job vacancy has been deleted.' : ['Job vacancy could not be deleted.']);
+        $this->redirect('/employer/jobs');
+    }
+
+    public function toggleStatus(): void
+    {
+        $this->requireEmployer();
+
+        $updated = (new JobVacancy())->toggleStatusForEmployer((int) ($_POST['id'] ?? 0), (int) $_SESSION['user']['id']);
+        $this->flash($updated ? 'success' : 'errors', $updated ? 'Job vacancy status has been updated.' : ['Job vacancy status could not be updated.']);
+        $this->back();
     }
 
     public function basics(): void
@@ -171,7 +242,7 @@ class JobVacancyController extends Controller
 
         unset($_SESSION['job_vacancy_draft']);
 
-        $this->flash('success', 'Job vacancy has been published successfully.');
+        $this->flash('success', ! empty($draft['editing_job_id']) ? 'Job vacancy has been updated successfully.' : 'Job vacancy has been published successfully.');
         $this->redirect('/employer/jobs');
     }
 
@@ -224,7 +295,7 @@ class JobVacancyController extends Controller
                 'description' => trim((string) $draft['company_description']),
             ]);
 
-            $jobVacancyId = (new JobVacancy())->create([
+            $payload = [
                 'employer_user_id' => $employerUserId,
                 'company_id' => $companyId,
                 'job_title_id' => (int) $draft['job_title_id'],
@@ -246,8 +317,26 @@ class JobVacancyController extends Controller
                 'additional_notes' => trim((string) ($draft['additional_notes'] ?? '')) ?: null,
                 'minimum_degree_level_id' => (int) $draft['minimum_degree_level_id'],
                 'minimum_years_experience' => (int) $draft['minimum_years_experience'],
-                'status' => 'active',
-            ]);
+                'status' => (string) ($draft['status'] ?? 'active'),
+            ];
+
+            $jobModel = new JobVacancy();
+            $editingJobId = (int) ($draft['editing_job_id'] ?? 0);
+
+            if ($editingJobId > 0) {
+                if (! $jobModel->belongsToEmployer($editingJobId, $employerUserId)) {
+                    throw new RuntimeException('This job vacancy does not belong to your account.');
+                }
+
+                unset($payload['employer_user_id']);
+                $jobModel->update($editingJobId, $payload);
+                $jobVacancyId = $editingJobId;
+                (new JobVacancySkill())->replaceForVacancy($jobVacancyId, $skills);
+
+                return $jobVacancyId;
+            }
+
+            $jobVacancyId = $jobModel->create($payload);
 
             (new JobVacancySkill())->createManyForVacancy($jobVacancyId, $skills);
 
