@@ -4,6 +4,8 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS job_vacancy_skills;
+DROP TABLE IF EXISTS job_vacancies;
 DROP TABLE IF EXISTS cv_skills;
 DROP TABLE IF EXISTS cv_certificates;
 DROP TABLE IF EXISTS cv_work_histories;
@@ -11,6 +13,11 @@ DROP TABLE IF EXISTS cv_educations;
 DROP TABLE IF EXISTS cvs;
 DROP TABLE IF EXISTS users;
 
+DROP TABLE IF EXISTS work_arrangements;
+DROP TABLE IF EXISTS salary_types;
+DROP TABLE IF EXISTS salary_ranges;
+DROP TABLE IF EXISTS job_levels;
+DROP TABLE IF EXISTS job_categories;
 DROP TABLE IF EXISTS cv_templates;
 DROP TABLE IF EXISTS certificate_names;
 DROP TABLE IF EXISTS issuing_organizations;
@@ -104,6 +111,13 @@ CREATE TABLE cv_categories (
   updated_at TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE job_categories (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL UNIQUE,
+  created_at TIMESTAMP NULL DEFAULT NULL,
+  updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE degree_levels (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(120) NOT NULL UNIQUE,
@@ -133,6 +147,14 @@ CREATE TABLE job_titles (
   updated_at TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE job_levels (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(80) NOT NULL UNIQUE,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NULL DEFAULT NULL,
+  updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE employment_types (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE,
@@ -143,6 +165,31 @@ CREATE TABLE employment_types (
 CREATE TABLE industries (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(150) NOT NULL UNIQUE,
+  created_at TIMESTAMP NULL DEFAULT NULL,
+  updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE salary_ranges (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  label VARCHAR(120) NOT NULL UNIQUE,
+  min_salary DECIMAL(12,2) NULL,
+  max_salary DECIMAL(12,2) NULL,
+  currency VARCHAR(10) NOT NULL DEFAULT 'USD',
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NULL DEFAULT NULL,
+  updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE salary_types (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
+  created_at TIMESTAMP NULL DEFAULT NULL,
+  updated_at TIMESTAMP NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE work_arrangements (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE,
   created_at TIMESTAMP NULL DEFAULT NULL,
   updated_at TIMESTAMP NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -376,6 +423,133 @@ CREATE TABLE cv_skills (
     ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE job_vacancies (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  employer_user_id BIGINT UNSIGNED NOT NULL,
+
+  job_title_id BIGINT UNSIGNED NOT NULL,
+  job_category_id BIGINT UNSIGNED NOT NULL,
+  employment_type_id BIGINT UNSIGNED NOT NULL,
+  industry_id BIGINT UNSIGNED NOT NULL,
+  job_level_id BIGINT UNSIGNED NOT NULL,
+  number_of_openings INT UNSIGNED NOT NULL DEFAULT 1,
+
+  country_id BIGINT UNSIGNED NOT NULL,
+  city_id BIGINT UNSIGNED NOT NULL,
+  district_id BIGINT UNSIGNED NULL,
+  work_arrangement_id BIGINT UNSIGNED NOT NULL,
+
+  salary_range_id BIGINT UNSIGNED NOT NULL,
+  salary_type_id BIGINT UNSIGNED NOT NULL,
+  benefits TEXT NULL,
+
+  responsibilities TEXT NOT NULL,
+  required_qualifications TEXT NOT NULL,
+  preferred_skills TEXT NULL,
+  additional_notes TEXT NULL,
+
+  minimum_degree_level_id BIGINT UNSIGNED NOT NULL,
+  minimum_years_experience TINYINT UNSIGNED NOT NULL DEFAULT 0,
+
+  status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  KEY idx_job_vacancies_employer (employer_user_id),
+  KEY idx_job_vacancies_status (status),
+  KEY idx_job_vacancies_category (job_category_id),
+  KEY idx_job_vacancies_location (country_id, city_id),
+  KEY idx_job_vacancies_salary (salary_range_id),
+  KEY idx_job_vacancies_updated_at (updated_at),
+  FULLTEXT KEY ft_job_vacancies_keyword (
+    responsibilities,
+    required_qualifications,
+    preferred_skills,
+    additional_notes
+  ),
+
+  CONSTRAINT fk_job_vacancies_employer
+    FOREIGN KEY (employer_user_id) REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_job_vacancies_title
+    FOREIGN KEY (job_title_id) REFERENCES job_titles(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_category
+    FOREIGN KEY (job_category_id) REFERENCES job_categories(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_employment_type
+    FOREIGN KEY (employment_type_id) REFERENCES employment_types(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_industry
+    FOREIGN KEY (industry_id) REFERENCES industries(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_level
+    FOREIGN KEY (job_level_id) REFERENCES job_levels(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_country
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_city
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_district
+    FOREIGN KEY (district_id) REFERENCES districts(id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  CONSTRAINT fk_job_vacancies_work_arrangement
+    FOREIGN KEY (work_arrangement_id) REFERENCES work_arrangements(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_salary_range
+    FOREIGN KEY (salary_range_id) REFERENCES salary_ranges(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_salary_type
+    FOREIGN KEY (salary_type_id) REFERENCES salary_types(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancies_min_degree
+    FOREIGN KEY (minimum_degree_level_id) REFERENCES degree_levels(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE job_vacancy_skills (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  job_vacancy_id BIGINT UNSIGNED NOT NULL,
+  skill_id BIGINT UNSIGNED NOT NULL,
+  minimum_proficiency_level_id BIGINT UNSIGNED NOT NULL,
+
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  UNIQUE KEY uq_job_vacancy_skills_job_skill (job_vacancy_id, skill_id),
+  KEY idx_job_vacancy_skills_skill (skill_id),
+  KEY idx_job_vacancy_skills_proficiency (minimum_proficiency_level_id),
+
+  CONSTRAINT fk_job_vacancy_skills_job
+    FOREIGN KEY (job_vacancy_id) REFERENCES job_vacancies(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_job_vacancy_skills_skill
+    FOREIGN KEY (skill_id) REFERENCES skills(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_job_vacancy_skills_proficiency
+    FOREIGN KEY (minimum_proficiency_level_id) REFERENCES skill_proficiency_levels(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DELIMITER //
 
 CREATE TRIGGER trg_cv_skills_limit_before_insert
@@ -403,6 +577,34 @@ BEGIN
   ) >= 5 THEN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'A CV can have at most 5 strongest skills.';
+  END IF;
+END//
+
+CREATE TRIGGER trg_job_vacancy_skills_limit_before_insert
+BEFORE INSERT ON job_vacancy_skills
+FOR EACH ROW
+BEGIN
+  IF (
+    SELECT COUNT(*)
+    FROM job_vacancy_skills
+    WHERE job_vacancy_id = NEW.job_vacancy_id
+  ) >= 5 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'A job vacancy can have at most 5 required skills.';
+  END IF;
+END//
+
+CREATE TRIGGER trg_job_vacancy_skills_limit_before_update
+BEFORE UPDATE ON job_vacancy_skills
+FOR EACH ROW
+BEGIN
+  IF NEW.job_vacancy_id <> OLD.job_vacancy_id AND (
+    SELECT COUNT(*)
+    FROM job_vacancy_skills
+    WHERE job_vacancy_id = NEW.job_vacancy_id
+  ) >= 5 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'A job vacancy can have at most 5 required skills.';
   END IF;
 END//
 
@@ -479,6 +681,17 @@ UNION ALL SELECT cities.id, 'Central Area' FROM cities JOIN countries ON countri
 UNION ALL SELECT cities.id, 'Jurong East' FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Singapore' AND cities.name = 'Singapore';
 
 INSERT INTO cv_categories (name) VALUES
+  ('Software Development'),
+  ('Data Science'),
+  ('Finance & Accounting'),
+  ('Marketing'),
+  ('Education'),
+  ('Design & Creative'),
+  ('Business & Management'),
+  ('Law & Legal Services'),
+  ('General Labor');
+
+INSERT INTO job_categories (name) VALUES
   ('Software Development'),
   ('Data Science'),
   ('Finance & Accounting'),
@@ -672,6 +885,11 @@ INSERT INTO employment_types (name) VALUES
   ('Internship'),
   ('Freelance');
 
+INSERT INTO job_levels (name, sort_order) VALUES
+  ('Junior', 1),
+  ('Mid', 2),
+  ('Senior', 3);
+
 INSERT INTO industries (name) VALUES
   ('Information Technology'),
   ('Software Development'),
@@ -713,6 +931,24 @@ INSERT INTO industries (name) VALUES
   ('Security Services'),
   ('Cleaning Services'),
   ('General Labor');
+
+INSERT INTO salary_ranges (label, min_salary, max_salary, currency, sort_order) VALUES
+  ('Below 500 USD', 0, 499, 'USD', 1),
+  ('500 - 1000 USD', 500, 1000, 'USD', 2),
+  ('1000 - 1500 USD', 1000, 1500, 'USD', 3),
+  ('1500 - 2000 USD', 1500, 2000, 'USD', 4),
+  ('2000 - 3000 USD', 2000, 3000, 'USD', 5),
+  ('Above 3000 USD', 3000, NULL, 'USD', 6),
+  ('Negotiable', NULL, NULL, 'USD', 7);
+
+INSERT INTO salary_types (name) VALUES
+  ('Gross'),
+  ('Net');
+
+INSERT INTO work_arrangements (name) VALUES
+  ('Onsite'),
+  ('Remote'),
+  ('Hybrid');
 
 INSERT INTO skills (name) VALUES
   ('PHP'),
@@ -864,3 +1100,195 @@ INSERT INTO cv_templates (name) VALUES
   ('Modern'),
   ('Classic'),
   ('Minimal');
+
+INSERT INTO job_vacancies (
+  employer_user_id,
+  job_title_id,
+  job_category_id,
+  employment_type_id,
+  industry_id,
+  job_level_id,
+  number_of_openings,
+  country_id,
+  city_id,
+  district_id,
+  work_arrangement_id,
+  salary_range_id,
+  salary_type_id,
+  benefits,
+  responsibilities,
+  required_qualifications,
+  preferred_skills,
+  additional_notes,
+  minimum_degree_level_id,
+  minimum_years_experience,
+  status
+) VALUES
+  (
+    (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    (SELECT id FROM job_titles WHERE name = 'Frontend Developer'),
+    (SELECT id FROM job_categories WHERE name = 'Software Development'),
+    (SELECT id FROM employment_types WHERE name = 'Full-time'),
+    (SELECT id FROM industries WHERE name = 'Software Development'),
+    (SELECT id FROM job_levels WHERE name = 'Mid'),
+    2,
+    (SELECT id FROM countries WHERE name = 'Vietnam'),
+    (SELECT cities.id FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'),
+    (SELECT districts.id FROM districts JOIN cities ON cities.id = districts.city_id JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City' AND districts.name = 'District 1'),
+    (SELECT id FROM work_arrangements WHERE name = 'Hybrid'),
+    (SELECT id FROM salary_ranges WHERE label = '1000 - 1500 USD'),
+    (SELECT id FROM salary_types WHERE name = 'Gross'),
+    'Annual performance bonus, health insurance, laptop allowance, and flexible working days.',
+    'Build responsive web interfaces, collaborate with backend developers, convert UI designs into production-ready pages, and improve frontend performance.',
+    'At least 2 years of frontend experience, strong HTML/CSS/JavaScript fundamentals, and practical experience with component-based UI development.',
+    'Experience with React, REST APIs, Git workflow, and basic UI/UX design sense is preferred.',
+    'Portfolio or GitHub profile is a strong plus.',
+    (SELECT id FROM degree_levels WHERE name = 'Bachelor Degree'),
+    2,
+    'active'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'an@gmail.com'),
+    (SELECT id FROM job_titles WHERE name = 'Data Analyst'),
+    (SELECT id FROM job_categories WHERE name = 'Data Science'),
+    (SELECT id FROM employment_types WHERE name = 'Full-time'),
+    (SELECT id FROM industries WHERE name = 'Data & Analytics'),
+    (SELECT id FROM job_levels WHERE name = 'Junior'),
+    1,
+    (SELECT id FROM countries WHERE name = 'Vietnam'),
+    (SELECT cities.id FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi'),
+    (SELECT districts.id FROM districts JOIN cities ON cities.id = districts.city_id JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Hanoi' AND districts.name = 'Cau Giay'),
+    (SELECT id FROM work_arrangements WHERE name = 'Onsite'),
+    (SELECT id FROM salary_ranges WHERE label = '500 - 1000 USD'),
+    (SELECT id FROM salary_types WHERE name = 'Net'),
+    'Training budget, mentorship program, paid leave, and quarterly team activities.',
+    'Prepare dashboards, clean raw datasets, analyze business metrics, and communicate insights to internal teams.',
+    'Good Excel skills, basic SQL knowledge, analytical thinking, and ability to explain data clearly.',
+    'Power BI, Python, statistics, and business reporting experience are preferred.',
+    'Fresh graduates with strong analytical projects can apply.',
+    (SELECT id FROM degree_levels WHERE name = 'Bachelor Degree'),
+    0,
+    'active'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    (SELECT id FROM job_titles WHERE name = 'Accountant'),
+    (SELECT id FROM job_categories WHERE name = 'Finance & Accounting'),
+    (SELECT id FROM employment_types WHERE name = 'Full-time'),
+    (SELECT id FROM industries WHERE name = 'Accounting'),
+    (SELECT id FROM job_levels WHERE name = 'Mid'),
+    1,
+    (SELECT id FROM countries WHERE name = 'Vietnam'),
+    (SELECT cities.id FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Da Nang'),
+    (SELECT districts.id FROM districts JOIN cities ON cities.id = districts.city_id JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Da Nang' AND districts.name = 'Hai Chau'),
+    (SELECT id FROM work_arrangements WHERE name = 'Onsite'),
+    (SELECT id FROM salary_ranges WHERE label = '1000 - 1500 USD'),
+    (SELECT id FROM salary_types WHERE name = 'Gross'),
+    '13th-month salary, professional certification support, and annual company trip.',
+    'Manage bookkeeping records, prepare monthly reports, reconcile transactions, and support tax documentation.',
+    'At least 2 years of accounting experience, solid Excel skills, and knowledge of Vietnamese accounting standards.',
+    'CPA, ACCA, auditing experience, and ERP exposure are preferred.',
+    'Candidates should be detail-oriented and comfortable with deadlines.',
+    (SELECT id FROM degree_levels WHERE name = 'Bachelor Degree'),
+    2,
+    'active'
+  ),
+  (
+    (SELECT id FROM users WHERE email = 'hoa@gmail.com'),
+    (SELECT id FROM job_titles WHERE name = 'UI/UX Designer'),
+    (SELECT id FROM job_categories WHERE name = 'Design & Creative'),
+    (SELECT id FROM employment_types WHERE name = 'Contract'),
+    (SELECT id FROM industries WHERE name = 'Design & Creative Services'),
+    (SELECT id FROM job_levels WHERE name = 'Senior'),
+    1,
+    (SELECT id FROM countries WHERE name = 'Vietnam'),
+    (SELECT cities.id FROM cities JOIN countries ON countries.id = cities.country_id WHERE countries.name = 'Vietnam' AND cities.name = 'Ho Chi Minh City'),
+    NULL,
+    (SELECT id FROM work_arrangements WHERE name = 'Remote'),
+    (SELECT id FROM salary_ranges WHERE label = '1500 - 2000 USD'),
+    (SELECT id FROM salary_types WHERE name = 'Net'),
+    'Remote-first contract, flexible schedule, design tooling budget, and milestone bonuses.',
+    'Lead product design work, create wireframes and prototypes, run usability reviews, and maintain design system consistency.',
+    'At least 4 years of UI/UX experience, strong portfolio, user-centered thinking, and ability to communicate design decisions.',
+    'Figma, design systems, accessibility, product strategy, and frontend awareness are preferred.',
+    'This contract can be extended based on product roadmap needs.',
+    (SELECT id FROM degree_levels WHERE name = 'Bachelor Degree'),
+    4,
+    'inactive'
+  );
+
+INSERT INTO job_vacancy_skills (job_vacancy_id, skill_id, minimum_proficiency_level_id)
+SELECT
+  job_vacancies.id,
+  skills.id,
+  skill_proficiency_levels.id
+FROM job_vacancies
+JOIN job_titles ON job_titles.id = job_vacancies.job_title_id
+JOIN users ON users.id = job_vacancies.employer_user_id
+JOIN skills ON skills.name IN ('HTML', 'CSS', 'JavaScript', 'React', 'Git')
+JOIN skill_proficiency_levels ON skill_proficiency_levels.level_value = CASE skills.name
+  WHEN 'HTML' THEN 7
+  WHEN 'CSS' THEN 7
+  WHEN 'JavaScript' THEN 7
+  WHEN 'React' THEN 6
+  ELSE 5
+END
+WHERE users.email = 'an@gmail.com'
+  AND job_titles.name = 'Frontend Developer';
+
+INSERT INTO job_vacancy_skills (job_vacancy_id, skill_id, minimum_proficiency_level_id)
+SELECT
+  job_vacancies.id,
+  skills.id,
+  skill_proficiency_levels.id
+FROM job_vacancies
+JOIN job_titles ON job_titles.id = job_vacancies.job_title_id
+JOIN users ON users.id = job_vacancies.employer_user_id
+JOIN skills ON skills.name IN ('Microsoft Excel', 'Data Analysis', 'Power BI', 'Python', 'Business Analysis')
+JOIN skill_proficiency_levels ON skill_proficiency_levels.level_value = CASE skills.name
+  WHEN 'Microsoft Excel' THEN 7
+  WHEN 'Data Analysis' THEN 6
+  WHEN 'Power BI' THEN 5
+  WHEN 'Python' THEN 4
+  ELSE 5
+END
+WHERE users.email = 'an@gmail.com'
+  AND job_titles.name = 'Data Analyst';
+
+INSERT INTO job_vacancy_skills (job_vacancy_id, skill_id, minimum_proficiency_level_id)
+SELECT
+  job_vacancies.id,
+  skills.id,
+  skill_proficiency_levels.id
+FROM job_vacancies
+JOIN job_titles ON job_titles.id = job_vacancies.job_title_id
+JOIN users ON users.id = job_vacancies.employer_user_id
+JOIN skills ON skills.name IN ('Accounting', 'Bookkeeping', 'Auditing', 'Microsoft Excel', 'Financial Analysis')
+JOIN skill_proficiency_levels ON skill_proficiency_levels.level_value = CASE skills.name
+  WHEN 'Accounting' THEN 7
+  WHEN 'Bookkeeping' THEN 7
+  WHEN 'Auditing' THEN 5
+  WHEN 'Microsoft Excel' THEN 7
+  ELSE 6
+END
+WHERE users.email = 'hoa@gmail.com'
+  AND job_titles.name = 'Accountant';
+
+INSERT INTO job_vacancy_skills (job_vacancy_id, skill_id, minimum_proficiency_level_id)
+SELECT
+  job_vacancies.id,
+  skills.id,
+  skill_proficiency_levels.id
+FROM job_vacancies
+JOIN job_titles ON job_titles.id = job_vacancies.job_title_id
+JOIN users ON users.id = job_vacancies.employer_user_id
+JOIN skills ON skills.name IN ('UI/UX Design', 'Figma', 'Adobe Photoshop', 'Communication', 'Product Management')
+JOIN skill_proficiency_levels ON skill_proficiency_levels.level_value = CASE skills.name
+  WHEN 'UI/UX Design' THEN 8
+  WHEN 'Figma' THEN 8
+  WHEN 'Adobe Photoshop' THEN 6
+  WHEN 'Communication' THEN 7
+  ELSE 5
+END
+WHERE users.email = 'hoa@gmail.com'
+  AND job_titles.name = 'UI/UX Designer';
