@@ -5,6 +5,8 @@ use App\Controllers\AdminController;
 use App\Controllers\CVController;
 use App\Controllers\DashboardController;
 use App\Controllers\HomeController;
+use App\Controllers\JobSearchController;
+use App\Controllers\JobVacancyController;
 use App\Controllers\ProfileController;
 use App\Controllers\SearchController;
 use App\Core\View;
@@ -38,6 +40,18 @@ $router->post('/profile', [ProfileController::class, 'update']);
 $router->get('/profiles', [ProfileController::class, 'show']);
 $router->get('/find-cvs', [SearchController::class, 'index']);
 $router->get('/find-cvs/show', [SearchController::class, 'show']);
+$router->get('/jobs', [JobSearchController::class, 'index']);
+
+$router->get('/employer/jobs', [JobVacancyController::class, 'index']);
+$router->get('/employer/jobs/create', [JobVacancyController::class, 'create']);
+$router->get('/employer/jobs/create/basics', [JobVacancyController::class, 'basics']);
+$router->post('/employer/jobs/create/basics', [JobVacancyController::class, 'saveBasics']);
+$router->get('/employer/jobs/create/location', [JobVacancyController::class, 'location']);
+$router->post('/employer/jobs/create/location', [JobVacancyController::class, 'saveLocation']);
+$router->get('/employer/jobs/create/requirements', [JobVacancyController::class, 'requirements']);
+$router->post('/employer/jobs/create/requirements', [JobVacancyController::class, 'saveRequirements']);
+$router->get('/employer/jobs/create/review', [JobVacancyController::class, 'review']);
+$router->post('/employer/jobs/create/publish', [JobVacancyController::class, 'publish']);
 
 $router->get('/admin', function (): void {
     header('Location: ' . View::url('/admin/overview'));

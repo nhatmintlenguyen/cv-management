@@ -16,11 +16,14 @@ if ($user === null) {
     $tabs = [
         'home' => ['label' => 'Home', 'url' => '/'],
         'find-cvs' => ['label' => 'Find CVs', 'url' => '/find-cvs'],
+        'my-jobs' => ['label' => 'My Jobs', 'url' => '/employer/jobs'],
+        'post-job' => ['label' => 'Post Job', 'url' => '/employer/jobs/create'],
         'profile' => ['label' => 'Profile', 'url' => '/profiles'],
     ];
 } else {
     $tabs = [
         'home' => ['label' => 'Home', 'url' => '/'],
+        'job-search' => ['label' => 'Jobs', 'url' => '/jobs'],
         'templates' => ['label' => 'Templates', 'url' => '/cv/templates'],
         'builder' => ['label' => 'CV Builder', 'url' => '/cv/edit'],
         'profile' => ['label' => 'Profile', 'url' => '/profiles'],
