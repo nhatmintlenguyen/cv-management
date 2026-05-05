@@ -3,8 +3,8 @@
 use App\Core\View;
 
 $activeSiteTab = 'find-cvs';
-$templates = $templates ?? [];
 $selectedTemplate = $selectedTemplate ?? 'modern';
+$selectedTemplateInfo = $selectedTemplateInfo ?? ['name' => ucfirst($selectedTemplate), 'description' => 'Candidate selected template'];
 $mockCv = $mockCv ?? [];
 $cv = $cv ?? [];
 $backUrl = $backUrl ?? View::url('/find-cvs');
@@ -19,7 +19,7 @@ $backUrl = $backUrl ?? View::url('/find-cvs');
                 Back to candidates
             </a>
             <h1><?= View::e($cv['full_name'] ?? 'Candidate CV') ?></h1>
-            <p>Read-only CV preview for employer review. Template switching does not modify candidate data.</p>
+            <p>Read-only CV preview using the presentation template selected by this candidate.</p>
         </div>
         <div class="employer-readonly-pill">
             <span>lock</span>
@@ -31,24 +31,16 @@ $backUrl = $backUrl ?? View::url('/find-cvs');
         <aside class="template-sidebar employer-template-sidebar">
             <section class="template-panel">
                 <h2>
-                    <span class="template-panel-icon">dashboard_customize</span>
-                    CV Templates
+                    <span class="template-panel-icon">verified</span>
+                    Selected Template
                 </h2>
-
-                <div class="template-choice-list">
-                    <?php foreach ($templates as $key => $template): ?>
-                        <a
-                            class="template-choice <?= $selectedTemplate === $key ? 'active' : '' ?>"
-                            href="<?= View::url('/find-cvs/show?id=' . (int) ($cv['id'] ?? 0) . '&template=' . $key) ?>"
-                        >
-                            <span class="template-choice-icon"><?= $key === 'modern' ? 'architecture' : ($key === 'classic' ? 'menu_book' : 'view_agenda') ?></span>
-                            <span>
-                                <strong><?= View::e($template['name']) ?></strong>
-                                <small><?= View::e($template['description']) ?></small>
-                            </span>
-                            <span class="template-check"><?= $selectedTemplate === $key ? 'check_circle' : 'radio_button_unchecked' ?></span>
-                        </a>
-                    <?php endforeach; ?>
+                <div class="employer-selected-template-card">
+                    <span><?= $selectedTemplate === 'modern' ? 'architecture' : ($selectedTemplate === 'classic' ? 'menu_book' : 'view_agenda') ?></span>
+                    <div>
+                        <strong><?= View::e($selectedTemplateInfo['name'] ?? ucfirst($selectedTemplate)) ?></strong>
+                        <small><?= View::e($selectedTemplateInfo['description'] ?? '') ?></small>
+                    </div>
+                    <i>lock</i>
                 </div>
             </section>
 

@@ -37,6 +37,7 @@ class CV extends Model
     {
         return $this->first(
             'SELECT cvs.*,
+                    cv_templates.name AS template_name,
                     cv_categories.name AS category_name,
                     genders.name AS gender_name,
                     countries.name AS country_name,
@@ -45,6 +46,7 @@ class CV extends Model
                     users.avatar_url
              FROM `cvs`
              INNER JOIN `users` ON users.id = cvs.user_id
+             LEFT JOIN `cv_templates` ON cv_templates.id = cvs.cv_template_id
              INNER JOIN `cv_categories` ON cv_categories.id = cvs.cv_category_id
              INNER JOIN `genders` ON genders.id = cvs.gender_id
              INNER JOIN `countries` ON countries.id = cvs.country_id

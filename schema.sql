@@ -189,6 +189,7 @@ CREATE TABLE cv_templates (
 CREATE TABLE cvs (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NOT NULL UNIQUE,
+  cv_template_id BIGINT UNSIGNED NULL,
   cv_category_id BIGINT UNSIGNED NOT NULL,
   gender_id BIGINT UNSIGNED NOT NULL,
   country_id BIGINT UNSIGNED NOT NULL,
@@ -215,6 +216,10 @@ CREATE TABLE cvs (
     FOREIGN KEY (user_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE CASCADE,
+  CONSTRAINT fk_cvs_template
+    FOREIGN KEY (cv_template_id) REFERENCES cv_templates(id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
   CONSTRAINT fk_cvs_category
     FOREIGN KEY (cv_category_id) REFERENCES cv_categories(id)
     ON UPDATE CASCADE

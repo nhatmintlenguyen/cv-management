@@ -14,6 +14,7 @@ use App\Models\CVCategory;
 use App\Models\CVEducation;
 use App\Models\CVSkill;
 use App\Models\CVWorkHistory;
+use App\Models\CVTemplate;
 use App\Models\DegreeLevel;
 use App\Models\District;
 use App\Models\EmploymentType;
@@ -227,6 +228,11 @@ class CVController extends Controller
             $this->redirect('/cv/edit/review?template=' . $selected);
         }
 
+        $template = (new CVTemplate())->findByKey($selected);
+        if ($template !== null && $cv !== null) {
+            (new CV())->update((int) $cv['id'], ['cv_template_id' => (int) $template['id']]);
+        }
+
         $_SESSION['selected_cv_template'] = $selected;
         $_SESSION['cv_finished'] = true;
 
@@ -239,14 +245,9 @@ class CVController extends Controller
         $this->requireJobSeeker();
 
         $templates = $this->templateOptions();
-        $selected = (string) ($_SESSION['selected_cv_template'] ?? 'modern');
-
-        if (! array_key_exists($selected, $templates)) {
-            $selected = 'modern';
-        }
-
         $cv = $this->currentUserCv();
         $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+        $selected = $this->selectedTemplateForCv($fullCv);
 
         $this->view('cv/show', [
             'title' => 'Completed CV',
@@ -493,6 +494,14 @@ class CVController extends Controller
                 'accent' => '#000000',
             ],
         ];
+    }
+
+    private function selectedTemplateForCv(?array $cv): string
+    {
+        $selected = (new CVTemplate())->keyFromName($cv['template_name'] ?? null);
+        $templates = $this->templateOptions();
+
+        return array_key_exists($selected, $templates) ? $selected : 'modern';
     }
 
     private function presentableCv(array $cv): array

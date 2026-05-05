@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\CV;
 use App\Models\CVCategory;
 use App\Models\CVSearch;
+use App\Models\CVTemplate;
 use App\Models\DegreeLevel;
 use App\Models\Skill;
 use App\Models\SkillProficiencyLevel;
@@ -54,13 +55,6 @@ class SearchController extends Controller
     {
         $this->requireEmployer();
 
-        $templates = $this->templateOptions();
-        $selected = (string) ($_GET['template'] ?? 'modern');
-
-        if (! array_key_exists($selected, $templates)) {
-            $selected = 'modern';
-        }
-
         $cvId = (int) ($_GET['id'] ?? 0);
         $cv = $cvId > 0 ? (new CV())->findFullCV($cvId) : null;
 
@@ -70,10 +64,13 @@ class SearchController extends Controller
             return;
         }
 
+        $selected = $this->selectedTemplateForCv($cv);
+        $templates = $this->templateOptions();
+
         $this->view('search/show', [
             'title' => 'Candidate CV',
             'cv' => $cv,
-            'templates' => $templates,
+            'selectedTemplateInfo' => $templates[$selected],
             'selectedTemplate' => $selected,
             'mockCv' => $this->presentableCv($cv),
             'backUrl' => $_SERVER['HTTP_REFERER'] ?? '/find-cvs',
@@ -183,6 +180,14 @@ class SearchController extends Controller
                 'accent' => '#000000',
             ],
         ];
+    }
+
+    private function selectedTemplateForCv(array $cv): string
+    {
+        $selected = (new CVTemplate())->keyFromName($cv['template_name'] ?? null);
+        $templates = $this->templateOptions();
+
+        return array_key_exists($selected, $templates) ? $selected : 'modern';
     }
 
     private function presentableCv(array $cv): array
