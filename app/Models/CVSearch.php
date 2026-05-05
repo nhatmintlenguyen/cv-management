@@ -12,9 +12,31 @@ class CVSearch extends Model
 
     public function search(array $filters = []): array
     {
+        $query = $this->buildQuery($filters);
+        $limit = max(1, min(48, (int) ($filters['limit'] ?? 6)));
+        $offset = max(0, (int) ($filters['offset'] ?? 0));
+
+        $sql = $query['select'] . $query['from'] . $query['where'] . $query['order'] . ' LIMIT ' . $limit . ' OFFSET ' . $offset;
+        $params = $query['params'];
+
+        return $this->get($sql, $params);
+    }
+
+    public function count(array $filters = []): int
+    {
+        $query = $this->buildQuery($filters);
+        $row = $this->first(
+            'SELECT COUNT(*) AS total FROM (' . $query['select'] . $query['from'] . $query['where'] . ') AS filtered_cvs',
+            $query['params']
+        );
+
+        return (int) ($row['total'] ?? 0);
+    }
+
+    private function buildQuery(array $filters = []): array
+    {
         $params = [];
         $where = [];
-        $joins = [];
 
         $select = 'SELECT DISTINCT cvs.*,
                           cv_categories.name AS category_name,
@@ -39,27 +61,105 @@ class CVSearch extends Model
                   ) AS experience ON experience.cv_id = cvs.id';
 
         if (! empty($filters['keyword'])) {
-            $where[] = '(cvs.full_name LIKE :keyword
+            $keywordWhere = '(cvs.full_name LIKE :keyword
                          OR cvs.summary LIKE :keyword
+                         OR cvs.email LIKE :keyword
+                         OR cvs.phone_number LIKE :keyword
+                         OR cvs.street_address LIKE :keyword
+                         OR cvs.postal_code LIKE :keyword
+                         OR cv_categories.name LIKE :keyword
+                         OR countries.name LIKE :keyword
+                         OR cities.name LIKE :keyword
                          OR EXISTS (
-                           SELECT 1 FROM `cv_work_histories`
+                           SELECT 1
+                           FROM `districts`
+                           WHERE districts.id = cvs.district_id
+                             AND districts.name LIKE :keyword
+                         )
+                         OR EXISTS (
+                           SELECT 1
+                           FROM `genders`
+                           WHERE genders.id = cvs.gender_id
+                             AND genders.name LIKE :keyword
+                         )
+                         OR EXISTS (
+                           SELECT 1
+                           FROM `cv_work_histories`
+                           INNER JOIN `job_titles`
+                             ON job_titles.id = cv_work_histories.job_title_id
+                           INNER JOIN `employment_types`
+                             ON employment_types.id = cv_work_histories.employment_type_id
+                           INNER JOIN `industries`
+                             ON industries.id = cv_work_histories.industry_id
                            WHERE cv_work_histories.cv_id = cvs.id
                              AND (
                                cv_work_histories.company_name LIKE :keyword
                                OR cv_work_histories.job_description LIKE :keyword
+                               OR job_titles.name LIKE :keyword
+                               OR employment_types.name LIKE :keyword
+                               OR industries.name LIKE :keyword
                              )
                          )
                          OR EXISTS (
-                           SELECT 1 FROM `cv_educations`
+                           SELECT 1
+                           FROM `cv_educations`
+                           INNER JOIN `institutions`
+                             ON institutions.id = cv_educations.institution_id
+                           INNER JOIN `degree_levels`
+                             ON degree_levels.id = cv_educations.degree_level_id
+                           INNER JOIN `majors`
+                             ON majors.id = cv_educations.major_id
                            WHERE cv_educations.cv_id = cvs.id
-                             AND cv_educations.description LIKE :keyword
+                             AND (
+                               cv_educations.description LIKE :keyword
+                               OR institutions.name LIKE :keyword
+                               OR degree_levels.name LIKE :keyword
+                               OR majors.name LIKE :keyword
+                             )
                          )
                          OR EXISTS (
-                           SELECT 1 FROM `cv_certificates`
+                           SELECT 1
+                           FROM `cv_certificates`
+                           INNER JOIN `certificate_names`
+                             ON certificate_names.id = cv_certificates.certificate_name_id
+                           INNER JOIN `issuing_organizations`
+                             ON issuing_organizations.id = cv_certificates.issuing_organization_id
                            WHERE cv_certificates.cv_id = cvs.id
-                             AND cv_certificates.description LIKE :keyword
+                             AND (
+                               cv_certificates.description LIKE :keyword
+                               OR certificate_names.name LIKE :keyword
+                               OR issuing_organizations.name LIKE :keyword
+                             )
+                         )
+                         OR EXISTS (
+                           SELECT 1
+                           FROM `cv_skills`
+                           INNER JOIN `skills`
+                             ON skills.id = cv_skills.skill_id
+                           INNER JOIN `skill_proficiency_levels`
+                             ON skill_proficiency_levels.id = cv_skills.proficiency_level_id
+                           WHERE cv_skills.cv_id = cvs.id
+                             AND (
+                               skills.name LIKE :keyword
+                               OR skill_proficiency_levels.name LIKE :keyword
+                               OR skill_proficiency_levels.level_value = :keyword_level
+                             )
                          ))';
-            $params['keyword'] = '%' . $filters['keyword'] . '%';
+
+            $keywordValue = '%' . $filters['keyword'] . '%';
+            $keywordLevel = ctype_digit((string) $filters['keyword']) ? (int) $filters['keyword'] : -1;
+            $keywordIndex = 0;
+            $keywordWhere = preg_replace_callback(
+                '/:(keyword|keyword_level)\b/',
+                static function (array $matches) use (&$params, &$keywordIndex, $keywordValue, $keywordLevel): string {
+                    $placeholder = $matches[1] . '_' . $keywordIndex++;
+                    $params[$placeholder] = $matches[1] === 'keyword' ? $keywordValue : $keywordLevel;
+
+                    return ':' . $placeholder;
+                },
+                $keywordWhere
+            );
+            $where[] = $keywordWhere;
         }
 
         if (! empty($filters['category_id'])) {
@@ -87,24 +187,40 @@ class CVSearch extends Model
         }
 
         if (! empty($filters['skill_ids']) && is_array($filters['skill_ids'])) {
-            $skillPlaceholders = [];
-
             foreach (array_values($filters['skill_ids']) as $index => $skillId) {
-                $placeholder = 'skill_id_' . $index;
-                $skillPlaceholders[] = ':' . $placeholder;
-                $params[$placeholder] = (int) $skillId;
-            }
+                $skillId = (int) $skillId;
 
-            if ($skillPlaceholders !== []) {
+                if ($skillId <= 0) {
+                    continue;
+                }
+
+                $skillPlaceholder = 'skill_id_' . $index;
+                $params[$skillPlaceholder] = $skillId;
+
+                if (! empty($filters['min_proficiency'])) {
+                    $proficiencyPlaceholder = 'skill_min_proficiency_' . $index;
+                    $params[$proficiencyPlaceholder] = (int) $filters['min_proficiency'];
+                    $where[] = 'EXISTS (
+                        SELECT 1
+                        FROM `cv_skills`
+                        INNER JOIN `skill_proficiency_levels`
+                            ON skill_proficiency_levels.id = cv_skills.proficiency_level_id
+                        WHERE cv_skills.cv_id = cvs.id
+                          AND cv_skills.skill_id = :' . $skillPlaceholder . '
+                          AND skill_proficiency_levels.level_value >= :' . $proficiencyPlaceholder . '
+                    )';
+                    continue;
+                }
+
                 $where[] = 'EXISTS (
                     SELECT 1 FROM `cv_skills`
                     WHERE cv_skills.cv_id = cvs.id
-                      AND cv_skills.skill_id IN (' . implode(', ', $skillPlaceholders) . ')
+                      AND cv_skills.skill_id = :' . $skillPlaceholder . '
                 )';
             }
         }
 
-        if (! empty($filters['min_proficiency'])) {
+        if (empty($filters['skill_ids']) && ! empty($filters['min_proficiency'])) {
             $where[] = 'EXISTS (
                 SELECT 1
                 FROM `cv_skills`
@@ -116,15 +232,18 @@ class CVSearch extends Model
             $params['min_proficiency'] = (int) $filters['min_proficiency'];
         }
 
-        $sql = $select . $from . implode(' ', $joins);
-
+        $whereSql = '';
         if ($where !== []) {
-            $sql .= ' WHERE ' . implode(' AND ', $where);
+            $whereSql = ' WHERE ' . implode(' AND ', $where);
         }
 
-        $sql .= ' ' . $this->sortSql((string) ($filters['sort'] ?? 'recent'));
-
-        return $this->get($sql, $params);
+        return [
+            'select' => $select,
+            'from' => $from,
+            'where' => $whereSql,
+            'order' => ' ' . $this->sortSql((string) ($filters['sort'] ?? 'recent')),
+            'params' => $params,
+        ];
     }
 
     private function sortSql(string $sort): string

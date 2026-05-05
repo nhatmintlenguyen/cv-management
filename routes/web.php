@@ -37,6 +37,7 @@ $router->get('/profile', [ProfileController::class, 'show']);
 $router->post('/profile', [ProfileController::class, 'update']);
 $router->get('/profiles', [ProfileController::class, 'show']);
 $router->get('/find-cvs', [SearchController::class, 'index']);
+$router->get('/find-cvs/show', [SearchController::class, 'show']);
 
 $router->get('/admin', function (): void {
     header('Location: ' . View::url('/admin/overview'));

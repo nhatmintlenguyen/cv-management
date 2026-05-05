@@ -7,18 +7,25 @@ $user = $_SESSION['user'] ?? null;
 $initials = strtoupper(substr($user['full_name'] ?? 'U', 0, 1));
 $authRedirectQuery = $activeSiteTab === 'home' ? '?redirect=' . rawurlencode('/') : '';
 
-$tabs = $user === null
-    ? [
+if ($user === null) {
+    $tabs = [
         'home' => ['label' => 'Home', 'url' => '/'],
         'templates' => ['label' => 'Templates', 'url' => '/cv/templates'],
-    ]
-    : [
+    ];
+} elseif (($user['role'] ?? null) === 'employer') {
+    $tabs = [
+        'home' => ['label' => 'Home', 'url' => '/'],
+        'find-cvs' => ['label' => 'Find CVs', 'url' => '/find-cvs'],
+        'profile' => ['label' => 'Profile', 'url' => '/profiles'],
+    ];
+} else {
+    $tabs = [
         'home' => ['label' => 'Home', 'url' => '/'],
         'templates' => ['label' => 'Templates', 'url' => '/cv/templates'],
         'builder' => ['label' => 'CV Builder', 'url' => '/cv/edit'],
-        'find-cvs' => ['label' => 'Find CVs', 'url' => '/find-cvs'],
-        'profile' => ['label' => 'Profiles', 'url' => '/profiles'],
+        'profile' => ['label' => 'Profile', 'url' => '/profiles'],
     ];
+}
 ?>
 <header class="job-topbar">
     <div class="job-topbar-inner">

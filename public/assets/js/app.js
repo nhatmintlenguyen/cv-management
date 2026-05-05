@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      option.hidden = countryId === '' || option.dataset.countryId !== countryId;
+      option.hidden = countryId !== '' && option.dataset.countryId !== countryId;
     });
 
     if (profileCitySelect.selectedOptions[0]?.hidden) {
@@ -169,6 +169,50 @@ document.addEventListener('DOMContentLoaded', () => {
     setProfileEditMode(false);
     syncProfileCities();
   }
+
+  const employerSearchForm = document.querySelector('.employer-search-shell');
+  const employerCountrySelect = employerSearchForm?.querySelector('[data-employer-country]');
+  const employerCitySelect = employerSearchForm?.querySelector('[data-employer-city]');
+  const employerProficiencyRange = employerSearchForm?.querySelector('[data-employer-proficiency-range]');
+  const employerProficiencyOutput = employerSearchForm?.querySelector('[data-employer-proficiency-output]');
+
+  const syncEmployerCities = () => {
+    if (!employerCountrySelect || !employerCitySelect) {
+      return;
+    }
+
+    const countryId = employerCountrySelect.value || '';
+
+    Array.from(employerCitySelect.options).forEach((option) => {
+      if (option.value === '') {
+        option.hidden = false;
+        return;
+      }
+
+      option.hidden = countryId !== '' && option.dataset.countryId !== countryId;
+    });
+
+    if (employerCitySelect.selectedOptions[0]?.hidden) {
+      employerCitySelect.value = '';
+    }
+  };
+
+  employerCountrySelect?.addEventListener('change', () => {
+    if (employerCitySelect) {
+      employerCitySelect.value = '';
+    }
+
+    syncEmployerCities();
+  });
+
+  syncEmployerCities();
+
+  employerProficiencyRange?.addEventListener('input', () => {
+    if (employerProficiencyOutput) {
+      employerProficiencyOutput.value = employerProficiencyRange.value;
+      employerProficiencyOutput.textContent = employerProficiencyRange.value;
+    }
+  });
 
   const dynamicBuilderForm = document.querySelector('.js-dynamic-builder-form');
 

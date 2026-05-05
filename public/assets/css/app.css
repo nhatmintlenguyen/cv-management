@@ -896,6 +896,468 @@ input {
   font-weight: 900;
 }
 
+.employer-search-page {
+  width: min(100%, 1220px);
+  margin: 0 auto;
+  padding: 0 24px 72px;
+}
+
+.employer-search-shell {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  min-height: calc(100vh - 76px);
+  background: #f6f8fb;
+}
+
+.employer-filter-panel {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  padding: 34px 28px;
+  background: #eef1f5;
+}
+
+.employer-filter-section {
+  display: grid;
+  gap: 14px;
+}
+
+.employer-filter-section h2,
+.employer-filter-heading-row h2 {
+  margin: 0;
+  color: #1b2433;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.employer-filter-heading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.employer-filter-heading-row a {
+  color: #001a38;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.employer-search-input,
+.employer-filter-field {
+  display: grid;
+  gap: 8px;
+}
+
+.employer-search-input {
+  position: relative;
+}
+
+.employer-search-input > span {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  font-family: "Material Symbols Outlined";
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 1.05rem;
+}
+
+.employer-search-input input,
+.employer-filter-field select {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 5px;
+  padding: 0 14px;
+  color: #1f2937;
+  background: #ffffff;
+  font: inherit;
+}
+
+.employer-search-input input {
+  padding-left: 42px;
+}
+
+.employer-filter-field > span {
+  color: #263241;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.employer-proficiency-slider {
+  display: grid;
+  gap: 10px;
+  border-radius: 6px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.employer-proficiency-slider > span {
+  color: #263241;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.employer-proficiency-slider strong {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #315f9f;
+  background: #e7efff;
+  font-size: 0.75rem;
+}
+
+.employer-proficiency-slider input[type="range"] {
+  width: 100%;
+  accent-color: #001a38;
+  cursor: pointer;
+}
+
+.employer-proficiency-slider div {
+  display: flex;
+  justify-content: space-between;
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.employer-skill-picker {
+  max-height: 300px;
+  display: grid;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.employer-skill-picker label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 6px;
+  padding: 12px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.employer-skill-picker input {
+  accent-color: #001a38;
+}
+
+.employer-skill-picker span {
+  color: #1f2937;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.employer-filter-actions button {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #001a38;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.employer-results-panel {
+  padding: 48px 44px 64px;
+}
+
+.employer-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 38px;
+}
+
+.employer-results-header h1 {
+  margin: 0 0 6px;
+  color: #071426;
+  font-size: clamp(2rem, 4vw, 2.4rem);
+  line-height: 1.08;
+}
+
+.employer-results-header p {
+  margin: 0;
+  color: #334155;
+}
+
+.employer-view-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.employer-view-toggle span,
+.employer-candidate-topline > span,
+.employer-load-more span,
+.employer-back-link span,
+.employer-readonly-pill span {
+  font-family: "Material Symbols Outlined";
+  line-height: 1;
+}
+
+.employer-view-toggle span {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: #64748b;
+  background: #f1f5f9;
+}
+
+.employer-view-toggle span.active {
+  color: #001a38;
+  background: #dfe5ee;
+}
+
+.employer-candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px;
+}
+
+.employer-candidate-card {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 28px;
+  color: #111827;
+  background: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.employer-candidate-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+}
+
+.employer-candidate-topline {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.employer-candidate-avatar {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #001a38;
+  font-weight: 900;
+}
+
+.employer-candidate-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.employer-candidate-topline > span {
+  color: #717987;
+  font-size: 1.3rem;
+}
+
+.employer-candidate-card h2 {
+  margin: 0;
+  color: #121927;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.employer-candidate-card > strong {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 5px 8px;
+  color: #315f9f;
+  background: #e7efff;
+  font-size: 0.78rem;
+}
+
+.employer-candidate-card p {
+  margin: 18px 0 0;
+  color: #334155;
+  line-height: 1.65;
+}
+
+.employer-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 22px;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.employer-card-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.employer-card-skills span {
+  color: #001a38;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.employer-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 42px;
+}
+
+.employer-load-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px 28px;
+  color: #111827;
+  background: #ffffff;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.employer-empty-state {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  color: #64748b;
+  background: #ffffff;
+  text-align: center;
+}
+
+.employer-empty-state span {
+  font-family: "Material Symbols Outlined";
+  color: #001a38;
+  font-size: 2.6rem;
+}
+
+.employer-empty-state h2 {
+  margin: 0;
+  color: #111827;
+}
+
+.employer-empty-state p {
+  margin: 0;
+}
+
+.employer-cv-page {
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  padding: 42px 24px 76px;
+}
+
+.employer-cv-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.employer-cv-header h1 {
+  margin: 12px 0 6px;
+  color: var(--primary);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.employer-cv-header p {
+  margin: 0;
+  color: #475569;
+}
+
+.employer-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #001a38;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.employer-readonly-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 12px 16px;
+  color: #0f5132;
+  background: #dcfce7;
+  font-weight: 900;
+}
+
+.employer-cv-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.employer-template-sidebar {
+  gap: 18px;
+}
+
+.employer-cv-facts {
+  display: grid;
+  gap: 14px;
+  border-radius: 8px;
+  padding: 22px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(25, 28, 30, 0.05);
+}
+
+.employer-cv-facts h2 {
+  margin: 0 0 4px;
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+.employer-cv-facts p {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  color: #475569;
+}
+
+.employer-cv-facts strong {
+  color: #111827;
+}
+
+.employer-cv-preview-stage {
+  min-height: calc(100vh - 180px);
+}
+
+.employer-cv-preview-frame {
+  width: min(100%, 50vw, calc((100vh - 180px - 48px) / 1.414));
+}
+
 .dashboard-actions {
   display: flex;
   flex-wrap: wrap;
@@ -3555,6 +4017,32 @@ input {
 
   .profile-detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .employer-search-shell,
+  .employer-cv-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .employer-search-page {
+    padding: 0 16px 56px;
+  }
+
+  .employer-results-panel {
+    padding: 34px 20px 52px;
+  }
+
+  .employer-candidate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .employer-cv-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .employer-cv-preview-frame {
+    width: min(100%, calc((100vh - 180px - 48px) / 1.414));
   }
 
   .template-hero,
