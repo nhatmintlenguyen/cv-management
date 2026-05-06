@@ -163,7 +163,7 @@ class CVController extends Controller
         (new CVEducation())->replaceForCv((int) $cv['id'], $educations);
         (new CVWorkHistory())->replaceForCv((int) $cv['id'], $workHistories);
 
-        $this->flash('success', 'Your education and work history have been saved.');
+        $this->flash('success', 'Your education and career history have been saved.');
         if (($_POST['next_step'] ?? '') === 'qualifications') {
             $this->redirect('/cv/edit/qualifications');
         }
@@ -567,10 +567,6 @@ class CVController extends Controller
             $errors[] = 'Please add at least one education entry before finishing your CV.';
         }
 
-        if (($cv['work_histories'] ?? []) === []) {
-            $errors[] = 'Please add at least one work history entry before finishing your CV.';
-        }
-
         if (($cv['certificates'] ?? []) === []) {
             $errors[] = 'Please add at least one certificate before finishing your CV.';
         }
@@ -717,7 +713,6 @@ class CVController extends Controller
     private function sanitizeWorkHistories(array $rows, array &$errors): array
     {
         if ($rows === []) {
-            $errors[] = 'Please add at least one work history entry.';
             return [];
         }
 

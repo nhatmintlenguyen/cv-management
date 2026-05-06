@@ -34,7 +34,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
         <div class="builder-heading-row">
             <div>
                 <h1>Step 2: Academic &amp; Career Narrative</h1>
-                <p>Add your education background and work history. You can add multiple degrees and multiple work experiences.</p>
+                <p>Add your education background. Work history is optional, so new graduates can continue without experience.</p>
             </div>
 
             <div class="builder-progress-card">
@@ -46,32 +46,32 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
     <div class="builder-shell">
         <aside class="builder-stepper" aria-label="CV builder progress">
-            <div class="builder-step completed">
+            <a class="builder-step completed" href="<?= View::url('/cv/edit/personal-info') ?>" onclick="window.location.href = this.href; return false;">
                 <span>1</span>
                 <div>
                     <strong>Personal Info</strong>
                     <small>Saved</small>
                 </div>
-            </div>
-            <div class="builder-step active">
+            </a>
+            <a class="builder-step active" href="<?= View::url('/cv/edit/academic') ?>" onclick="window.location.href = this.href; return false;">
                 <span>2</span>
                 <div>
                     <strong>Education &amp; Experience</strong>
                     <small>In Progress</small>
                 </div>
-            </div>
-            <div class="builder-step">
+            </a>
+            <a class="builder-step" href="<?= View::url('/cv/edit/qualifications') ?>" onclick="window.location.href = this.href; return false;">
                 <span>3</span>
                 <div>
                     <strong>Qualifications &amp; Skills</strong>
                 </div>
-            </div>
-            <div class="builder-step">
+            </a>
+            <a class="builder-step" href="<?= View::url('/cv/edit/review') ?>" onclick="window.location.href = this.href; return false;">
                 <span>4</span>
                 <div>
                     <strong>Review</strong>
                 </div>
-            </div>
+            </a>
         </aside>
 
         <?php if ($cv === null): ?>
@@ -166,6 +166,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
                         <div>
                             <span>business_center</span>
                             <h2>Work History</h2>
+                            <p class="builder-helper-text">Optional. Leave this section blank if you do not have work experience yet.</p>
                         </div>
                         <button class="builder-secondary-button js-add-dynamic-row" type="button" data-target="work">
                             <span>add</span>
@@ -184,7 +185,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
                                 <div class="builder-form-grid">
                                     <label class="builder-field">
                                         <span>Job Title</span>
-                                        <select name="work_histories[<?= $index ?>][job_title_id]" required>
+                                        <select name="work_histories[<?= $index ?>][job_title_id]">
                                             <option value="">Select job title</option>
                                             <?php foreach ($jobTitles as $jobTitle): ?>
                                                 <option value="<?= (int) $jobTitle['id'] ?>" <?= $selected($workHistory, 'job_title_id', $jobTitle['id']) ?>><?= View::e($jobTitle['name']) ?></option>
@@ -194,7 +195,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
                                     <label class="builder-field">
                                         <span>Employment Type</span>
-                                        <select name="work_histories[<?= $index ?>][employment_type_id]" required>
+                                        <select name="work_histories[<?= $index ?>][employment_type_id]">
                                             <option value="">Select employment type</option>
                                             <?php foreach ($employmentTypes as $employmentType): ?>
                                                 <option value="<?= (int) $employmentType['id'] ?>" <?= $selected($workHistory, 'employment_type_id', $employmentType['id']) ?>><?= View::e($employmentType['name']) ?></option>
@@ -204,7 +205,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
                                     <label class="builder-field">
                                         <span>Industry</span>
-                                        <select name="work_histories[<?= $index ?>][industry_id]" required>
+                                        <select name="work_histories[<?= $index ?>][industry_id]">
                                             <option value="">Select industry</option>
                                             <?php foreach ($industries as $industry): ?>
                                                 <option value="<?= (int) $industry['id'] ?>" <?= $selected($workHistory, 'industry_id', $industry['id']) ?>><?= View::e($industry['name']) ?></option>
@@ -214,12 +215,12 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
                                     <label class="builder-field">
                                         <span>Company Name</span>
-                                        <input type="text" name="work_histories[<?= $index ?>][company_name]" value="<?= View::e($rowValue($workHistory, 'company_name')) ?>" placeholder="e.g. OneCV Labs" required>
+                                        <input type="text" name="work_histories[<?= $index ?>][company_name]" value="<?= View::e($rowValue($workHistory, 'company_name')) ?>" placeholder="e.g. OneCV Labs">
                                     </label>
 
                                     <label class="builder-field">
                                         <span>Start Year</span>
-                                        <input type="number" name="work_histories[<?= $index ?>][start_year]" value="<?= View::e($rowValue($workHistory, 'start_year')) ?>" min="1950" max="<?= (int) date('Y') + 1 ?>" placeholder="2022" required>
+                                        <input type="number" name="work_histories[<?= $index ?>][start_year]" value="<?= View::e($rowValue($workHistory, 'start_year')) ?>" min="1950" max="<?= (int) date('Y') + 1 ?>" placeholder="2022">
                                     </label>
 
                                     <label class="builder-field">
@@ -234,7 +235,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
 
                                     <label class="builder-field builder-field-wide">
                                         <span>Job Description</span>
-                                        <textarea name="work_histories[<?= $index ?>][job_description]" rows="5" placeholder="Summarize responsibilities, achievements, technologies, or measurable impact." required><?= View::e($rowValue($workHistory, 'job_description')) ?></textarea>
+                                        <textarea name="work_histories[<?= $index ?>][job_description]" rows="5" placeholder="Summarize responsibilities, achievements, technologies, or measurable impact."><?= View::e($rowValue($workHistory, 'job_description')) ?></textarea>
                                     </label>
                                 </div>
                             </article>

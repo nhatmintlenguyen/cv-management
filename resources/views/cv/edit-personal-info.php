@@ -38,31 +38,31 @@ $isSelected = static fn (string $field, mixed $value): string => (string) ($old[
 
     <div class="builder-shell">
         <aside class="builder-stepper" aria-label="CV builder progress">
-            <div class="builder-step active">
+            <a class="builder-step active" href="<?= View::url('/cv/edit/personal-info') ?>" onclick="window.location.href = this.href; return false;">
                 <span>1</span>
                 <div>
                     <strong>Personal Info</strong>
                     <small>In Progress</small>
                 </div>
-            </div>
-            <div class="builder-step">
+            </a>
+            <a class="builder-step" href="<?= View::url('/cv/edit/academic') ?>" onclick="window.location.href = this.href; return false;">
                 <span>2</span>
                 <div>
                     <strong>Education &amp; Experience</strong>
                 </div>
-            </div>
-            <div class="builder-step">
+            </a>
+            <a class="builder-step" href="<?= View::url('/cv/edit/qualifications') ?>" onclick="window.location.href = this.href; return false;">
                 <span>3</span>
                 <div>
                     <strong>Qualifications &amp; Skills</strong>
                 </div>
-            </div>
-            <div class="builder-step">
+            </a>
+            <a class="builder-step" href="<?= View::url('/cv/edit/review') ?>" onclick="window.location.href = this.href; return false;">
                 <span>4</span>
                 <div>
                     <strong>Review</strong>
                 </div>
-            </div>
+            </a>
         </aside>
 
         <form class="builder-form-card js-builder-identity-form" method="post" action="<?= View::url('/cv/identity') ?>">

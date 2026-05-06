@@ -2756,10 +2756,19 @@ input {
 
 .builder-step {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   gap: 16px;
+  min-height: 34px;
+  border-radius: 8px;
   color: #94a3b8;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.builder-step:hover strong {
+  color: var(--primary);
 }
 
 .builder-step:not(:last-child)::after {
@@ -2773,11 +2782,12 @@ input {
   background: #c4c6ce;
   transform: translateX(-0.5px);
   z-index: 0;
+  pointer-events: none;
 }
 
 .builder-step > span {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 26px;
   height: 26px;
   flex: 0 0 auto;
@@ -2789,6 +2799,11 @@ input {
   background: #fff;
   font-size: 0.72rem;
   font-weight: 900;
+}
+
+.builder-step > div {
+  position: relative;
+  z-index: 2;
 }
 
 .builder-step.active > span {
