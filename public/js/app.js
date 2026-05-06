@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+  function selectedLabel(select) {
+    const option = select.selectedOptions?.[0];
+
+    return option && option.value !== '' ? option.textContent.trim() : '';
+  }
+
   const identityForm = document.querySelector('.js-builder-identity-form');
 
   if (identityForm) {
@@ -87,6 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
     profileEditableFields.forEach((field) => {
       if (field.tagName === 'SELECT') {
         field.disabled = !enabled;
+        const searchableInput = field.nextElementSibling?.querySelector?.('.searchable-select-input');
+
+        if (searchableInput) {
+          searchableInput.disabled = !enabled;
+          searchableInput.value = selectedLabel(field);
+        }
+
         return;
       }
 
@@ -214,6 +227,207 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const referenceTypeForSelect = (select) => {
+    if (select.dataset.refType) {
+      return select.dataset.refType;
+    }
+
+    const name = select.name || '';
+    const fieldName = name.match(/\[([a-z_]+)\]$/)?.[1] || name;
+    const action = select.form?.getAttribute('action') || '';
+
+    if (fieldName === 'category_id') {
+      return action.includes('find-cvs') ? 'cv_categories' : 'job_categories';
+    }
+
+    const map = {
+      certificate_name_id: 'certificate_names',
+      city_id: 'cities',
+      country_id: 'countries',
+      cv_category_id: 'cv_categories',
+      degree_level_id: 'degree_levels',
+      district_id: 'districts',
+      employment_type_id: 'employment_types',
+      gender_id: 'genders',
+      industry_id: 'industries',
+      institution_id: 'institutions',
+      issuing_organization_id: 'issuing_organizations',
+      job_category_id: 'job_categories',
+      job_level_id: 'job_levels',
+      job_title_id: 'job_titles',
+      major_id: 'majors',
+      minimum_degree_level_id: 'degree_levels',
+      minimum_proficiency_level_id: 'skill_proficiency_levels',
+      proficiency_level_id: 'skill_proficiency_levels',
+      salary_range_id: 'salary_ranges',
+      salary_type_id: 'salary_types',
+      skill_id: 'skills',
+      work_arrangement_id: 'work_arrangements',
+    };
+
+    return map[fieldName] || '';
+  };
+
+  const parentForReference = (select, type) => {
+    if (type === 'cities') {
+      return select.form?.querySelector('select[name="country_id"]')?.value || '';
+    }
+
+    if (type === 'districts') {
+      return select.form?.querySelector('select[name="city_id"]')?.value || '';
+    }
+
+    return '';
+  };
+
+  const appUrl = (path) => `${window.OneCV?.basePath || ''}${path}`;
+
+  const enhanceSearchableSelect = (select) => {
+    const refType = referenceTypeForSelect(select);
+
+    if (!refType || select.dataset.searchableReady === 'true') {
+      return;
+    }
+
+    select.dataset.searchableReady = 'true';
+    select.classList.add('searchable-select-source');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'searchable-select';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'searchable-select-input';
+    input.placeholder = select.options[0]?.textContent.trim() || 'Search...';
+    input.autocomplete = 'off';
+    input.value = selectedLabel(select);
+    input.disabled = select.disabled;
+
+    const list = document.createElement('div');
+    list.className = 'searchable-select-list';
+    list.hidden = true;
+
+    wrapper.append(input, list);
+    select.insertAdjacentElement('afterend', wrapper);
+
+    let activeItems = [];
+    let abortController = null;
+
+    const closeList = () => {
+      list.hidden = true;
+      list.innerHTML = '';
+      activeItems = [];
+    };
+
+    const syncFromSelect = () => {
+      input.value = selectedLabel(select);
+      input.disabled = select.disabled;
+    };
+
+    const chooseItem = (item) => {
+      let option = Array.from(select.options).find((current) => current.value === item.id);
+
+      if (!option) {
+        option = new Option(item.label, item.id);
+        select.add(option);
+      }
+
+      select.value = item.id;
+      input.value = item.label;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      closeList();
+    };
+
+    const renderItems = (items) => {
+      list.innerHTML = '';
+      activeItems = items;
+
+      if (items.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'searchable-select-empty';
+        empty.textContent = 'No matching options';
+        list.appendChild(empty);
+        list.hidden = false;
+        return;
+      }
+
+      items.forEach((item) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'searchable-select-option';
+        button.textContent = item.label;
+        button.addEventListener('mousedown', (event) => {
+          event.preventDefault();
+          chooseItem(item);
+        });
+        list.appendChild(button);
+      });
+
+      list.hidden = false;
+    };
+
+    const fetchItems = async () => {
+      abortController?.abort();
+      abortController = new AbortController();
+
+      const params = new URLSearchParams({
+        type: refType,
+        q: input.value.trim(),
+      });
+      const parentId = parentForReference(select, refType);
+
+      if (parentId !== '') {
+        params.set('parent_id', parentId);
+      }
+
+      try {
+        const response = await fetch(`${appUrl('/api/references')}?${params.toString()}`, {
+          headers: { Accept: 'application/json' },
+          signal: abortController.signal,
+        });
+        const data = response.ok ? await response.json() : { items: [] };
+
+        renderItems(data.items || []);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          renderItems([]);
+        }
+      }
+    };
+
+    input.addEventListener('focus', fetchItems);
+    input.addEventListener('input', fetchItems);
+    input.addEventListener('blur', () => {
+      window.setTimeout(() => {
+        if (!activeItems.some((item) => item.label === input.value && item.id === select.value)) {
+          syncFromSelect();
+        }
+
+        closeList();
+      }, 140);
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        syncFromSelect();
+        closeList();
+      }
+    });
+    select.addEventListener('change', syncFromSelect);
+
+    if (refType === 'cities' || refType === 'districts') {
+      const parentName = refType === 'cities' ? 'country_id' : 'city_id';
+      select.form?.querySelector(`select[name="${parentName}"]`)?.addEventListener('change', () => {
+        input.value = '';
+        closeList();
+      });
+    }
+  };
+
+  const initSearchableSelects = (root = document) => {
+    root.querySelectorAll('select').forEach(enhanceSearchableSelect);
+  };
+
+  initSearchableSelects();
+
   const dynamicBuilderForm = document.querySelector('.js-dynamic-builder-form');
 
   if (dynamicBuilderForm) {
@@ -261,7 +475,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const resetItem = (item) => {
+      item.querySelectorAll('.searchable-select').forEach((wrapper) => wrapper.remove());
       item.querySelectorAll('input, select, textarea').forEach((field) => {
+        field.classList.remove('searchable-select-source');
+        delete field.dataset.searchableReady;
+
         if (field.type === 'checkbox') {
           field.checked = false;
           return;
@@ -320,6 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = firstItem.cloneNode(true);
         resetItem(item);
         list.appendChild(item);
+        initSearchableSelects(item);
         updateList(list, prefix);
       });
     });

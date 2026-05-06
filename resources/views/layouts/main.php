@@ -15,6 +15,11 @@ $success = $_SESSION['_flash']['success'] ?? null;
     <title><?= View::e($title) ?> | <?= View::e($app['name']) ?></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap">
     <link rel="stylesheet" href="<?= View::asset('css/app.css') ?>">
+    <script>
+        window.OneCV = {
+            basePath: <?= json_encode(defined('APP_BASE_PATH') ? APP_BASE_PATH : '') ?>
+        };
+    </script>
     <script defer src="<?= View::asset('js/app.js') ?>"></script>
 </head>
 <body>

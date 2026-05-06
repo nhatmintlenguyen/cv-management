@@ -2953,6 +2953,131 @@ input {
   transition: background 160ms ease, box-shadow 160ms ease;
 }
 
+.profile-detail-field select,
+.employer-filter-field select,
+.reference-form select,
+.admin-table select,
+.builder-field select {
+  appearance: none;
+  padding-right: 42px;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%23001A38' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
+}
+
+.searchable-select-source {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.searchable-select {
+  position: relative;
+  width: 100%;
+}
+
+.searchable-select-input {
+  width: 100%;
+  min-height: inherit;
+  border: 0;
+  border-radius: inherit;
+  padding: inherit;
+  padding-right: 42px;
+  color: inherit;
+  background: inherit;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%23001A38' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
+  font: inherit;
+  outline: none;
+}
+
+.employer-filter-field .searchable-select-input {
+  min-height: 44px;
+  border-radius: 5px;
+  padding: 0 42px 0 14px;
+  color: #1f2937;
+  background-color: #ffffff;
+}
+
+.builder-field .searchable-select-input {
+  min-height: 48px;
+  border-radius: 8px;
+  padding: 13px 42px 13px 16px;
+  color: var(--text);
+  background-color: var(--surface-container-highest);
+}
+
+.profile-detail-field .searchable-select-input {
+  min-height: 62px;
+  border-radius: 8px;
+  padding: 19px 42px 19px 18px;
+  color: #1f252d;
+  background-color: #dfe3e6;
+}
+
+.reference-form .searchable-select-input,
+.admin-table .searchable-select-input {
+  min-height: 38px;
+  border: 1px solid var(--surface-muted);
+  border-radius: 7px;
+  padding: 0 42px 0 10px;
+  color: var(--text);
+  background-color: var(--surface);
+}
+
+.searchable-select-input:focus {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px var(--primary-fixed);
+}
+
+.searchable-select-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  z-index: 70;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid rgba(196, 198, 206, 0.72);
+  border-radius: 8px;
+  padding: 6px;
+  background: #ffffff;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.14);
+}
+
+.searchable-select-option,
+.searchable-select-empty {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #1f2937;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+}
+
+.searchable-select-option {
+  cursor: pointer;
+}
+
+.searchable-select-option:hover,
+.searchable-select-option:focus {
+  color: var(--primary);
+  background: var(--primary-fixed);
+}
+
+.searchable-select-empty {
+  color: #64748b;
+  cursor: default;
+}
+
 .builder-field textarea {
   resize: vertical;
   min-height: 132px;

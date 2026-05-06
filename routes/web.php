@@ -8,6 +8,7 @@ use App\Controllers\HomeController;
 use App\Controllers\JobSearchController;
 use App\Controllers\JobVacancyController;
 use App\Controllers\ProfileController;
+use App\Controllers\ReferenceApiController;
 use App\Controllers\SearchController;
 use App\Core\View;
 
@@ -22,6 +23,7 @@ $router->post('/register', [AuthController::class, 'register']);
 
 $router->post('/logout', [AuthController::class, 'logout']);
 $router->get('/dashboard', [DashboardController::class, 'index']);
+$router->get('/api/references', [ReferenceApiController::class, 'index']);
 
 $router->get('/cv/create', [CVController::class, 'create']);
 $router->get('/cv/edit', [CVController::class, 'edit']);
