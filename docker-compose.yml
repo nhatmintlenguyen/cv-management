@@ -6,15 +6,39 @@ services:
       - "8080:80"
     environment:
       WEB_DOCUMENT_ROOT: /app/public
-      DB_HOST: host.docker.internal
+      DB_HOST: db
       DB_PORT: 3306
       DB_DATABASE: cv_management
       DB_USERNAME: root
-      DB_PASSWORD: ""
+      DB_PASSWORD: root
       MAIL_HOST: host.docker.internal
       MAIL_PORT: 1025
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
     restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: onecv-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cv_management
+    volumes:
+      - onecv-db-data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: always
+
+volumes:
+  onecv-db-data:

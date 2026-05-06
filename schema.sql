@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS cv_certificates;
 DROP TABLE IF EXISTS cv_work_histories;
 DROP TABLE IF EXISTS cv_educations;
 DROP TABLE IF EXISTS cvs;
+DROP TABLE IF EXISTS password_resets;
 DROP TABLE IF EXISTS users;
 
 DROP TABLE IF EXISTS work_arrangements;
