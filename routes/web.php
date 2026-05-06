@@ -62,6 +62,8 @@ $router->get('/admin', function (): void {
     exit;
 });
 $router->get('/admin/overview', [AdminController::class, 'overview']);
+$router->get('/admin/job-vacancies', [AdminController::class, 'jobVacancies']);
+$router->post('/admin/job-vacancies/delete', [AdminController::class, 'deleteJobVacancy']);
 $router->get('/admin/reference-management', [AdminController::class, 'referenceManagement']);
 $router->get('/admin/reference', [AdminController::class, 'referenceManagement']);
 $router->post('/admin/reference/store', [AdminController::class, 'storeReference']);

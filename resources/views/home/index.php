@@ -30,7 +30,7 @@ $activeSiteTab = 'home';
 
             <div class="marketing-hero-media">
                 <img
-                    src="https://lh3.googleusercontent.com/aida/ADBb0ugqKc4mruksAhejJ2QgPhxgYKkyR1zoQ3xvDRB3bpxkbp1_DEeFR9ymx_agarQbiyUQzjqdCBEVuO0ei4ih8HAtSD8zy9JmmGqdF0GsoXOip7UYwdoi7r2qylC_ou65LJSfZ835aqR1Paf7hgye_RTPzsLVvkc3D8-5tXI7zcz4-wzzctwdA8oEvsAE5f7sEZTRA8xjTFeYKcH54ytdiAX0-eoL4Igyk44MySuQa9sMaxI3X2MILgpoqAS7v-CXf293B9TIVYRgeQ"
+                    src="https://www.topcv.vn/cv/snapshot/template-cv/mau-cv-an-tuong-6-_VlJVBQcNCQgBBVdWAgMCVQFTUAYPVgBUCVNRAQb0f5.webp?t=1756435041&color=574040&template_name=impressive_6_v2&lang=vi"
                     alt="Resume builder interface"
                 >
                 <div class="marketing-floating-card">
@@ -80,7 +80,7 @@ $activeSiteTab = 'home';
         <div class="marketing-shell marketing-template-grid">
             <div class="marketing-template-preview">
                 <img
-                    src="https://lh3.googleusercontent.com/aida/ADBb0uik-4A3N7LC9XMHDDhvV729n8TKTEASYd_F0hFBgr07V3dZhUyB_pEHUlqfask3nMxHpqzFwqKYw-Xbu_sJ9-dggEKNnl-sxCzqLj5xHt2RyA6uOALOCyUhLBdTePkJI3_bCG6mBUG-r4IglP8kcFv9_wfBrHPH0vKU1ld8qYtOr8gWYMYhiwYE5SdKt54yHrudXvvZJKtw_hWA9LKcU0YXUT67RBQIPBgWTqsaPgQBkKa3uvlNSJB8KpIUVgUqzCFwFUuSTGH3S-s"
+                    src="https://www.topcv.vn/cv/snapshot/template-cv/mau-cv-hien-dai-1-_VAFaBAAJVw0CAQ4CUQECV1QABQcCAgkCVgNVCw391b.webp?t=1750134891&color=a94a4b&template_name=modern_1_v2&lang=vi"
                     alt="CV template preview"
                 >
                 <div class="marketing-layout-badge">

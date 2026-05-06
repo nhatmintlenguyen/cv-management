@@ -13,12 +13,14 @@ $fields = $selectedConfig['fields'] ?? ['name' => 'Name'];
 $fieldOptions = $fieldOptions ?? [];
 $isLocked = ! empty($selectedConfig['locked']);
 
-$renderField = function (string $field, string $label, array $row = [], ?string $formId = null) use ($fieldOptions): void {
+$renderField = function (string $field, string $label, array $row = [], ?string $formId = null) use ($fieldOptions, $selectedConfig): void {
     $value = $row[$field] ?? '';
     $formAttribute = $formId === null ? '' : ' form="' . View::e($formId) . '"';
+    $isNullable = in_array($field, $selectedConfig['nullable_fields'] ?? [], true);
+    $required = $isNullable ? '' : ' required';
 
     if (isset($fieldOptions[$field])) {
-        echo '<select name="' . View::e($field) . '"' . $formAttribute . ' required>';
+        echo '<select name="' . View::e($field) . '"' . $formAttribute . $required . '>';
         echo '<option value="">Select ' . View::e($label) . '</option>';
 
         foreach ($fieldOptions[$field] as $option) {
@@ -30,10 +32,11 @@ $renderField = function (string $field, string $label, array $row = [], ?string 
         return;
     }
 
-    $type = in_array($field, ['sort_order', 'level_value'], true) ? 'number' : 'text';
+    $type = in_array($field, ['sort_order', 'level_value', 'min_salary', 'max_salary'], true) ? 'number' : 'text';
     $min = $field === 'level_value' ? ' min="1" max="10"' : ($field === 'sort_order' ? ' min="0"' : '');
+    $step = in_array($field, ['min_salary', 'max_salary'], true) ? ' step="0.01" min="0"' : '';
 
-    echo '<input type="' . $type . '" name="' . View::e($field) . '" value="' . View::e($value) . '" placeholder="' . View::e($label) . '"' . $min . $formAttribute . ' required>';
+    echo '<input type="' . $type . '" name="' . View::e($field) . '" value="' . View::e($value) . '" placeholder="' . View::e($label) . '"' . $min . $step . $formAttribute . $required . '>';
 };
 
 $fieldForColumn = function (string $column) use ($fields): ?string {

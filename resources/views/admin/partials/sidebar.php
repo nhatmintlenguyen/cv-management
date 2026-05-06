@@ -21,6 +21,11 @@ $activeTab = $activeTab ?? '';
             <strong>User Management</strong>
         </a>
 
+        <a class="<?= $activeTab === 'jobs' ? 'active' : '' ?>" href="<?= View::url('/admin/job-vacancies') ?>">
+            <span>work</span>
+            <strong>Job Vacancies</strong>
+        </a>
+
         <a class="<?= $activeTab === 'reference' ? 'active' : '' ?>" href="<?= View::url('/admin/reference-management?type=skills') ?>">
             <span>database</span>
             <strong>Reference Data</strong>

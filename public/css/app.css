@@ -8,6 +8,18 @@
   --primary: #001a38;
   --primary-soft: #d5e3ff;
   --primary-mid: #002e5d;
+  --primary-fixed: #d5e3ff;
+  --primary-container: #001a38;
+  --on-primary-container: #b9c7df;
+  --secondary-fixed: #d5e3fc;
+  --secondary-container: #d5e3fc;
+  --on-secondary-container: #3a485c;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f2f4f6;
+  --surface-container: #eceef0;
+  --surface-container-high: #e6e8ea;
+  --surface-container-highest: #e0e3e5;
+  --tertiary-container: #001b3f;
   --danger: #ba1a1a;
   --danger-soft: #ffdad6;
   --success: #11693a;
@@ -2000,6 +2012,30 @@ input {
   color: #fff;
 }
 
+.admin-job-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 28px;
+}
+
+.admin-status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.admin-status-pill.is-active {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.admin-status-pill.is-inactive {
+  color: #92400e;
+  background: #fef3c7;
+}
+
 .admin-toolbar,
 .table-heading {
   display: flex;
@@ -3656,9 +3692,10 @@ input {
 .marketing-stats {
   position: relative;
   overflow: hidden;
-  padding: 96px 0;
+  padding: 88px 0;
   color: #fff;
-  background: var(--primary-container);
+  background:
+    linear-gradient(135deg, rgba(0, 26, 56, 0.98), rgba(0, 46, 93, 0.96));
 }
 
 .marketing-stats::before {
@@ -3675,8 +3712,15 @@ input {
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 48px;
+  gap: 24px;
   text-align: center;
+}
+
+.marketing-stats-grid div {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 28px 20px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .marketing-stats-grid strong,
@@ -3685,13 +3729,14 @@ input {
 }
 
 .marketing-stats-grid strong {
+  color: #ffffff;
   font-size: clamp(3rem, 6vw, 4.6rem);
   line-height: 1;
 }
 
 .marketing-stats-grid span {
   margin-top: 12px;
-  color: var(--on-primary-container);
+  color: rgba(255, 255, 255, 0.78);
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -4342,6 +4387,10 @@ input {
     text-align: center;
   }
 
+  .admin-job-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .home-hero,
   .home-service-grid {
     grid-template-columns: 1fr;
@@ -4466,6 +4515,10 @@ input {
   }
 
   .profile-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-job-metrics {
     grid-template-columns: 1fr;
   }
 

@@ -16,9 +16,13 @@ use App\Models\EmploymentType;
 use App\Models\Industry;
 use App\Models\Institution;
 use App\Models\IssuingOrganization;
+use App\Models\JobCategory;
+use App\Models\JobLevel;
 use App\Models\JobTitle;
+use App\Models\JobVacancy;
 use App\Models\Major;
 use App\Models\Role;
+use App\Models\SalaryRange;
 use App\Models\Skill;
 use App\Models\SkillProficiencyLevel;
 use App\Models\User;
@@ -29,6 +33,7 @@ class AdminController extends Controller
     private array $referenceTypes = [
         'skills' => ['label' => 'Skills', 'icon' => 'psychology', 'model' => Skill::class, 'columns' => ['id' => 'ID', 'name' => 'Skill Name'], 'fields' => ['name' => 'Skill Name']],
         'categories' => ['label' => 'CV Categories', 'icon' => 'category', 'model' => CVCategory::class, 'columns' => ['id' => 'ID', 'name' => 'Category Name'], 'fields' => ['name' => 'Category Name']],
+        'job_categories' => ['label' => 'Job Categories', 'icon' => 'category', 'model' => JobCategory::class, 'columns' => ['id' => 'ID', 'name' => 'Category Name'], 'fields' => ['name' => 'Category Name']],
         'degrees' => ['label' => 'Degree Levels', 'icon' => 'school', 'model' => DegreeLevel::class, 'columns' => ['id' => 'ID', 'name' => 'Degree Level', 'sort_order' => 'Sort Order'], 'fields' => ['name' => 'Degree Level', 'sort_order' => 'Sort Order'], 'locked' => true],
         'majors' => ['label' => 'Majors', 'icon' => 'auto_stories', 'model' => Major::class, 'columns' => ['id' => 'ID', 'name' => 'Major Name'], 'fields' => ['name' => 'Major Name']],
         'institutions' => ['label' => 'Institutions', 'icon' => 'account_balance', 'model' => Institution::class, 'columns' => ['id' => 'ID', 'name' => 'Institution Name'], 'fields' => ['name' => 'Institution Name']],
@@ -36,8 +41,10 @@ class AdminController extends Controller
         'cities' => ['label' => 'Cities', 'icon' => 'location_city', 'model' => City::class, 'columns' => ['id' => 'ID', 'name' => 'City Name', 'country_name' => 'Country'], 'fields' => ['name' => 'City Name', 'country_id' => 'Country']],
         'districts' => ['label' => 'Districts', 'icon' => 'map', 'model' => District::class, 'columns' => ['id' => 'ID', 'name' => 'District Name', 'city_name' => 'City'], 'fields' => ['name' => 'District Name', 'city_id' => 'City']],
         'job_titles' => ['label' => 'Job Titles', 'icon' => 'badge', 'model' => JobTitle::class, 'columns' => ['id' => 'ID', 'name' => 'Job Title'], 'fields' => ['name' => 'Job Title']],
+        'job_levels' => ['label' => 'Job Levels', 'icon' => 'signal_cellular_alt', 'model' => JobLevel::class, 'columns' => ['id' => 'ID', 'name' => 'Job Level', 'sort_order' => 'Sort Order'], 'fields' => ['name' => 'Job Level', 'sort_order' => 'Sort Order']],
         'employment_types' => ['label' => 'Employment Types', 'icon' => 'work_history', 'model' => EmploymentType::class, 'columns' => ['id' => 'ID', 'name' => 'Employment Type'], 'fields' => ['name' => 'Employment Type']],
         'industries' => ['label' => 'Industries', 'icon' => 'work', 'model' => Industry::class, 'columns' => ['id' => 'ID', 'name' => 'Industry Name'], 'fields' => ['name' => 'Industry Name']],
+        'salary_ranges' => ['label' => 'Salary Ranges', 'icon' => 'payments', 'model' => SalaryRange::class, 'columns' => ['id' => 'ID', 'label' => 'Label', 'min_salary' => 'Minimum', 'max_salary' => 'Maximum', 'currency' => 'Currency', 'sort_order' => 'Sort Order'], 'fields' => ['label' => 'Label', 'min_salary' => 'Minimum Salary', 'max_salary' => 'Maximum Salary', 'currency' => 'Currency', 'sort_order' => 'Sort Order'], 'nullable_fields' => ['max_salary']],
         'certificates' => ['label' => 'Certificates', 'icon' => 'workspace_premium', 'model' => CertificateName::class, 'columns' => ['id' => 'ID', 'name' => 'Certificate Name'], 'fields' => ['name' => 'Certificate Name']],
         'issuing_organizations' => ['label' => 'Issuing Organizations', 'icon' => 'verified', 'model' => IssuingOrganization::class, 'columns' => ['id' => 'ID', 'name' => 'Organization Name'], 'fields' => ['name' => 'Organization Name']],
         'proficiency_levels' => ['label' => 'Proficiency Levels', 'icon' => 'bar_chart', 'model' => SkillProficiencyLevel::class, 'columns' => ['id' => 'ID', 'name' => 'Level Name', 'level_value' => 'Value'], 'fields' => ['name' => 'Level Name', 'level_value' => 'Value'], 'locked' => true],
@@ -93,6 +100,66 @@ class AdminController extends Controller
             'users' => $users,
             'total' => count($users),
         ]);
+    }
+
+    public function jobVacancies(): void
+    {
+        $this->requireAdmin();
+
+        $jobModel = new JobVacancy();
+        $jobs = $jobModel->get(
+            'SELECT job_vacancies.id, job_vacancies.status, job_vacancies.number_of_openings,
+                    job_vacancies.updated_at, job_titles.name AS job_title,
+                    job_categories.name AS job_category, companies.name AS company_name,
+                    cities.name AS city_name, countries.name AS country_name,
+                    users.full_name AS employer_name, users.email AS employer_email,
+                    (
+                        SELECT COUNT(*)
+                        FROM `job_vacancy_skills`
+                        WHERE job_vacancy_skills.job_vacancy_id = job_vacancies.id
+                    ) AS required_skill_count
+             FROM `job_vacancies`
+             INNER JOIN `job_titles` ON job_titles.id = job_vacancies.job_title_id
+             INNER JOIN `job_categories` ON job_categories.id = job_vacancies.job_category_id
+             INNER JOIN `companies` ON companies.id = job_vacancies.company_id
+             INNER JOIN `cities` ON cities.id = job_vacancies.city_id
+             INNER JOIN `countries` ON countries.id = job_vacancies.country_id
+             INNER JOIN `users` ON users.id = job_vacancies.employer_user_id
+             ORDER BY job_vacancies.updated_at DESC'
+        );
+
+        $this->view('admin/job-vacancies', [
+            'title' => 'Job Vacancy Management',
+            'activeTab' => 'jobs',
+            'jobs' => $jobs,
+            'stats' => [
+                'total' => count($jobs),
+                'active' => count(array_filter($jobs, static fn (array $job): bool => ($job['status'] ?? '') === 'active')),
+                'inactive' => count(array_filter($jobs, static fn (array $job): bool => ($job['status'] ?? '') === 'inactive')),
+                'openings' => array_sum(array_map(static fn (array $job): int => (int) ($job['number_of_openings'] ?? 0), $jobs)),
+            ],
+        ]);
+    }
+
+    public function deleteJobVacancy(): void
+    {
+        $this->requireAdmin();
+
+        $jobId = (int) ($_POST['id'] ?? 0);
+
+        if ($jobId <= 0) {
+            $this->flash('errors', ['Invalid job vacancy.']);
+            $this->redirect('/admin/job-vacancies');
+        }
+
+        try {
+            (new JobVacancy())->delete($jobId);
+            $this->flash('success', 'Job vacancy removed.');
+        } catch (PDOException $exception) {
+            $this->flash('errors', ['Could not remove this job vacancy.']);
+        }
+
+        $this->redirect('/admin/job-vacancies');
     }
 
     public function referenceManagement(): void
@@ -281,6 +348,18 @@ class AdminController extends Controller
             );
         }
 
+        if ($type === 'job_levels') {
+            return (new JobLevel())->get(
+                "SELECT * FROM `job_levels` ORDER BY `sort_order` ASC LIMIT {$limit} OFFSET {$offset}"
+            );
+        }
+
+        if ($type === 'salary_ranges') {
+            return (new SalaryRange())->get(
+                "SELECT * FROM `salary_ranges` ORDER BY `sort_order` ASC LIMIT {$limit} OFFSET {$offset}"
+            );
+        }
+
         if ($type === 'cities') {
             return (new City())->get(
                 "SELECT cities.id, cities.name, cities.country_id, countries.name AS country_name
@@ -321,6 +400,7 @@ class AdminController extends Controller
         return match ($modelClass) {
             Skill::class => 'skills',
             CVCategory::class => 'cv_categories',
+            JobCategory::class => 'job_categories',
             DegreeLevel::class => 'degree_levels',
             Major::class => 'majors',
             Institution::class => 'institutions',
@@ -328,8 +408,10 @@ class AdminController extends Controller
             City::class => 'cities',
             District::class => 'districts',
             JobTitle::class => 'job_titles',
+            JobLevel::class => 'job_levels',
             EmploymentType::class => 'employment_types',
             Industry::class => 'industries',
+            SalaryRange::class => 'salary_ranges',
             CertificateName::class => 'certificate_names',
             IssuingOrganization::class => 'issuing_organizations',
             SkillProficiencyLevel::class => 'skill_proficiency_levels',
@@ -349,6 +431,11 @@ class AdminController extends Controller
         foreach ($config['fields'] as $field => $label) {
             $value = trim((string) ($_POST[$field] ?? ''));
 
+            if ($value === '' && in_array($field, $config['nullable_fields'] ?? [], true)) {
+                $payload[$field] = null;
+                continue;
+            }
+
             if ($value === '') {
                 $errors[] = "{$label} is required.";
                 continue;
@@ -356,6 +443,8 @@ class AdminController extends Controller
 
             if (in_array($field, ['country_id', 'city_id', 'sort_order', 'level_value'], true)) {
                 $payload[$field] = (int) $value;
+            } elseif (in_array($field, ['min_salary', 'max_salary'], true)) {
+                $payload[$field] = (float) $value;
             } else {
                 $payload[$field] = $value;
             }
