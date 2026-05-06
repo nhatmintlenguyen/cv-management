@@ -314,6 +314,96 @@ Running `database/setup.php` again will recreate the schema because
 `schema.sql` drops existing project tables before creating them. Do not run it
 after adding real data unless you want to reset the database.
 
+### Mailpit Setup for Forgot Password
+
+The forgot password feature sends reset emails through a local SMTP server.
+For local development, this project uses Mailpit in Docker. Mailpit catches
+emails locally so you can test password reset without sending real email.
+
+#### 1. Pull the Mailpit Docker Image
+
+```bash
+docker pull axllent/mailpit:edge
+```
+
+#### 2. Start the Mailpit Container
+
+```bash
+docker run -d --name onecv-mailpit \
+  -p 8025:8025 \
+  -p 1025:1025 \
+  axllent/mailpit:edge
+```
+
+Ports used by Mailpit:
+
+- `8025`: web inbox UI.
+- `1025`: SMTP server used by the PHP application.
+
+Open the Mailpit inbox at:
+
+```text
+http://localhost:8025
+```
+
+#### 3. Project Mail Configuration
+
+The project SMTP settings are stored in `config/mail.php`:
+
+```php
+'host' => '127.0.0.1',
+'port' => 1025,
+'username' => null,
+'password' => null,
+'encryption' => null,
+'from_email' => 'no-reply@onecv.local',
+'from_name' => 'OneCV',
+```
+
+Mailpit does not require SMTP authentication or TLS in local development.
+
+#### 4. Required Database Table
+
+Forgot password needs the `password_resets` table.
+
+If you created the database from the latest `schema.sql`, this table already
+exists. If your database was created before this feature was added, run the SQL
+file below in phpMyAdmin:
+
+```text
+database/migrations/2026_05_06_create_password_resets.sql
+```
+
+#### 5. Test the Forgot Password Flow
+
+1. Start Apache and MySQL from XAMPP.
+2. Make sure the Mailpit container is running.
+3. Open the login page:
+
+   ```text
+   http://localhost/cv-management/public/login
+   ```
+
+4. Click `Forgot password?`.
+5. Enter an email address that exists in the `users` table.
+6. Open Mailpit:
+
+   ```text
+   http://localhost:8025
+   ```
+
+7. Open the reset email and click the reset link.
+8. Enter a new password and log in with the updated password.
+
+Useful Docker commands:
+
+```bash
+docker ps
+docker start onecv-mailpit
+docker stop onecv-mailpit
+docker rm -f onecv-mailpit
+```
+
 #### Serving the Project With XAMPP
 
 For a simple XAMPP setup, place or symlink this project inside XAMPP's web root.
