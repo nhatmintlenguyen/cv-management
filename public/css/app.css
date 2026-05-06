@@ -637,10 +637,18 @@ input {
   cursor: default;
 }
 
+.profile-dashboard.is-readonly .profile-name-field input {
+  pointer-events: none;
+}
+
 .profile-dashboard.is-editing .profile-name-field input,
 .profile-dashboard.is-editing .profile-detail-field input,
 .profile-dashboard.is-editing .profile-detail-field select {
   cursor: text;
+}
+
+.profile-dashboard.is-editing .profile-name-field input {
+  pointer-events: auto;
 }
 
 .profile-dashboard.is-editing .profile-avatar-camera {
@@ -1409,6 +1417,40 @@ input {
   color: #64748b;
   font-size: 0.76rem;
   font-weight: 800;
+}
+
+.job-search-page .employer-search-shell {
+  border-radius: 0 0 12px 12px;
+}
+
+.job-search-results {
+  gap: 18px;
+}
+
+.job-search-card {
+  align-items: stretch;
+}
+
+.job-search-card .employer-job-logo {
+  align-self: flex-start;
+}
+
+.job-search-posted {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #315f9f;
+  background: #e7efff;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.job-search-description {
+  max-width: 720px;
+  margin: 14px 0 0;
+  color: #334155;
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .job-detail-hero {

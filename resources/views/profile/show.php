@@ -42,10 +42,10 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
             </div>
 
             <div class="profile-hero-copy">
-                <label class="profile-name-field">
+                <div class="profile-name-field">
                     <span>Full Name</span>
-                    <input class="js-profile-editable" type="text" name="full_name" value="<?= View::e($fullName) ?>" required readonly>
-                </label>
+                    <input class="js-profile-editable" type="text" name="full_name" value="<?= View::e($fullName) ?>" aria-label="Full Name" required readonly>
+                </div>
                 <p><?= View::e($headline) ?></p>
                 <div class="profile-badges" aria-label="Profile badges">
                     <span><span>verified</span> Executive Tier</span>
@@ -66,15 +66,15 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
                 </div>
 
                 <div class="profile-detail-grid">
-                    <label class="profile-detail-field">
+                    <div class="profile-detail-field">
                         <span>Email Address</span>
                         <input class="js-profile-editable" type="email" name="email" value="<?= View::e($email) ?>" required readonly>
-                    </label>
+                    </div>
 
-                    <label class="profile-detail-field">
+                    <div class="profile-detail-field">
                         <span>Phone Number</span>
                         <input class="js-profile-editable" type="tel" name="phone_number" value="<?= View::e($phoneNumber) ?>" placeholder="Not added yet" readonly>
-                    </label>
+                    </div>
 
                     <label class="profile-detail-field">
                         <span>Country</span>
