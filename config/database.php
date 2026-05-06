@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'host' => '127.0.0.1',
-    'port' => 3306,
-    'database' => 'cv_management',
-    'username' => 'root',
-    'password' => '',
-    'charset' => 'utf8mb4',
-    'collation' => 'utf8mb4_unicode_ci',
+    'host' => getenv('DB_HOST') ?: '127.0.0.1',
+    'port' => (int) (getenv('DB_PORT') ?: 3306),
+    'database' => getenv('DB_DATABASE') ?: 'cv_management',
+    'username' => getenv('DB_USERNAME') ?: 'root',
+    'password' => getenv('DB_PASSWORD') ?: '',
+    'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
+    'collation' => getenv('DB_COLLATION') ?: 'utf8mb4_unicode_ci',
 ];

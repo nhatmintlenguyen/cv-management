@@ -36,6 +36,8 @@ class SearchController extends Controller
 
         $data = [
             'title' => 'Find CVs',
+            'metaDescription' => 'Search structured candidate CVs on OneCV by keyword, category, location, skills, proficiency level, degree level, and experience.',
+            'canonicalPath' => '/find-cvs',
             'user' => $_SESSION['user'],
             'filters' => $filters,
             'page' => $page,
@@ -77,6 +79,9 @@ class SearchController extends Controller
 
         $this->view('search/show', [
             'title' => 'Candidate CV',
+            'metaDescription' => 'View a read-only structured candidate CV preview on OneCV using the candidate selected template.',
+            'canonicalPath' => '/find-cvs/show',
+            'robots' => 'noindex,nofollow',
             'cv' => $cv,
             'selectedTemplateInfo' => $templates[$selected],
             'selectedTemplate' => $selected,

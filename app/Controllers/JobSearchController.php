@@ -38,6 +38,8 @@ class JobSearchController extends Controller
 
         $data = [
             'title' => 'Job Search',
+            'metaDescription' => 'Search active job vacancies on OneCV by keyword, category, location, required skills, salary, employment type, level, and work arrangement.',
+            'canonicalPath' => '/jobs',
             'jobs' => $rows,
             'filters' => $filters,
             'page' => $page,
@@ -88,6 +90,9 @@ class JobSearchController extends Controller
 
         $this->view('jobs/show', [
             'title' => $job['job_title'] ?? 'Job Detail',
+            'metaDescription' => $this->jobMetaDescription($job),
+            'canonicalPath' => '/jobs/show',
+            'structuredData' => $this->jobStructuredData($job),
             'job' => $job,
             'requiredSkills' => (new JobVacancySkill())->findByJobVacancyId($jobId),
             'isEmployerOwner' => $isEmployerOwner,
@@ -158,5 +163,45 @@ class JobSearchController extends Controller
         } catch (Throwable) {
             return 0;
         }
+    }
+
+    private function jobMetaDescription(array $job): string
+    {
+        $parts = array_values(array_filter([
+            $job['job_title'] ?? null,
+            $job['company_name'] ?? null,
+            $job['city_name'] ?? null,
+            $job['salary_range'] ?? null,
+        ]));
+
+        return implode(' at ', array_slice($parts, 0, 2))
+            . (isset($parts[2]) ? ' in ' . $parts[2] : '')
+            . '. View salary, required skills, responsibilities, and employer information on OneCV.';
+    }
+
+    private function jobStructuredData(array $job): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'JobPosting',
+            'title' => $job['job_title'] ?? 'Job Vacancy',
+            'description' => trim(strip_tags((string) ($job['responsibilities'] ?? 'Job vacancy on OneCV.'))),
+            'datePosted' => isset($job['created_at']) ? date('Y-m-d', strtotime((string) $job['created_at'])) : date('Y-m-d'),
+            'employmentType' => $job['employment_type'] ?? null,
+            'hiringOrganization' => [
+                '@type' => 'Organization',
+                'name' => $job['company_name'] ?? 'OneCV Employer',
+                'logo' => $job['company_avatar_url'] ?? null,
+            ],
+            'jobLocation' => [
+                '@type' => 'Place',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => $job['city_name'] ?? null,
+                    'addressRegion' => $job['district_name'] ?? null,
+                    'addressCountry' => $job['country_name'] ?? null,
+                ],
+            ],
+        ];
     }
 }

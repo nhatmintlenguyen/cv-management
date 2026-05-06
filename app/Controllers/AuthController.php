@@ -25,6 +25,9 @@ class AuthController extends Controller
         $this->view('auth/login', [
             'title' => 'Login',
             'redirect' => $redirect,
+            'metaDescription' => 'Log in to OneCV to manage CVs, search candidates, post jobs, or administer reference data.',
+            'canonicalPath' => '/login',
+            'robots' => 'noindex,nofollow',
         ]);
     }
 
@@ -39,6 +42,9 @@ class AuthController extends Controller
         $this->view('auth/register', [
             'title' => 'Register',
             'redirect' => $redirect,
+            'metaDescription' => 'Create a OneCV account as a job seeker or employer.',
+            'canonicalPath' => '/register',
+            'robots' => 'noindex,nofollow',
         ]);
     }
 
@@ -50,6 +56,9 @@ class AuthController extends Controller
 
         $this->view('auth/forgot-password', [
             'title' => 'Forgot Password',
+            'metaDescription' => 'Request a secure OneCV password reset link.',
+            'canonicalPath' => '/forgot-password',
+            'robots' => 'noindex,nofollow',
         ]);
     }
 
@@ -108,6 +117,9 @@ class AuthController extends Controller
             'title' => 'Reset Password',
             'token' => $token,
             'email' => $reset['email'],
+            'metaDescription' => 'Create a new OneCV password using a secure reset token.',
+            'canonicalPath' => '/reset-password',
+            'robots' => 'noindex,nofollow',
         ]);
     }
 

@@ -251,6 +251,9 @@ class CVController extends Controller
 
         $this->view('cv/show', [
             'title' => 'Completed CV',
+            'metaDescription' => 'Preview your completed OneCV profile with the selected CV presentation template.',
+            'canonicalPath' => '/cv/show',
+            'robots' => 'noindex,nofollow',
             'cv' => $fullCv,
             'templates' => $templates,
             'selectedTemplate' => $selected,
@@ -290,6 +293,8 @@ class CVController extends Controller
 
         $this->view('cv/templates', [
             'title' => 'CV Templates',
+            'metaDescription' => 'Browse OneCV resume templates including Modern Executive, Classic Editorial, and Senior Minimal layouts.',
+            'canonicalPath' => '/cv/templates',
             'templates' => $templates,
             'selectedTemplate' => $selected,
             'mockCv' => $this->mockCvData(),

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">OneCV</title>
+  <desc id="desc">OneCV premium CV builder and job discovery platform.</desc>
+  <rect width="1200" height="630" fill="#f7f9fb"/>
+  <rect x="76" y="78" width="1048" height="474" rx="28" fill="#001a38"/>
+  <rect x="138" y="144" width="242" height="342" rx="16" fill="#d5e3ff"/>
+  <rect x="426" y="154" width="532" height="34" rx="17" fill="#ffffff"/>
+  <rect x="426" y="226" width="626" height="22" rx="11" fill="#b9c7df"/>
+  <rect x="426" y="276" width="560" height="22" rx="11" fill="#b9c7df"/>
+  <rect x="426" y="326" width="612" height="22" rx="11" fill="#b9c7df"/>
+  <rect x="426" y="406" width="420" height="22" rx="11" fill="#b9c7df"/>
+  <text x="138" y="244" fill="#001a38" font-family="Arial, sans-serif" font-size="64" font-weight="700">OneCV</text>
+  <text x="426" y="506" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="700">Build CVs. Discover jobs. Hire smarter.</text>
+</svg>

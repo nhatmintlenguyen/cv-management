@@ -12,6 +12,8 @@ class HomeController extends Controller
     {
         $this->view('home/index', [
             'title' => 'Homepage',
+            'metaDescription' => 'Create professional CVs with structured forms, choose polished templates, and explore role-based tools for job seekers and employers on OneCV.',
+            'canonicalPath' => '/',
         ]);
     }
 }
