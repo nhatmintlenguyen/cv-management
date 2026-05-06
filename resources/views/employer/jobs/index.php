@@ -33,6 +33,14 @@ $locationLabel = static function (array $job): string {
 
 <main class="builder-page builder-page-wide">
     <section class="builder-heading">
+        <?php
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => '/'],
+            ['label' => 'My Jobs'],
+        ];
+        require dirname(__DIR__, 2) . '/partials/breadcrumb.php';
+        ?>
+
         <div class="builder-heading-row">
             <div>
                 <h1>Job Vacancy Management</h1>

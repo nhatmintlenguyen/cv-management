@@ -59,6 +59,14 @@ $excerpt = static function (string $value, int $length = 170): string {
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="employer-search-page job-search-page">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Jobs'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <form class="employer-search-shell" method="get" action="<?= View::url('/jobs') ?>" data-ajax-search-form>
         <aside class="employer-filter-panel">
             <section class="employer-filter-section">

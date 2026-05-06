@@ -11,6 +11,14 @@ $mockCv = $mockCv ?? [];
 <?php require dirname(__DIR__) . '/job-seeker/partials/topbar.php'; ?>
 
 <main class="job-page template-page">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'CV Templates'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <section class="template-hero">
         <div>
             <h1>Curate Your Identity</h1>

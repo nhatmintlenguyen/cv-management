@@ -12,6 +12,16 @@ $backUrl = $backUrl ?? View::url('/find-cvs');
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="employer-cv-page">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Find CVs', 'url' => '/find-cvs'],
+        ['label' => $mockCv['category'] ?? 'Category', 'url' => ! empty($cv['cv_category_id']) ? '/find-cvs?category_id=' . (int) $cv['cv_category_id'] : '/find-cvs'],
+        ['label' => $cv['full_name'] ?? 'Candidate CV'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <header class="employer-cv-header">
         <div>
             <a class="employer-back-link" href="<?= View::e($backUrl) ?>">

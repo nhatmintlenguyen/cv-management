@@ -28,6 +28,14 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="profile-page">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Profile'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <form class="profile-dashboard js-profile-form is-readonly" method="post" action="<?= View::url('/profile') ?>" enctype="multipart/form-data">
         <section class="profile-hero-card" aria-label="Profile summary">
             <div class="profile-hero-media">

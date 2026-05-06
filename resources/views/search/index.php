@@ -24,6 +24,14 @@ $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $s
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="employer-search-page">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Find CVs'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <form class="employer-search-shell" method="get" action="<?= View::url('/find-cvs') ?>" data-ajax-search-form>
         <aside class="employer-filter-panel">
             <section class="employer-filter-section">

@@ -33,6 +33,16 @@ $formatDate = static function (?string $value): string {
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="builder-page builder-page-wide">
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => ($user['role'] ?? null) === 'employer' ? 'My Jobs' : 'Jobs', 'url' => ($user['role'] ?? null) === 'employer' ? '/employer/jobs' : '/jobs'],
+        ['label' => $job['job_category'] ?? 'Category', 'url' => ! empty($job['job_category_id']) ? '/jobs?job_category_id=' . (int) $job['job_category_id'] : '/jobs'],
+        ['label' => $job['job_title'] ?? 'Job Vacancy'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
+
     <section class="job-detail-hero">
         <a class="employer-back-link" href="<?= View::url(($user['role'] ?? null) === 'employer' ? '/employer/jobs' : '/jobs') ?>">
             <span>arrow_back</span>
