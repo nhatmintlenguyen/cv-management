@@ -21,11 +21,16 @@ class ProfileController extends Controller
             $this->redirect('/login');
         }
 
-        $user = (new User())->find((int) $_SESSION['user']['id']);
+        $userModel = new User();
+        $user = $userModel->find((int) $_SESSION['user']['id']);
 
         if ($user === null) {
             $this->redirect('/logout');
         }
+
+        $roleName = $userModel->getRole((int) $user['id'])['name'] ?? $_SESSION['user']['role'] ?? null;
+        $user['role'] = $roleName;
+        $_SESSION['user']['role'] = $roleName;
 
         $cvModel = new CV();
         $cv = $cvModel->findByUserId((int) $user['id']);
@@ -36,7 +41,7 @@ class ProfileController extends Controller
             'user' => $user,
             'avatarUrl' => $user['avatar_url'] ?? null,
             'cv' => $fullCv,
-            'headline' => $this->profileHeadline($fullCv),
+            'headline' => $this->profileHeadline($fullCv, $roleName),
             'profileCompletion' => $this->profileCompletion($fullCv),
             'countries' => (new Country())->all('name'),
             'cities' => (new City())->all('name'),
@@ -191,8 +196,16 @@ class ProfileController extends Controller
         return 'avatars/user-' . $userId . '-' . time() . '.' . $extension;
     }
 
-    private function profileHeadline(?array $cv): string
+    private function profileHeadline(?array $cv, ?string $roleName): string
     {
+        if ($roleName === 'employer') {
+            return 'Active Employer';
+        }
+
+        if ($roleName === 'admin') {
+            return 'Active Administrator';
+        }
+
         $workHistories = $cv['work_histories'] ?? [];
 
         if (isset($workHistories[0]['job_title_name']) && trim((string) $workHistories[0]['job_title_name']) !== '') {
@@ -203,7 +216,7 @@ class ProfileController extends Controller
             return (string) $cv['category_name'] . ' Candidate';
         }
 
-        return 'Active Job Seeker';
+        return $roleName === 'job_seeker' ? 'Active Job Seeker' : 'Active User';
     }
 
     private function profileCompletion(?array $cv): int

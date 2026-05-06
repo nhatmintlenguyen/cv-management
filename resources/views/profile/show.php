@@ -10,7 +10,13 @@ $cities = $cities ?? [];
 $fullName = $old['full_name'] ?? $user['full_name'] ?? '';
 $email = $old['email'] ?? $user['email'] ?? '';
 $initials = strtoupper(substr((string) $fullName, 0, 1));
-$headline = $headline ?? 'Active Job Seeker';
+$roleLabel = match ($user['role'] ?? '') {
+    'employer' => 'Active Employer',
+    'job_seeker' => 'Active Job Seeker',
+    'admin' => 'Active Administrator',
+    default => 'Active User',
+};
+$headline = $headline ?? $roleLabel;
 $profileCompletion = $profileCompletion ?? 0;
 $phoneNumber = $old['phone_number'] ?? $cv['phone_number'] ?? '';
 $selectedCountryId = (string) ($old['country_id'] ?? $cv['country_id'] ?? '');
@@ -46,10 +52,8 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
                     <span>Full Name</span>
                     <input class="js-profile-editable" type="text" name="full_name" value="<?= View::e($fullName) ?>" aria-label="Full Name" required readonly>
                 </div>
-                <p><?= View::e($headline) ?></p>
                 <div class="profile-badges" aria-label="Profile badges">
-                    <span><span>verified</span> Executive Tier</span>
-                    <span>Active Job Seeker</span>
+                    <span><?= View::e($roleLabel) ?></span>
                 </div>
             </div>
 
@@ -68,17 +72,17 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
                 <div class="profile-detail-grid">
                     <div class="profile-detail-field">
                         <span>Email Address</span>
-                        <input class="js-profile-editable" type="email" name="email" value="<?= View::e($email) ?>" required readonly>
+                        <input class="js-profile-editable" type="email" name="email" value="<?= View::e($email) ?>" aria-label="Email Address" required readonly>
                     </div>
 
                     <div class="profile-detail-field">
                         <span>Phone Number</span>
-                        <input class="js-profile-editable" type="tel" name="phone_number" value="<?= View::e($phoneNumber) ?>" placeholder="Not added yet" readonly>
+                        <input class="js-profile-editable" type="tel" name="phone_number" value="<?= View::e($phoneNumber) ?>" aria-label="Phone Number" placeholder="Not added yet" readonly>
                     </div>
 
-                    <label class="profile-detail-field">
+                    <div class="profile-detail-field">
                         <span>Country</span>
-                        <select class="js-profile-editable" name="country_id" data-profile-country disabled>
+                        <select class="js-profile-editable" name="country_id" data-profile-country aria-label="Country" disabled>
                             <option value="">Not added yet</option>
                             <?php foreach ($countries as $country): ?>
                                 <option value="<?= (int) $country['id'] ?>" <?= $selectedCountryId === (string) $country['id'] ? 'selected' : '' ?>>
@@ -86,11 +90,11 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </label>
+                    </div>
 
-                    <label class="profile-detail-field">
+                    <div class="profile-detail-field">
                         <span>City</span>
-                        <select class="js-profile-editable" name="city_id" data-profile-city disabled>
+                        <select class="js-profile-editable" name="city_id" data-profile-city aria-label="City" disabled>
                             <option value="">Not added yet</option>
                             <?php foreach ($cities as $city): ?>
                                 <option value="<?= (int) $city['id'] ?>" data-country-id="<?= (int) $city['country_id'] ?>" <?= $selectedCityId === (string) $city['id'] ? 'selected' : '' ?>>
@@ -98,12 +102,12 @@ $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profil
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </label>
+                    </div>
 
-                    <label class="profile-detail-field profile-detail-wide">
+                    <div class="profile-detail-field profile-detail-wide">
                         <span>Street Address</span>
-                        <input class="js-profile-editable" type="text" name="street_address" value="<?= View::e($streetAddress) ?>" placeholder="Not added yet" readonly>
-                    </label>
+                        <input class="js-profile-editable" type="text" name="street_address" value="<?= View::e($streetAddress) ?>" aria-label="Street Address" placeholder="Not added yet" readonly>
+                    </div>
                 </div>
             </article>
 

@@ -641,6 +641,11 @@ input {
   pointer-events: none;
 }
 
+.profile-dashboard.is-readonly .profile-detail-field input,
+.profile-dashboard.is-readonly .profile-detail-field select {
+  pointer-events: none;
+}
+
 .profile-dashboard.is-editing .profile-name-field input,
 .profile-dashboard.is-editing .profile-detail-field input,
 .profile-dashboard.is-editing .profile-detail-field select {
@@ -648,6 +653,11 @@ input {
 }
 
 .profile-dashboard.is-editing .profile-name-field input {
+  pointer-events: auto;
+}
+
+.profile-dashboard.is-editing .profile-detail-field input,
+.profile-dashboard.is-editing .profile-detail-field select {
   pointer-events: auto;
 }
 
@@ -4063,7 +4073,7 @@ input {
   gap: 0.82em;
   padding: 1.4em 1.1em;
   color: #fff;
-  background: #312120;
+  background: #001a38;
 }
 
 .cv-modern-sidebar .cv-avatar {
@@ -4166,14 +4176,14 @@ input {
   margin-bottom: 0.48em;
   padding: 0.28em 0.66em;
   color: #fff;
-  background: #5b403f;
+  background: #002e5d;
 }
 
 .cv-meta-strip {
   display: flex;
   gap: 0.4em;
   margin-top: 0.42em;
-  color: #5b403f;
+  color: #002e5d;
   font-weight: 800;
 }
 
@@ -4223,9 +4233,9 @@ input {
 }
 
 .cv-output-classic .cv-avatar {
-  border: 0.18em solid #aa4550;
+  border: 0.18em solid #1f477b;
   outline: 0.24em solid #fff;
-  box-shadow: 0 0 0 0.28em #aa4550;
+  box-shadow: 0 0 0 0.28em #1f477b;
 }
 
 .cv-classic-title-row {
@@ -4233,17 +4243,17 @@ input {
   align-items: end;
   justify-content: space-between;
   gap: 1em;
-  border-bottom: 0.12em solid #aa4550;
+  border-bottom: 0.12em solid #1f477b;
   padding-bottom: 0.22em;
 }
 
 .cv-classic-title-row h2 {
-  color: #aa4550;
+  color: #001a38;
   font-size: 1.22em;
 }
 
 .cv-classic-title-row strong {
-  color: #aa4550;
+  color: #1f477b;
   font-size: 0.72em;
 }
 
@@ -4269,7 +4279,7 @@ input {
   border-bottom: 1px solid #c7c7c7;
   margin-bottom: 0.38em;
   padding-bottom: 0.16em;
-  color: #aa4550;
+  color: #1f477b;
   font-size: 0.82em;
 }
 

@@ -17,16 +17,6 @@ $mockCv = $mockCv ?? [];
             <p>Select a layout that mirrors your professional narrative. Each template is structured for clean presentation and consistent CV data.</p>
         </div>
 
-        <div class="template-actions">
-            <button class="secondary-button" type="button">
-                <span class="template-action-icon">download</span>
-                Export PDF
-            </button>
-            <button class="primary-button" type="button">
-                <span class="template-action-icon">save</span>
-                Save Draft
-            </button>
-        </div>
     </section>
 
     <section class="template-workspace">

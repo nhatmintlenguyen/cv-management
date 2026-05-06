@@ -266,13 +266,13 @@ class CVController extends Controller
                 'name' => 'Modern Executive',
                 'description' => 'Asymmetric, bold typography',
                 'image' => 'https://www.topcv.vn/cv/snapshot/template-cv/mau-cv-hien-dai-1-_VAFaBAAJVw0CAQ4CUQECV1QABQcCAgkCVgNVCw391b.webp?t=1750134891&color=a94a4b&template_name=modern_1_v2&lang=vi',
-                'accent' => '#a94a4b',
+                'accent' => '#002e5d',
             ],
             'classic' => [
                 'name' => 'Classic Editorial',
                 'description' => 'Serif, single column focus',
                 'image' => 'https://www.topcv.vn/cv/snapshot/template-cv/mau-cv-an-tuong-6-_VlJVBQcNCQgBBVdWAgMCVQFTUAYPVgBUCVNRAQb0f5.webp?t=1756435041&color=574040&template_name=impressive_6_v2&lang=vi',
-                'accent' => '#574040',
+                'accent' => '#1f477b',
             ],
             'minimal' => [
                 'name' => 'Senior Minimal',
@@ -481,12 +481,12 @@ class CVController extends Controller
             'modern' => [
                 'name' => 'Modern Executive',
                 'description' => 'Asymmetric, bold typography',
-                'accent' => '#a94a4b',
+                'accent' => '#002e5d',
             ],
             'classic' => [
                 'name' => 'Classic Editorial',
                 'description' => 'Serif, single column focus',
-                'accent' => '#574040',
+                'accent' => '#1f477b',
             ],
             'minimal' => [
                 'name' => 'Senior Minimal',
