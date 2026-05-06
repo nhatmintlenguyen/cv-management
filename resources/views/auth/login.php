@@ -117,6 +117,10 @@ $redirectQuery = $redirectPath !== '' ? '?redirect=' . rawurlencode($redirectPat
                     >
                 </label>
 
+                <div class="auth-inline-actions">
+                    <a href="<?= View::url('/forgot-password') ?>">Forgot password?</a>
+                </div>
+
                 <button class="primary-button" type="submit">Login</button>
             </form>
         </section>

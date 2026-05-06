@@ -66,10 +66,6 @@ $isFinished = $isFinished ?? false;
                         <span>visibility</span>
                         Review Template
                     </a>
-                    <button class="builder-primary-button" type="button">
-                        Export PDF
-                        <span>download</span>
-                    </button>
                 </div>
             </aside>
 

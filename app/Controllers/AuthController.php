@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\View;
+use App\Models\PasswordReset;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\Mailer;
+use RuntimeException;
 
 class AuthController extends Controller
 {
@@ -36,6 +40,102 @@ class AuthController extends Controller
             'title' => 'Register',
             'redirect' => $redirect,
         ]);
+    }
+
+    public function showForgotPassword(): void
+    {
+        if ($this->authenticated()) {
+            $this->redirect('/dashboard');
+        }
+
+        $this->view('auth/forgot-password', [
+            'title' => 'Forgot Password',
+        ]);
+    }
+
+    public function sendResetLink(): void
+    {
+        $email = strtolower(trim((string) $this->input('email', '')));
+
+        if ($email === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->flash('errors', ['Please enter a valid email address.']);
+            $this->old(['email' => $email]);
+            $this->redirect('/forgot-password');
+        }
+
+        $user = (new User())->findByEmail($email);
+
+        if ($user !== null && $user['status'] === 'active') {
+            $token = bin2hex(random_bytes(32));
+            $tokenHash = hash('sha256', $token);
+
+            (new PasswordReset())->createToken((int) $user['id'], $tokenHash);
+
+            $resetUrl = $this->absoluteUrl('/reset-password?token=' . rawurlencode($token));
+
+            try {
+                (new Mailer())->send(
+                    $email,
+                    'Reset your OneCV password',
+                    $this->resetEmailHtml((string) $user['full_name'], $resetUrl),
+                    "Reset your OneCV password:\n{$resetUrl}\n\nThis link expires in 60 minutes."
+                );
+            } catch (RuntimeException $exception) {
+                $this->flash('errors', ['We could not send the reset email. Please make sure Mailpit is running.']);
+                $this->redirect('/forgot-password');
+            }
+        }
+
+        $this->flash('success', 'If that email exists, a password reset link has been sent.');
+        $this->redirect('/login');
+    }
+
+    public function showResetPassword(): void
+    {
+        if ($this->authenticated()) {
+            $this->redirect('/dashboard');
+        }
+
+        $token = trim((string) $this->input('token', ''));
+        $reset = $token === '' ? null : (new PasswordReset())->findValidByHash(hash('sha256', $token));
+
+        if ($reset === null) {
+            $this->flash('errors', ['This password reset link is invalid or expired.']);
+            $this->redirect('/forgot-password');
+        }
+
+        $this->view('auth/reset-password', [
+            'title' => 'Reset Password',
+            'token' => $token,
+            'email' => $reset['email'],
+        ]);
+    }
+
+    public function resetPassword(): void
+    {
+        $token = trim((string) $this->input('token', ''));
+        $password = (string) $this->input('password', '');
+        $passwordConfirmation = (string) $this->input('password_confirmation', '');
+        $reset = $token === '' ? null : (new PasswordReset())->findValidByHash(hash('sha256', $token));
+
+        if ($reset === null) {
+            $this->flash('errors', ['This password reset link is invalid or expired.']);
+            $this->redirect('/forgot-password');
+        }
+
+        $errors = $this->validatePasswordReset($password, $passwordConfirmation);
+
+        if ($errors !== []) {
+            $this->flash('errors', $errors);
+            $this->redirect('/reset-password?token=' . rawurlencode($token));
+        }
+
+        $userModel = new User();
+        $userModel->updatePassword((int) $reset['user_id'], $password);
+        (new PasswordReset())->markUsed((int) $reset['id']);
+
+        $this->flash('success', 'Your password has been reset. Please log in with your new password.');
+        $this->redirect('/login');
     }
 
     public function register(): void
@@ -198,6 +298,21 @@ class AuthController extends Controller
         return $errors;
     }
 
+    private function validatePasswordReset(string $password, string $passwordConfirmation): array
+    {
+        $errors = [];
+
+        if (strlen($password) < 8) {
+            $errors[] = 'Password must be at least 8 characters.';
+        }
+
+        if ($password !== $passwordConfirmation) {
+            $errors[] = 'Password confirmation does not match.';
+        }
+
+        return $errors;
+    }
+
     private function loginUser(int $userId): void
     {
         session_regenerate_id(true);
@@ -246,5 +361,27 @@ class AuthController extends Controller
     private function redirectQuery(?string $redirect): string
     {
         return $redirect === null ? '' : '?redirect=' . rawurlencode($redirect);
+    }
+
+    private function absoluteUrl(string $path): string
+    {
+        $scheme = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+        return $scheme . '://' . $host . View::url($path);
+    }
+
+    private function resetEmailHtml(string $fullName, string $resetUrl): string
+    {
+        $name = htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8');
+        $url = htmlspecialchars($resetUrl, ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+            <h1>Reset your OneCV password</h1>
+            <p>Hello {$name},</p>
+            <p>Click the button below to create a new password. This link expires in 60 minutes.</p>
+            <p><a href="{$url}">Reset password</a></p>
+            <p>If you did not request this, you can safely ignore this email.</p>
+        HTML;
     }
 }

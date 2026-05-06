@@ -231,6 +231,32 @@ input {
   box-shadow: 0 0 0 3px rgba(0, 26, 56, 0.12);
 }
 
+.auth-inline-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+
+.auth-inline-actions a,
+.auth-helper-link a {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-inline-actions a:hover,
+.auth-helper-link a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.auth-helper-link {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
 .role-grid {
   grid-template-columns: 1fr 1fr;
 }

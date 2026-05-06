@@ -30,6 +30,13 @@ class User extends Model
         return $this->update($userId, $data);
     }
 
+    public function updatePassword(int $userId, string $password): bool
+    {
+        return $this->update($userId, [
+            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+        ]);
+    }
+
     public function emailExistsForAnotherUser(string $email, int $userId): bool
     {
         return $this->first(
