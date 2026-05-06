@@ -59,7 +59,7 @@ $excerpt = static function (string $value, int $length = 170): string {
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
 <main class="employer-search-page job-search-page">
-    <form class="employer-search-shell" method="get" action="<?= View::url('/jobs') ?>">
+    <form class="employer-search-shell" method="get" action="<?= View::url('/jobs') ?>" data-ajax-search-form>
         <aside class="employer-filter-panel">
             <section class="employer-filter-section">
                 <h2>Quick Search</h2>
@@ -146,7 +146,7 @@ $excerpt = static function (string $value, int $length = 170): string {
             <section class="employer-filter-section">
                 <div class="employer-filter-heading-row">
                     <h2>Required Skills</h2>
-                    <a href="<?= View::url('/jobs') ?>">Clear</a>
+                    <a href="<?= View::url('/jobs') ?>" data-ajax-search-clear>Clear</a>
                 </div>
 
                 <div class="employer-skill-picker" aria-label="Required skill filters">
@@ -177,82 +177,8 @@ $excerpt = static function (string $value, int $length = 170): string {
             </div>
         </aside>
 
-        <section class="employer-results-panel">
-            <header class="employer-results-header">
-                <div>
-                    <h1>Job Discovery</h1>
-                    <p>Showing <?= (int) $shown ?> of <?= (int) $total ?> active vacancies matching your criteria</p>
-                </div>
-                <div class="employer-view-toggle" aria-hidden="true">
-                    <span class="active">view_list</span>
-                    <span>work</span>
-                </div>
-            </header>
-
-            <?php if ($jobs === []): ?>
-                <section class="employer-empty-state">
-                    <span>work_alert</span>
-                    <h2>No matching jobs found</h2>
-                    <p>Try a broader keyword, remove one skill, or clear a location filter.</p>
-                </section>
-            <?php else: ?>
-                <section class="employer-job-list job-search-results">
-                    <?php foreach ($jobs as $job): ?>
-                        <?php $companyName = (string) ($job['company_name'] ?? 'Company'); ?>
-                        <a class="employer-job-card job-search-card" href="<?= View::url('/jobs/show?id=' . (int) $job['id']) ?>">
-                            <div class="employer-job-logo">
-                                <?php if (! empty($job['company_avatar_url'])): ?>
-                                    <img src="<?= View::e($job['company_avatar_url']) ?>" alt="<?= View::e($companyName) ?> logo">
-                                <?php else: ?>
-                                    <?= View::e($companyInitials($companyName)) ?>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="employer-job-main">
-                                <div class="employer-job-title-row">
-                                    <div>
-                                        <h2><?= View::e($job['job_title']) ?></h2>
-                                        <p><?= View::e($companyName) ?></p>
-                                    </div>
-                                    <span class="job-search-posted">Posted <?= View::e($formatDate($job['created_at'] ?? null)) ?></span>
-                                </div>
-
-                                <div class="employer-job-meta">
-                                    <span><i>location_on</i><?= View::e($locationLabel($job)) ?></span>
-                                    <span><i>payments</i><?= View::e(($job['salary_range'] ?? 'Salary') . ' / ' . ($job['salary_type'] ?? 'Type')) ?></span>
-                                    <span><i>business_center</i><?= View::e($job['employment_type'] ?? 'Employment type') ?></span>
-                                    <span><i>home_work</i><?= View::e($job['work_arrangement'] ?? 'Arrangement') ?></span>
-                                </div>
-
-                                <p class="job-search-description">
-                                    <?= View::e($excerpt((string) ($job['responsibilities'] ?? ''))) ?>
-                                </p>
-
-                                <div class="employer-job-tags">
-                                    <span><?= View::e($job['job_category'] ?? 'Category') ?></span>
-                                    <span><?= View::e($job['job_level'] ?? 'Level') ?></span>
-                                    <span><?= (int) ($job['required_skill_count'] ?? 0) ?> required skill<?= (int) ($job['required_skill_count'] ?? 0) === 1 ? '' : 's' ?></span>
-                                </div>
-                            </div>
-
-                            <aside class="employer-job-side">
-                                <strong><?= View::e($job['salary_range'] ?? 'Salary') ?></strong>
-                                <span><?= View::e($job['work_arrangement'] ?? 'Arrangement') ?></span>
-                                <small>View details</small>
-                            </aside>
-                        </a>
-                    <?php endforeach; ?>
-                </section>
-
-                <?php if ($shown < $total): ?>
-                    <div class="employer-load-more">
-                        <a href="<?= View::url('/jobs' . $queryPrefix . 'page=' . ((int) $page + 1)) ?>">
-                            Load More Jobs
-                            <span>expand_more</span>
-                        </a>
-                    </div>
-                <?php endif; ?>
-            <?php endif; ?>
+        <section class="employer-results-panel" data-ajax-search-results>
+            <?php require __DIR__ . '/partials/results.php'; ?>
         </section>
     </form>
 </main>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\View;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\EmploymentType;
@@ -29,13 +30,13 @@ class JobSearchController extends Controller
 
         $filters = $this->filtersFromQuery();
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $filters['limit'] = self::PER_PAGE;
-        $filters['offset'] = ($page - 1) * self::PER_PAGE;
+        $filters['limit'] = $page * self::PER_PAGE;
+        $filters['offset'] = 0;
         $jobVacancies = new JobVacancy();
         $rows = $this->safeLookup(fn (): array => $jobVacancies->searchActive($filters));
         $total = $this->safeCount(fn (): int => $jobVacancies->countActive($filters));
 
-        $this->view('jobs/index', [
+        $data = [
             'title' => 'Job Search',
             'jobs' => $rows,
             'filters' => $filters,
@@ -51,7 +52,14 @@ class JobSearchController extends Controller
             'salaryRanges' => $this->safeLookup(fn (): array => (new SalaryRange())->all('sort_order')),
             'workArrangements' => $this->safeLookup(fn (): array => (new WorkArrangement())->all('name')),
             'queryString' => $this->queryStringWithoutPage(),
-        ]);
+        ];
+
+        if ($this->isAjaxSearchRequest()) {
+            View::render('jobs/partials/results', $data, null);
+            return;
+        }
+
+        $this->view('jobs/index', $data);
     }
 
     public function show(): void
@@ -122,9 +130,16 @@ class JobSearchController extends Controller
     private function queryStringWithoutPage(): string
     {
         $query = $_GET;
-        unset($query['page']);
+        unset($query['page'], $query['ajax']);
 
         return http_build_query($query);
+    }
+
+    private function isAjaxSearchRequest(): bool
+    {
+        return ($_GET['ajax'] ?? '') === '1'
+            || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'text/html+partial')
+            || strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'fetch';
     }
 
     private function safeLookup(callable $loader): array

@@ -1120,7 +1120,26 @@ input {
 }
 
 .employer-results-panel {
+  position: relative;
   padding: 48px 44px 64px;
+}
+
+.employer-results-panel.is-loading {
+  cursor: progress;
+}
+
+.employer-results-panel.is-loading::after {
+  content: "Searching...";
+  position: absolute;
+  top: 18px;
+  right: 44px;
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: #001a38;
+  background: #d5e3ff;
+  font-size: 0.76rem;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(0, 26, 56, 0.12);
 }
 
 .employer-results-header {

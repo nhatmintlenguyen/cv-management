@@ -428,6 +428,162 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initSearchableSelects();
 
+  const debounce = (callback, wait = 300) => {
+    let timeoutId;
+
+    return (...args) => {
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => callback(...args), wait);
+    };
+  };
+
+  document.querySelectorAll('[data-ajax-search-form]').forEach((form) => {
+    const results = form.querySelector('[data-ajax-search-results]');
+
+    if (!results) {
+      return;
+    }
+
+    let abortController;
+
+    const syncRangeOutputs = () => {
+      form.querySelectorAll('[data-employer-proficiency-range]').forEach((range) => {
+        const output = form.querySelector('[data-employer-proficiency-output]');
+
+        if (output) {
+          output.textContent = range.value;
+        }
+      });
+    };
+
+    const urlFromForm = (page = '1') => {
+      const url = new URL(form.action, window.location.origin);
+      const params = new URLSearchParams(new FormData(form));
+
+      Array.from(params.keys()).forEach((key) => {
+        const values = params.getAll(key).filter((value) => value !== '');
+
+        params.delete(key);
+        values.forEach((value) => params.append(key, value));
+      });
+
+      if (page !== '1') {
+        params.set('page', page);
+      } else {
+        params.delete('page');
+      }
+
+      url.search = params.toString();
+
+      return url;
+    };
+
+    const fetchResults = async (url, pushState = true) => {
+      abortController?.abort();
+      abortController = new AbortController();
+
+      const requestUrl = new URL(url.toString());
+      requestUrl.searchParams.set('ajax', '1');
+      results.classList.add('is-loading');
+
+      try {
+        const response = await fetch(requestUrl.toString(), {
+          headers: {
+            Accept: 'text/html+partial',
+            'X-Requested-With': 'fetch',
+          },
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Search request failed with status ${response.status}`);
+        }
+
+        results.innerHTML = await response.text();
+        initSearchableSelects(results);
+
+        if (pushState) {
+          window.history.pushState({}, '', url.toString());
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          results.innerHTML = `
+            <section class="employer-empty-state">
+              <span>error</span>
+              <h2>Search could not be loaded</h2>
+              <p>Please try again or refresh the page.</p>
+            </section>
+          `;
+        }
+      } finally {
+        results.classList.remove('is-loading');
+      }
+    };
+
+    const runSearch = (page = '1') => {
+      syncRangeOutputs();
+      fetchResults(urlFromForm(page));
+    };
+
+    const debouncedSearch = debounce(() => runSearch(), 320);
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      runSearch();
+    });
+
+    form.addEventListener('input', (event) => {
+      if (event.target.matches('input[type="search"], input[type="range"]')) {
+        debouncedSearch();
+      }
+    });
+
+    form.addEventListener('change', (event) => {
+      if (event.target.matches('select, input[type="checkbox"], input[type="range"]')) {
+        runSearch();
+      }
+    });
+
+    form.addEventListener('click', (event) => {
+      const pageLink = event.target.closest('[data-ajax-search-page]');
+      const clearLink = event.target.closest('[data-ajax-search-clear]');
+
+      if (pageLink) {
+        event.preventDefault();
+        const url = new URL(pageLink.href);
+        fetchResults(url);
+        return;
+      }
+
+      if (!clearLink) {
+        return;
+      }
+
+      event.preventDefault();
+      form.querySelectorAll('input[type="search"]').forEach((input) => {
+        input.value = '';
+      });
+      form.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.checked = false;
+      });
+      form.querySelectorAll('select').forEach((select) => {
+        select.value = '';
+        select.dispatchEvent(new Event('change', { bubbles: false }));
+      });
+      form.querySelectorAll('input[type="range"]').forEach((range) => {
+        range.value = range.min || '1';
+      });
+      syncRangeOutputs();
+      fetchResults(new URL(clearLink.href));
+    });
+
+    window.addEventListener('popstate', () => {
+      window.location.reload();
+    });
+
+    syncRangeOutputs();
+  });
+
   const dynamicBuilderForm = document.querySelector('.js-dynamic-builder-form');
 
   if (dynamicBuilderForm) {

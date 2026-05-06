@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\View;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\CV;
@@ -26,14 +27,14 @@ class SearchController extends Controller
 
         $filters = $this->filtersFromQuery();
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $filters['limit'] = self::PER_PAGE;
-        $filters['offset'] = ($page - 1) * self::PER_PAGE;
+        $filters['limit'] = $page * self::PER_PAGE;
+        $filters['offset'] = 0;
 
         $search = new CVSearch();
         $rows = $this->safeLookup(fn (): array => $search->search($filters));
         $total = $this->safeCount(fn (): int => $search->count($filters));
 
-        $this->view('search/index', [
+        $data = [
             'title' => 'Find CVs',
             'user' => $_SESSION['user'],
             'filters' => $filters,
@@ -48,7 +49,14 @@ class SearchController extends Controller
             'proficiencyLevels' => $this->safeLookup(fn (): array => (new SkillProficiencyLevel())->ordered()),
             'degreeLevels' => $this->safeLookup(fn (): array => (new DegreeLevel())->ordered()),
             'queryString' => $this->queryStringWithoutPage(),
-        ]);
+        ];
+
+        if ($this->isAjaxSearchRequest()) {
+            View::render('search/partials/results', $data, null);
+            return;
+        }
+
+        $this->view('search/index', $data);
     }
 
     public function show(): void
@@ -156,9 +164,16 @@ class SearchController extends Controller
     private function queryStringWithoutPage(): string
     {
         $query = $_GET;
-        unset($query['page']);
+        unset($query['page'], $query['ajax']);
 
         return http_build_query($query);
+    }
+
+    private function isAjaxSearchRequest(): bool
+    {
+        return ($_GET['ajax'] ?? '') === '1'
+            || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'text/html+partial')
+            || strtolower((string) ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'fetch';
     }
 
     private function templateOptions(): array
