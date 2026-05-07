@@ -3,6 +3,14 @@
 use App\Core\View;
 
 $activeSiteTab = 'home';
+$user = $_SESSION['user'] ?? null;
+$isJobSeeker = ($user['role'] ?? null) === 'job_seeker';
+$cvActionUrl = $isJobSeeker ? '/cv/templates' : ($user === null ? '/register?redirect=' . rawurlencode('/cv/templates') : null);
+$chipItems = [
+    ['label' => '+ Add Education', 'url' => '/cv/edit/academic'],
+    ['label' => '+ Add Experience', 'url' => '/cv/edit/academic'],
+    ['label' => '+ Add Certificate', 'url' => '/cv/edit/qualifications'],
+];
 ?>
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
@@ -20,10 +28,17 @@ $activeSiteTab = 'home';
                     choose a premium layout, and let OneCV generate a polished resume instantly.
                 </p>
                 <div class="marketing-actions">
-                    <a class="marketing-primary-action" href="<?= View::url('/cv/templates') ?>">
-                        Create Your CV Now
-                        <span>arrow_forward</span>
-                    </a>
+                    <?php if ($cvActionUrl !== null): ?>
+                        <a class="marketing-primary-action" href="<?= View::url($cvActionUrl) ?>">
+                            Create Your CV Now
+                            <span>arrow_forward</span>
+                        </a>
+                    <?php else: ?>
+                        <span class="marketing-primary-action is-disabled" aria-disabled="true" title="CV Builder is available for Job Seeker accounts only.">
+                            Create Your CV Now
+                            <span>lock</span>
+                        </span>
+                    <?php endif; ?>
                     <a class="marketing-secondary-action" href="<?= View::url('/cv/templates') ?>">View Templates</a>
                 </div>
             </div>
@@ -59,9 +74,15 @@ $activeSiteTab = 'home';
                         <p>Easily add degrees, work experiences, certificates, and your strongest skills using focused form sections.</p>
                     </div>
                     <div class="marketing-chip-row">
-                        <span>+ Add Education</span>
-                        <span>+ Add Experience</span>
-                        <span>+ Add Certificate</span>
+                        <?php foreach ($chipItems as $item): ?>
+                            <?php if ($user === null): ?>
+                                <a href="<?= View::url('/login?redirect=' . rawurlencode($item['url'])) ?>"><?= View::e($item['label']) ?></a>
+                            <?php elseif ($isJobSeeker): ?>
+                                <a href="<?= View::url($item['url']) ?>"><?= View::e($item['label']) ?></a>
+                            <?php else: ?>
+                                <span><?= View::e($item['label']) ?></span>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
                 </article>
 
@@ -144,7 +165,11 @@ $activeSiteTab = 'home';
         <div class="marketing-cta-card">
             <h2>Ready to Land Your Next Role?</h2>
             <p>Fill in your details, pick your template, and export a beautiful CV today.</p>
-            <a class="marketing-primary-action" href="<?= View::url('/cv/templates') ?>">Start Building Now</a>
+            <?php if ($cvActionUrl !== null): ?>
+                <a class="marketing-primary-action" href="<?= View::url($cvActionUrl) ?>">Start Building Now</a>
+            <?php else: ?>
+                <span class="marketing-primary-action is-disabled" aria-disabled="true" title="CV Builder is available for Job Seeker accounts only.">Start Building Now</span>
+            <?php endif; ?>
         </div>
     </section>
 </main>

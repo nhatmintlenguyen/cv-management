@@ -248,9 +248,12 @@ class JobVacancyController extends Controller
 
     private function viewData(string $title): array
     {
+        $draft = $_SESSION['job_vacancy_draft'] ?? [];
+
         return [
             'title' => $title,
-            'draft' => $_SESSION['job_vacancy_draft'] ?? [],
+            'draft' => $draft,
+            'jobStepStatus' => $this->jobStepStatus($draft),
             'companies' => $this->safeCall(fn (): array => (new Company())->forEmployer((int) $_SESSION['user']['id'])),
             'jobTitles' => $this->safeCall(fn (): array => (new JobTitle())->all('name')),
             'jobCategories' => $this->safeCall(fn (): array => (new JobCategory())->all('name')),
@@ -281,6 +284,74 @@ class JobVacancyController extends Controller
     private function mergeDraft(array $data): void
     {
         $_SESSION['job_vacancy_draft'] = array_merge($_SESSION['job_vacancy_draft'] ?? [], $data);
+    }
+
+    private function jobStepStatus(array $draft): array
+    {
+        $basicsComplete = $this->hasDraftValues($draft, [
+            'job_title_id',
+            'job_category_id',
+            'employment_type_id',
+            'industry_id',
+            'job_level_id',
+            'number_of_openings',
+        ]) && (int) ($draft['number_of_openings'] ?? 0) >= 1;
+
+        $locationComplete = $this->hasDraftValues($draft, [
+            'company_name',
+            'company_description',
+            'country_id',
+            'city_id',
+            'work_arrangement_id',
+            'salary_range_id',
+            'salary_type_id',
+        ]);
+
+        $requirementsComplete = $this->hasDraftValues($draft, [
+            'responsibilities',
+            'required_qualifications',
+            'minimum_degree_level_id',
+            'minimum_years_experience',
+        ])
+            && (int) ($draft['minimum_years_experience'] ?? -1) >= 0
+            && $this->hasCompleteRequiredSkill($draft['skills'] ?? []);
+
+        return [
+            1 => $basicsComplete,
+            2 => $locationComplete,
+            3 => $requirementsComplete,
+            4 => $basicsComplete && $locationComplete && $requirementsComplete,
+        ];
+    }
+
+    private function hasDraftValues(array $draft, array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if (trim((string) ($draft[$field] ?? '')) === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function hasCompleteRequiredSkill(mixed $rows): bool
+    {
+        if (! is_array($rows)) {
+            return false;
+        }
+
+        foreach ($rows as $row) {
+            if (
+                is_array($row)
+                && trim((string) ($row['skill_id'] ?? '')) !== ''
+                && trim((string) ($row['minimum_proficiency_level_id'] ?? '')) !== ''
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function publishDraft(int $employerUserId, array $draft): int

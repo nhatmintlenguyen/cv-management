@@ -3699,6 +3699,17 @@ input {
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
 }
 
+.marketing-primary-action.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.54;
+  box-shadow: none;
+}
+
+.marketing-primary-action.is-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .marketing-primary-action span,
 .marketing-floating-card span,
 .marketing-feature-icon,
@@ -3870,11 +3881,19 @@ input {
   filter: grayscale(1);
 }
 
-.marketing-chip-row span {
+.marketing-chip-row span,
+.marketing-chip-row a {
   border-radius: 8px;
   padding: 10px 16px;
+  color: var(--primary);
   background: var(--surface-container);
   font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.marketing-chip-row a:hover {
+  background: var(--surface-container-high);
 }
 
 .marketing-dark-card {

@@ -52,7 +52,6 @@ $excerpt = static function (string $value, int $length = 170): string {
     </div>
     <div class="employer-view-toggle" aria-hidden="true">
         <span class="active">view_list</span>
-        <span>work</span>
     </div>
 </header>
 
