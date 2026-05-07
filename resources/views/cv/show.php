@@ -12,13 +12,16 @@ $isFinished = $isFinished ?? false;
 <?php require dirname(__DIR__) . '/job-seeker/partials/topbar.php'; ?>
 
 <main class="builder-page builder-page-wide">
-    <section class="builder-heading">
-        <div class="builder-breadcrumb">
-            <span>CV Builder</span>
-            <span class="builder-symbol">chevron_right</span>
-            <strong>Completed CV</strong>
-        </div>
+    <?php
+    $breadcrumbItems = [
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'CV Builder', 'url' => '/cv/edit/personal-info'],
+        ['label' => 'Completed CV'],
+    ];
+    require dirname(__DIR__) . '/partials/breadcrumb.php';
+    ?>
 
+    <section class="builder-heading">
         <div class="builder-heading-row">
             <div>
                 <h1>Your Completed CV</h1>

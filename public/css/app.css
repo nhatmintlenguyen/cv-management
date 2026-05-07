@@ -956,10 +956,10 @@ input {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 9px;
   margin: 0 0 22px;
   color: #8aa0bd;
-  font-size: 0.84rem;
+  font-size: 0.95rem;
   font-weight: 800;
 }
 
@@ -981,9 +981,13 @@ input {
 .site-breadcrumb i {
   font-family: "Material Symbols Outlined";
   color: #9aa9bd;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-style: normal;
   line-height: 1;
+}
+
+.job-search-page .site-breadcrumb {
+  margin-top: 14px;
 }
 
 .employer-search-page {
@@ -4592,25 +4596,45 @@ input {
 }
 
 @media (max-width: 760px) {
-  .job-topbar-inner,
-  .job-topbar-left {
-    align-items: flex-start;
-    flex-direction: column;
+  .job-topbar-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
   }
 
-  .job-topbar-inner {
-    padding: 16px 20px;
+  .job-topbar-left {
+    display: contents;
+  }
+
+  .job-brand {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .job-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
     min-height: 0;
     width: 100%;
     overflow-x: auto;
   }
 
   .job-topbar-actions {
-    width: 100%;
-    justify-content: space-between;
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .job-topbar-actions form {
+    flex: 0 0 auto;
+  }
+
+  .job-logout-button {
+    white-space: nowrap;
   }
 }
 
