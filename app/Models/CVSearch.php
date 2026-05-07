@@ -36,7 +36,7 @@ class CVSearch extends Model
     private function buildQuery(array $filters = []): array
     {
         $params = [];
-        $where = [];
+        $where = ['cvs.is_completed = 1'];
 
         $select = 'SELECT DISTINCT cvs.*,
                           cv_categories.name AS category_name,

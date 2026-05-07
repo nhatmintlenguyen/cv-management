@@ -269,12 +269,15 @@ CREATE TABLE cvs (
   street_address VARCHAR(255) NOT NULL,
   postal_code VARCHAR(30) NULL,
   summary TEXT NULL,
+  is_completed BOOLEAN NOT NULL DEFAULT FALSE,
+  completed_at DATETIME NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   KEY idx_cvs_category (cv_category_id),
   KEY idx_cvs_location (country_id, city_id),
+  KEY idx_cvs_completed (is_completed, completed_at),
   KEY idx_cvs_updated_at (updated_at),
   FULLTEXT KEY ft_cvs_keyword (full_name, summary),
 

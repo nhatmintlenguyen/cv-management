@@ -35,52 +35,8 @@ $mockCv = $mockCv ?? [];
     </section>
 
     <div class="builder-shell builder-review-shell">
-        <aside class="builder-stepper" aria-label="CV builder progress">
-            <a class="builder-step completed" href="<?= View::url('/cv/edit/personal-info') ?>" onclick="window.location.href = this.href; return false;">
-                <span>1</span>
-                <div>
-                    <strong>Personal Info</strong>
-                    <small>Saved</small>
-                </div>
-            </a>
-            <a class="builder-step completed" href="<?= View::url('/cv/edit/academic') ?>" onclick="window.location.href = this.href; return false;">
-                <span>2</span>
-                <div>
-                    <strong>Education &amp; Experience</strong>
-                    <small>Saved</small>
-                </div>
-            </a>
-            <a class="builder-step completed" href="<?= View::url('/cv/edit/qualifications') ?>" onclick="window.location.href = this.href; return false;">
-                <span>3</span>
-                <div>
-                    <strong>Qualifications &amp; Skills</strong>
-                    <small>Saved</small>
-                </div>
-            </a>
-            <a class="builder-step active" href="<?= View::url('/cv/edit/review') ?>" onclick="window.location.href = this.href; return false;">
-                <span>4</span>
-                <div>
-                    <strong>Review</strong>
-                    <small>In Progress</small>
-                </div>
-            </a>
-        </aside>
+        <?php $activeStep = 'review'; require __DIR__ . '/partials/stepper.php'; ?>
 
-        <?php if ($cv === null): ?>
-            <section class="builder-form-card">
-                <div class="builder-section-title">
-                    <span>info</span>
-                    <h2>Personal Information Required</h2>
-                </div>
-                <p class="builder-helper-text">Please save Step 1 before reviewing your CV.</p>
-                <div class="builder-form-actions">
-                    <a class="builder-primary-button" href="<?= View::url('/cv/edit/personal-info') ?>">
-                        Back to Step 1
-                        <span>arrow_forward</span>
-                    </a>
-                </div>
-            </section>
-        <?php else: ?>
             <section class="builder-review-card">
                 <aside class="template-sidebar builder-review-sidebar">
                     <section class="template-panel">
@@ -129,6 +85,5 @@ $mockCv = $mockCv ?? [];
                     </div>
                 </section>
             </section>
-        <?php endif; ?>
     </div>
 </main>

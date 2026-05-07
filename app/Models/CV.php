@@ -33,6 +33,23 @@ class CV extends Model
         return $this->update((int) $cv['id'], $data);
     }
 
+    public function markDraft(int $cvId): bool
+    {
+        return $this->update($cvId, [
+            'is_completed' => 0,
+            'completed_at' => null,
+        ]);
+    }
+
+    public function markCompleted(int $cvId, int $templateId): bool
+    {
+        return $this->update($cvId, [
+            'cv_template_id' => $templateId,
+            'is_completed' => 1,
+            'completed_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
     public function findWithLookups(int $cvId): ?array
     {
         return $this->first(

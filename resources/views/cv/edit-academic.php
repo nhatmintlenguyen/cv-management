@@ -48,50 +48,8 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
     </section>
 
     <div class="builder-shell">
-        <aside class="builder-stepper" aria-label="CV builder progress">
-            <a class="builder-step completed" href="<?= View::url('/cv/edit/personal-info') ?>" onclick="window.location.href = this.href; return false;">
-                <span>1</span>
-                <div>
-                    <strong>Personal Info</strong>
-                    <small>Saved</small>
-                </div>
-            </a>
-            <a class="builder-step active" href="<?= View::url('/cv/edit/academic') ?>" onclick="window.location.href = this.href; return false;">
-                <span>2</span>
-                <div>
-                    <strong>Education &amp; Experience</strong>
-                    <small>In Progress</small>
-                </div>
-            </a>
-            <a class="builder-step" href="<?= View::url('/cv/edit/qualifications') ?>" onclick="window.location.href = this.href; return false;">
-                <span>3</span>
-                <div>
-                    <strong>Qualifications &amp; Skills</strong>
-                </div>
-            </a>
-            <a class="builder-step" href="<?= View::url('/cv/edit/review') ?>" onclick="window.location.href = this.href; return false;">
-                <span>4</span>
-                <div>
-                    <strong>Review</strong>
-                </div>
-            </a>
-        </aside>
+        <?php $activeStep = 'academic'; require __DIR__ . '/partials/stepper.php'; ?>
 
-        <?php if ($cv === null): ?>
-            <section class="builder-form-card">
-                <div class="builder-section-title">
-                    <span>info</span>
-                    <h2>Personal Information Required</h2>
-                </div>
-                <p class="builder-helper-text">Please save Step 1 before adding education and work history.</p>
-                <div class="builder-form-actions">
-                    <a class="builder-primary-button" href="<?= View::url('/cv/edit/personal-info') ?>">
-                        Back to Step 1
-                        <span>arrow_forward</span>
-                    </a>
-                </div>
-            </section>
-        <?php else: ?>
             <form class="builder-form-card js-dynamic-builder-form" method="post" action="<?= View::url('/cv/academic') ?>">
                 <section class="builder-form-section">
                     <div class="builder-section-title builder-section-title-row">
@@ -261,6 +219,5 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
                     </div>
                 </div>
             </form>
-        <?php endif; ?>
     </div>
 </main>

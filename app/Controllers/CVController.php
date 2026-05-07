@@ -43,7 +43,7 @@ class CVController extends Controller
         $cv = $this->currentUserCv();
         $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
 
-        if ($this->completionErrors($fullCv) === []) {
+        if ($this->completionErrors($fullCv) === [] && (bool) ($fullCv['is_completed'] ?? false)) {
             $this->redirect('/cv/show');
         }
 
@@ -121,10 +121,21 @@ class CVController extends Controller
         $userId = (int) $_SESSION['user']['id'];
 
         if ($cvModel->findByUserId($userId) === null) {
+            $payload['is_completed'] = 0;
+            $payload['completed_at'] = null;
             $cvModel->createForUser($userId, $payload);
         } else {
+            $payload['is_completed'] = 0;
+            $payload['completed_at'] = null;
             $cvModel->updateForUser($userId, $payload);
         }
+
+        $cv = $cvModel->findByUserId($userId);
+        if ($cv !== null) {
+            $this->persistSessionDraftSections((int) $cv['id']);
+        }
+
+        unset($_SESSION['cv_finished']);
 
         $this->flash('success', 'Your personal information has been saved.');
         if (($data['next_step'] ?? '') === 'academic') {
@@ -139,11 +150,6 @@ class CVController extends Controller
         $this->requireJobSeeker();
 
         $cv = $this->currentUserCv();
-        if ($cv === null) {
-            $this->flash('errors', ['Please save your personal information before adding education and work history.']);
-            $this->redirect('/cv/edit/personal-info');
-        }
-
         $educationRows = $this->postedRows('educations');
         $workRows = $this->postedRows('work_histories');
         $errors = [];
@@ -160,8 +166,22 @@ class CVController extends Controller
             $this->redirect('/cv/edit/academic');
         }
 
+        if ($cv === null) {
+            $_SESSION['cv_builder_draft']['educations'] = $educations;
+            $_SESSION['cv_builder_draft']['work_histories'] = $workHistories;
+            $this->flash('success', 'Your education and career history have been saved as a draft.');
+
+            if (($_POST['next_step'] ?? '') === 'qualifications') {
+                $this->redirect('/cv/edit/qualifications');
+            }
+
+            $this->redirect('/cv/edit/academic');
+        }
+
         (new CVEducation())->replaceForCv((int) $cv['id'], $educations);
         (new CVWorkHistory())->replaceForCv((int) $cv['id'], $workHistories);
+        (new CV())->markDraft((int) $cv['id']);
+        unset($_SESSION['cv_finished']);
 
         $this->flash('success', 'Your education and career history have been saved.');
         if (($_POST['next_step'] ?? '') === 'qualifications') {
@@ -176,11 +196,6 @@ class CVController extends Controller
         $this->requireJobSeeker();
 
         $cv = $this->currentUserCv();
-        if ($cv === null) {
-            $this->flash('errors', ['Please save your personal information before adding qualifications and skills.']);
-            $this->redirect('/cv/edit/personal-info');
-        }
-
         $certificateRows = $this->postedRows('certificates');
         $skillRows = $this->postedRows('skills');
         $errors = [];
@@ -197,8 +212,22 @@ class CVController extends Controller
             $this->redirect('/cv/edit/qualifications');
         }
 
+        if ($cv === null) {
+            $_SESSION['cv_builder_draft']['certificates'] = $certificates;
+            $_SESSION['cv_builder_draft']['skills'] = $skills;
+            $this->flash('success', 'Your certificates and skills have been saved as a draft.');
+
+            if (($_POST['next_step'] ?? '') === 'review') {
+                $this->redirect('/cv/edit/review');
+            }
+
+            $this->redirect('/cv/edit/qualifications');
+        }
+
         (new CVCertificate())->replaceForCv((int) $cv['id'], $certificates);
         (new CVSkill())->replaceForCv((int) $cv['id'], $skills);
+        (new CV())->markDraft((int) $cv['id']);
+        unset($_SESSION['cv_finished']);
 
         $this->flash('success', 'Your certificates and skills have been saved.');
         if (($_POST['next_step'] ?? '') === 'review') {
@@ -230,7 +259,7 @@ class CVController extends Controller
 
         $template = (new CVTemplate())->findByKey($selected);
         if ($template !== null && $cv !== null) {
-            (new CV())->update((int) $cv['id'], ['cv_template_id' => (int) $template['id']]);
+            (new CV())->markCompleted((int) $cv['id'], (int) $template['id']);
         }
 
         $_SESSION['selected_cv_template'] = $selected;
@@ -247,6 +276,16 @@ class CVController extends Controller
         $templates = $this->templateOptions();
         $cv = $this->currentUserCv();
         $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+        $errors = $this->completionErrors($fullCv);
+
+        if ($fullCv === null || $errors !== [] || ! (bool) ($fullCv['is_completed'] ?? false)) {
+            if ($errors !== []) {
+                $this->flash('errors', $errors);
+            }
+
+            $this->redirect($this->firstIncompleteBuilderPath($fullCv));
+        }
+
         $selected = $this->selectedTemplateForCv($fullCv);
 
         $this->view('cv/show', [
@@ -258,7 +297,7 @@ class CVController extends Controller
             'templates' => $templates,
             'selectedTemplate' => $selected,
             'mockCv' => $fullCv === null ? [] : $this->presentableCv($fullCv),
-            'isFinished' => (bool) ($_SESSION['cv_finished'] ?? false),
+            'isFinished' => true,
         ]);
     }
 
@@ -384,9 +423,13 @@ class CVController extends Controller
 
     private function builderStepOneViewData(string $title): array
     {
+        $cv = $this->currentUserCv();
+        $fullCv = $cv === null ? null : (new CV())->findFullCV((int) $cv['id']);
+
         return [
             'title' => $title,
-            'cv' => $this->currentUserCv(),
+            'cv' => $cv,
+            'builderStepStatus' => $this->builderStepStatus($fullCv),
             'genders' => $this->safeLookup(fn (): array => (new Gender())->all('name')),
             'countries' => $this->safeLookup(fn (): array => (new Country())->all('name')),
             'cities' => $this->safeLookup(fn (): array => (new City())->all('name')),
@@ -403,20 +446,24 @@ class CVController extends Controller
             return [
                 'title' => 'Academic & Career Narrative',
                 'cv' => null,
-                'educations' => [],
-                'workHistories' => [],
-                'institutions' => [],
-                'degreeLevels' => [],
-                'majors' => [],
-                'jobTitles' => [],
-                'employmentTypes' => [],
-                'industries' => [],
+                'educations' => $_SESSION['cv_builder_draft']['educations'] ?? [],
+                'workHistories' => $_SESSION['cv_builder_draft']['work_histories'] ?? [],
+                'institutions' => $this->safeLookup(fn (): array => (new Institution())->all('name')),
+                'degreeLevels' => $this->safeLookup(fn (): array => (new DegreeLevel())->ordered()),
+                'majors' => $this->safeLookup(fn (): array => (new Major())->all('name')),
+                'jobTitles' => $this->safeLookup(fn (): array => (new JobTitle())->all('name')),
+                'employmentTypes' => $this->safeLookup(fn (): array => (new EmploymentType())->all('name')),
+                'industries' => $this->safeLookup(fn (): array => (new Industry())->all('name')),
+                'builderStepStatus' => $this->builderStepStatus(null),
             ];
         }
+
+        $fullCv = (new CV())->findFullCV((int) $cv['id']);
 
         return [
             'title' => 'Academic & Career Narrative',
             'cv' => $cv,
+            'builderStepStatus' => $this->builderStepStatus($fullCv),
             'educations' => $this->safeLookup(fn (): array => (new CVEducation())->findByCvId((int) $cv['id'])),
             'workHistories' => $this->safeLookup(fn (): array => (new CVWorkHistory())->findByCvId((int) $cv['id'])),
             'institutions' => $this->safeLookup(fn (): array => (new Institution())->all('name')),
@@ -436,18 +483,22 @@ class CVController extends Controller
             return [
                 'title' => 'Qualifications & Skills',
                 'cv' => null,
-                'certificates' => [],
-                'cvSkills' => [],
-                'certificateNames' => [],
-                'issuingOrganizations' => [],
-                'skills' => [],
-                'proficiencyLevels' => [],
+                'certificates' => $_SESSION['cv_builder_draft']['certificates'] ?? [],
+                'cvSkills' => $_SESSION['cv_builder_draft']['skills'] ?? [],
+                'certificateNames' => $this->safeLookup(fn (): array => (new CertificateName())->all('name')),
+                'issuingOrganizations' => $this->safeLookup(fn (): array => (new IssuingOrganization())->all('name')),
+                'skills' => $this->safeLookup(fn (): array => (new Skill())->all('name')),
+                'proficiencyLevels' => $this->safeLookup(fn (): array => (new SkillProficiencyLevel())->ordered()),
+                'builderStepStatus' => $this->builderStepStatus(null),
             ];
         }
+
+        $fullCv = (new CV())->findFullCV((int) $cv['id']);
 
         return [
             'title' => 'Qualifications & Skills',
             'cv' => $cv,
+            'builderStepStatus' => $this->builderStepStatus($fullCv),
             'certificates' => $this->safeLookup(fn (): array => (new CVCertificate())->findByCvId((int) $cv['id'])),
             'cvSkills' => $this->safeLookup(fn (): array => (new CVSkill())->findByCvId((int) $cv['id'])),
             'certificateNames' => $this->safeLookup(fn (): array => (new CertificateName())->all('name')),
@@ -474,6 +525,7 @@ class CVController extends Controller
         return [
             'title' => 'Final Review',
             'cv' => $fullCv,
+            'builderStepStatus' => $this->builderStepStatus($fullCv),
             'templates' => $templates,
             'selectedTemplate' => $selected,
             'mockCv' => $fullCv === null ? [] : $this->presentableCv($fullCv),
@@ -581,6 +633,67 @@ class CVController extends Controller
         }
 
         return $errors;
+    }
+
+    private function builderStepStatus(?array $cv): array
+    {
+        $identityComplete = $cv !== null;
+        $academicComplete = ($cv['educations'] ?? []) !== []
+            || ($_SESSION['cv_builder_draft']['educations'] ?? []) !== [];
+        $qualificationsComplete = (($cv['certificates'] ?? []) !== [] && ($cv['skills'] ?? []) !== [])
+            || (
+                ($_SESSION['cv_builder_draft']['certificates'] ?? []) !== []
+                && ($_SESSION['cv_builder_draft']['skills'] ?? []) !== []
+            );
+
+        return [
+            'personal' => $identityComplete,
+            'academic' => $academicComplete,
+            'qualifications' => $qualificationsComplete,
+            'review' => $identityComplete && $academicComplete && $qualificationsComplete,
+        ];
+    }
+
+    private function firstIncompleteBuilderPath(?array $cv): string
+    {
+        $status = $this->builderStepStatus($cv);
+
+        if (! $status['personal']) {
+            return '/cv/edit/personal-info';
+        }
+
+        if (! $status['academic']) {
+            return '/cv/edit/academic';
+        }
+
+        if (! $status['qualifications']) {
+            return '/cv/edit/qualifications';
+        }
+
+        return '/cv/edit/review';
+    }
+
+    private function persistSessionDraftSections(int $cvId): void
+    {
+        $draft = $_SESSION['cv_builder_draft'] ?? [];
+
+        if (($draft['educations'] ?? []) !== []) {
+            (new CVEducation())->replaceForCv($cvId, $draft['educations']);
+        }
+
+        if (array_key_exists('work_histories', $draft)) {
+            (new CVWorkHistory())->replaceForCv($cvId, $draft['work_histories']);
+        }
+
+        if (($draft['certificates'] ?? []) !== []) {
+            (new CVCertificate())->replaceForCv($cvId, $draft['certificates']);
+        }
+
+        if (($draft['skills'] ?? []) !== []) {
+            (new CVSkill())->replaceForCv($cvId, $draft['skills']);
+        }
+
+        unset($_SESSION['cv_builder_draft']);
     }
 
     private function currentUserCv(): ?array

@@ -2914,17 +2914,21 @@ input {
   z-index: 2;
 }
 
-.builder-step.active > span {
-  border-color: var(--primary);
-  color: #fff;
-  background: var(--primary);
-  box-shadow: 0 0 0 4px #fff;
-}
-
+.builder-step.is-complete > span,
 .builder-step.completed > span {
   border-color: #16a34a;
   color: #ffffff;
   background: #16a34a;
+}
+
+.builder-step.is-incomplete > span {
+  border-color: #f59e0b;
+  color: #78350f;
+  background: #fef3c7;
+}
+
+.builder-step.active > span {
+  box-shadow: 0 0 0 4px #fff, 0 0 0 7px rgba(0, 26, 56, 0.2);
 }
 
 .builder-step strong,
@@ -2938,8 +2942,12 @@ input {
   line-height: 1.15;
 }
 
-.builder-step.active strong {
-  color: var(--primary);
+.builder-step.is-complete strong {
+  color: #166534;
+}
+
+.builder-step.is-incomplete strong {
+  color: #92400e;
 }
 
 .builder-step small {

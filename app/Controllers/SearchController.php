@@ -68,7 +68,7 @@ class SearchController extends Controller
         $cvId = (int) ($_GET['id'] ?? 0);
         $cv = $cvId > 0 ? (new CV())->findFullCV($cvId) : null;
 
-        if ($cv === null) {
+        if ($cv === null || ! (bool) ($cv['is_completed'] ?? false)) {
             http_response_code(404);
             $this->view('errors/404', ['title' => 'CV Not Found']);
             return;
