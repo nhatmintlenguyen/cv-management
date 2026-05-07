@@ -11,13 +11,17 @@ services:
       DB_DATABASE: cv_management
       DB_USERNAME: root
       DB_PASSWORD: root
-      MAIL_HOST: host.docker.internal
+      MAIL_HOST: mailpit
       MAIL_PORT: 1025
+      MAIL_FROM_EMAIL: no-reply@onecv.local
+      MAIL_FROM_NAME: OneCV
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     volumes:
       - .:/app
     restart: always
@@ -40,5 +44,34 @@ services:
       retries: 20
     restart: always
 
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: onecv-phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: onecv-mailpit
+    ports:
+      - "8025:8025"
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    volumes:
+      - onecv-mailpit-data:/data
+    restart: unless-stopped
+
 volumes:
   onecv-db-data:
+  onecv-mailpit-data:
