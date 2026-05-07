@@ -460,6 +460,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = new URL(form.action, window.location.origin);
       const params = new URLSearchParams(new FormData(form));
 
+      form.querySelectorAll('[data-employer-proficiency-range]').forEach((range) => {
+        if (range.dataset.filterActive !== '1') {
+          params.delete(range.name);
+        }
+      });
+
       Array.from(params.keys()).forEach((key) => {
         const values = params.getAll(key).filter((value) => value !== '');
 
@@ -534,12 +540,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     form.addEventListener('input', (event) => {
       if (event.target.matches('input[type="search"], input[type="range"]')) {
+        if (event.target.matches('[data-employer-proficiency-range]')) {
+          event.target.dataset.filterActive = '1';
+        }
+
         debouncedSearch();
       }
     });
 
     form.addEventListener('change', (event) => {
       if (event.target.matches('select, input[type="checkbox"], input[type="range"]')) {
+        if (event.target.matches('[data-employer-proficiency-range]')) {
+          event.target.dataset.filterActive = '1';
+        }
+
         runSearch();
       }
     });
@@ -567,11 +581,14 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.checked = false;
       });
       form.querySelectorAll('select').forEach((select) => {
-        select.value = '';
+        select.value = Array.from(select.options).some((option) => option.value === '') ? '' : select.options[0]?.value || '';
         select.dispatchEvent(new Event('change', { bubbles: false }));
       });
       form.querySelectorAll('input[type="range"]').forEach((range) => {
         range.value = range.min || '1';
+        if (range.matches('[data-employer-proficiency-range]')) {
+          range.dataset.filterActive = '0';
+        }
       });
       syncRangeOutputs();
       fetchResults(new URL(clearLink.href));

@@ -55,10 +55,6 @@ if ($user === null) {
                 <a class="site-login-link" href="<?= View::url('/login' . $authRedirectQuery) ?>">Login</a>
                 <a class="site-register-link" href="<?= View::url('/register' . $authRedirectQuery) ?>">Register</a>
             <?php else: ?>
-                <button class="job-icon-button" type="button" aria-label="Notifications">
-                    <span>notifications</span>
-                </button>
-
                 <a class="job-avatar" href="<?= View::url('/profile') ?>" title="<?= View::e($user['full_name'] ?? 'User') ?>" aria-label="Open profile">
                     <?php if (! empty($user['avatar_url'])): ?>
                         <img src="<?= View::e($user['avatar_url']) ?>" alt="<?= View::e($user['full_name'] ?? 'User') ?> avatar">

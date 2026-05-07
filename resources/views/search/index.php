@@ -20,10 +20,11 @@ $queryPrefix = $queryString === '' ? '?' : '?' . $queryString . '&';
 
 $selected = static fn (string $key, mixed $value): string => (string) ($filters[$key] ?? '') === (string) $value ? 'selected' : '';
 $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $selectedSkills, true) ? 'checked' : '';
+$hasProficiencyFilter = (int) ($filters['min_proficiency'] ?? 0) > 0;
 ?>
 <?php require dirname(__DIR__) . '/partials/site-topbar.php'; ?>
 
-<main class="employer-search-page">
+<main class="employer-search-page cv-search-page">
     <?php
     $breadcrumbItems = [
         ['label' => 'Home', 'url' => '/'],
@@ -89,7 +90,6 @@ $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $s
             <section class="employer-filter-section">
                 <div class="employer-filter-heading-row">
                     <h2>Skills &amp; Proficiency</h2>
-                    <a href="<?= View::url('/find-cvs') ?>" data-ajax-search-clear>Clear</a>
                 </div>
 
                 <label class="employer-proficiency-slider">
@@ -97,7 +97,7 @@ $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $s
                     <strong>
                         Level
                         <output data-employer-proficiency-output>
-                            <?= (int) max(1, min(10, (int) ($filters['min_proficiency'] ?? 1))) ?>
+                            <?= (int) max(1, min(10, (int) ($filters['min_proficiency'] ?: 1))) ?>
                         </output>
                         / 10
                     </strong>
@@ -107,7 +107,8 @@ $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $s
                         min="1"
                         max="10"
                         step="1"
-                        value="<?= (int) max(1, min(10, (int) ($filters['min_proficiency'] ?? 1))) ?>"
+                        value="<?= (int) max(1, min(10, (int) ($filters['min_proficiency'] ?: 1))) ?>"
+                        data-filter-active="<?= $hasProficiencyFilter ? '1' : '0' ?>"
                         data-employer-proficiency-range
                     >
                     <div aria-hidden="true">
@@ -141,6 +142,7 @@ $checkedSkill = static fn (mixed $value): string => in_array((string) $value, $s
 
             <div class="employer-filter-actions">
                 <button type="submit">Apply Filters</button>
+                <a class="employer-clear-button" href="<?= View::url('/find-cvs') ?>" data-ajax-search-clear>Clear Criteria</a>
             </div>
         </aside>
 

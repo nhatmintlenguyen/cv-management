@@ -986,7 +986,8 @@ input {
   line-height: 1;
 }
 
-.job-search-page .site-breadcrumb {
+.job-search-page .site-breadcrumb,
+.cv-search-page .site-breadcrumb {
   margin-top: 14px;
 }
 
@@ -1146,6 +1147,11 @@ input {
   font-weight: 700;
 }
 
+.employer-filter-actions {
+  display: grid;
+  gap: 10px;
+}
+
 .employer-filter-actions button {
   width: 100%;
   min-height: 46px;
@@ -1155,6 +1161,25 @@ input {
   background: #001a38;
   font-weight: 900;
   cursor: pointer;
+}
+
+.employer-clear-button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #001a38;
+  background: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.employer-clear-button:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
 }
 
 .employer-results-panel {

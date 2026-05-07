@@ -154,7 +154,6 @@ $excerpt = static function (string $value, int $length = 170): string {
             <section class="employer-filter-section">
                 <div class="employer-filter-heading-row">
                     <h2>Required Skills</h2>
-                    <a href="<?= View::url('/jobs') ?>" data-ajax-search-clear>Clear</a>
                 </div>
 
                 <div class="employer-skill-picker" aria-label="Required skill filters">
@@ -182,6 +181,7 @@ $excerpt = static function (string $value, int $length = 170): string {
 
             <div class="employer-filter-actions">
                 <button type="submit">Search Jobs</button>
+                <a class="employer-clear-button" href="<?= View::url('/jobs') ?>" data-ajax-search-clear>Clear Criteria</a>
             </div>
         </aside>
 
