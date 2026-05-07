@@ -5,7 +5,7 @@ use App\Core\View;
 $activeSiteTab = 'home';
 $user = $_SESSION['user'] ?? null;
 $isJobSeeker = ($user['role'] ?? null) === 'job_seeker';
-$cvActionUrl = $isJobSeeker ? '/cv/templates' : ($user === null ? '/register?redirect=' . rawurlencode('/cv/templates') : null);
+$cvActionUrl = $isJobSeeker ? '/cv/edit' : ($user === null ? '/register?redirect=' . rawurlencode('/cv/edit') : null);
 $chipItems = [
     ['label' => '+ Add Education', 'url' => '/cv/edit/academic'],
     ['label' => '+ Add Experience', 'url' => '/cv/edit/academic'],

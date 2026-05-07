@@ -24,7 +24,7 @@ class JobSearchController extends Controller
 
     public function index(): void
     {
-        if (! in_array(($_SESSION['user']['role'] ?? null), ['job_seeker', 'employer'], true)) {
+        if (! in_array(($_SESSION['user']['role'] ?? null), ['job_seeker', 'employer', 'admin'], true)) {
             $this->redirect('/login');
         }
 
@@ -66,7 +66,7 @@ class JobSearchController extends Controller
 
     public function show(): void
     {
-        if (! in_array(($_SESSION['user']['role'] ?? null), ['job_seeker', 'employer'], true)) {
+        if (! in_array(($_SESSION['user']['role'] ?? null), ['job_seeker', 'employer', 'admin'], true)) {
             $this->redirect('/login');
         }
 
@@ -81,8 +81,9 @@ class JobSearchController extends Controller
 
         $isEmployerOwner = ($_SESSION['user']['role'] ?? null) === 'employer'
             && (int) $job['employer_user_id'] === (int) $_SESSION['user']['id'];
+        $isAdmin = ($_SESSION['user']['role'] ?? null) === 'admin';
 
-        if (($job['status'] ?? '') !== 'active' && ! $isEmployerOwner) {
+        if (($job['status'] ?? '') !== 'active' && ! $isEmployerOwner && ! $isAdmin) {
             http_response_code(404);
             $this->view('errors/404', ['path' => '/jobs/show']);
             return;

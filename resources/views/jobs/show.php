@@ -20,6 +20,12 @@ $locationParts = array_values(array_filter([
     $job['country_name'] ?? '',
 ]));
 $locationLabel = $locationParts === [] ? 'Location not provided' : implode(', ', $locationParts);
+$statusLabel = ucfirst((string) ($job['status'] ?? 'inactive'));
+$statusClass = match ((string) ($job['status'] ?? '')) {
+    'active' => 'is-active',
+    'suspicious' => 'is-suspicious',
+    default => 'is-inactive',
+};
 $formatDate = static function (?string $value): string {
     if ($value === null || $value === '') {
         return 'Recently updated';
@@ -64,8 +70,8 @@ $formatDate = static function (?string $value): string {
                         <h1><?= View::e($job['job_title'] ?? 'Job Vacancy') ?></h1>
                         <p><?= View::e($companyName) ?></p>
                     </div>
-                    <span class="employer-job-status <?= ($job['status'] ?? '') === 'active' ? 'is-active' : 'is-inactive' ?>">
-                        <?= View::e(($job['status'] ?? '') === 'active' ? 'Active' : 'Inactive') ?>
+                    <span class="employer-job-status <?= $statusClass ?>">
+                        <?= View::e($statusLabel) ?>
                     </span>
                 </div>
 

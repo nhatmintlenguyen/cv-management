@@ -747,6 +747,51 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  document.querySelectorAll('[data-row-href]').forEach((row) => {
+    row.addEventListener('click', (event) => {
+      if (event.target.closest('[data-no-row-nav], a, button, input, select, textarea, form')) {
+        return;
+      }
+
+      window.location.href = row.dataset.rowHref;
+    });
+  });
+
+  const jobStatusModal = document.querySelector('#job-status-modal');
+
+  if (jobStatusModal) {
+    const idInput = jobStatusModal.querySelector('#job-status-modal-id');
+    const statusSelect = jobStatusModal.querySelector('#job-status-modal-status');
+    const summary = jobStatusModal.querySelector('#job-status-modal-summary');
+    const openButtons = document.querySelectorAll('.js-open-job-status-modal');
+    const closeButtons = jobStatusModal.querySelectorAll('.js-close-job-status-modal');
+
+    const closeJobStatusModal = () => {
+      jobStatusModal.hidden = true;
+      document.body.classList.remove('modal-open');
+    };
+
+    openButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        idInput.value = button.dataset.id || '';
+        statusSelect.value = button.dataset.status || 'active';
+        summary.textContent = `${button.dataset.title || 'Job vacancy'} at ${button.dataset.company || 'Company'}`;
+        jobStatusModal.hidden = false;
+        document.body.classList.add('modal-open');
+      });
+    });
+
+    closeButtons.forEach((button) => {
+      button.addEventListener('click', closeJobStatusModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !jobStatusModal.hidden) {
+        closeJobStatusModal();
+      }
+    });
+  }
+
   const modal = document.querySelector('#reference-edit-modal');
 
   if (!modal) {

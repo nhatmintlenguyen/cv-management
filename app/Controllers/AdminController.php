@@ -136,6 +136,7 @@ class AdminController extends Controller
                 'total' => count($jobs),
                 'active' => count(array_filter($jobs, static fn (array $job): bool => ($job['status'] ?? '') === 'active')),
                 'inactive' => count(array_filter($jobs, static fn (array $job): bool => ($job['status'] ?? '') === 'inactive')),
+                'suspicious' => count(array_filter($jobs, static fn (array $job): bool => ($job['status'] ?? '') === 'suspicious')),
                 'openings' => array_sum(array_map(static fn (array $job): int => (int) ($job['number_of_openings'] ?? 0), $jobs)),
             ],
         ]);
@@ -159,6 +160,31 @@ class AdminController extends Controller
             $this->flash('errors', ['Could not remove this job vacancy.']);
         }
 
+        $this->redirect('/admin/job-vacancies');
+    }
+
+    public function updateJobVacancyStatus(): void
+    {
+        $this->requireAdmin();
+
+        $jobId = (int) ($_POST['id'] ?? 0);
+        $status = (string) ($_POST['status'] ?? '');
+
+        if ($jobId <= 0 || ! in_array($status, ['active', 'inactive', 'suspicious'], true)) {
+            $this->flash('errors', ['Invalid job vacancy status.']);
+            $this->redirect('/admin/job-vacancies');
+        }
+
+        $jobModel = new JobVacancy();
+        $job = $jobModel->find($jobId);
+
+        if ($job === null) {
+            $this->flash('errors', ['Job vacancy could not be found.']);
+            $this->redirect('/admin/job-vacancies');
+        }
+
+        $updated = ($job['status'] ?? '') === $status || $jobModel->updateStatus($jobId, $status);
+        $this->flash($updated ? 'success' : 'errors', $updated ? 'Job vacancy status updated.' : ['Could not update this job vacancy status.']);
         $this->redirect('/admin/job-vacancies');
     }
 

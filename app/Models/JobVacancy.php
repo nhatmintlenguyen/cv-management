@@ -209,6 +209,15 @@ class JobVacancy extends Model
         )->rowCount() > 0;
     }
 
+    public function updateStatus(int $id, string $status): bool
+    {
+        if (! in_array($status, ['active', 'inactive', 'suspicious'], true)) {
+            return false;
+        }
+
+        return $this->update($id, ['status' => $status]);
+    }
+
     public function deleteForEmployer(int $id, int $employerUserId): bool
     {
         return $this->query(

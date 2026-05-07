@@ -492,7 +492,7 @@ CREATE TABLE job_vacancies (
   minimum_degree_level_id BIGINT UNSIGNED NOT NULL,
   minimum_years_experience TINYINT UNSIGNED NOT NULL DEFAULT 0,
 
-  status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  status ENUM('active', 'inactive', 'suspicious') NOT NULL DEFAULT 'active',
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
