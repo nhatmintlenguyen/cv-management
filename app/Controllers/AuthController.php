@@ -194,7 +194,7 @@ class AuthController extends Controller
             $this->redirect($redirect);
         }
 
-        $this->redirect('/dashboard');
+        $this->redirect($this->defaultPathForRole((string) $role['name']));
     }
 
     public function login(): void
@@ -351,7 +351,7 @@ class AuthController extends Controller
     {
         return match ($role) {
             'admin' => '/admin/overview',
-            'job_seeker' => '/cv/templates',
+            'job_seeker' => '/',
             'employer' => '/find-cvs',
             default => '/dashboard',
         };

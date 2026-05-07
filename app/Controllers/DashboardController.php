@@ -19,7 +19,7 @@ class DashboardController extends Controller
         }
 
         if (($_SESSION['user']['role'] ?? null) === 'job_seeker') {
-            $this->redirect('/cv/templates');
+            $this->redirect('/');
         }
 
         if (($_SESSION['user']['role'] ?? null) === 'employer') {
