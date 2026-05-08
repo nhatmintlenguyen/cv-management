@@ -15,6 +15,8 @@ services:
       MAIL_PORT: 1025
       MAIL_FROM_EMAIL: no-reply@onecv.local
       MAIL_FROM_NAME: OneCV
+      GOOGLE_CLOUD_SERVICE_ACCOUNT_PATH: /app/project-2aa0e6cc-d48c-40e3-884-28e6fb59d79e.json
+      GOOGLE_CLOUD_STORAGE_BUCKET: cv-management
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
