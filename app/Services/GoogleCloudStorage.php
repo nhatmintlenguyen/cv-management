@@ -87,6 +87,11 @@ class GoogleCloudStorage
     private function jwt(array $payload): string
     {
         $header = ['alg' => 'RS256', 'typ' => 'JWT'];
+
+        if (! empty($this->serviceAccount['private_key_id'])) {
+            $header['kid'] = $this->serviceAccount['private_key_id'];
+        }
+
         $segments = [
             $this->base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR)),
             $this->base64UrlEncode(json_encode($payload, JSON_THROW_ON_ERROR)),
