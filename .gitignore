@@ -3,7 +3,6 @@
 /.env
 /.codex
 /.codex/
-project-*.json
 /ui-design/
 /storage/logs/*.log
 .DS_Store
