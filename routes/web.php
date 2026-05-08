@@ -77,3 +77,5 @@ $router->post('/admin/reference/store', [AdminController::class, 'storeReference
 $router->post('/admin/reference/update', [AdminController::class, 'updateReference']);
 $router->post('/admin/reference/delete', [AdminController::class, 'deleteReference']);
 $router->get('/admin/user-management/user', [AdminController::class, 'userManagement']);
+$router->post('/admin/user-management/user/status', [AdminController::class, 'updateUserStatus']);
+$router->post('/admin/user-management/user/delete', [AdminController::class, 'deleteUser']);

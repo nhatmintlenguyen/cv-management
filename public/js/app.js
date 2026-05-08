@@ -792,6 +792,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const userStatusModal = document.querySelector('#user-status-modal');
+
+  if (userStatusModal) {
+    const idInput = userStatusModal.querySelector('#user-status-modal-id');
+    const statusSelect = userStatusModal.querySelector('#user-status-modal-status');
+    const summary = userStatusModal.querySelector('#user-status-modal-summary');
+    const openButtons = document.querySelectorAll('.js-open-user-status-modal');
+    const closeButtons = userStatusModal.querySelectorAll('.js-close-user-status-modal');
+
+    const closeUserStatusModal = () => {
+      userStatusModal.hidden = true;
+      document.body.classList.remove('modal-open');
+    };
+
+    openButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        idInput.value = button.dataset.id || '';
+        statusSelect.value = button.dataset.status || 'active';
+        summary.textContent = `${button.dataset.name || 'User'} (${button.dataset.email || 'no email'})`;
+        userStatusModal.hidden = false;
+        document.body.classList.add('modal-open');
+      });
+    });
+
+    closeButtons.forEach((button) => {
+      button.addEventListener('click', closeUserStatusModal);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !userStatusModal.hidden) {
+        closeUserStatusModal();
+      }
+    });
+  }
+
   const modal = document.querySelector('#reference-edit-modal');
 
   if (!modal) {

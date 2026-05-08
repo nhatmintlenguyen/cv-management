@@ -7,6 +7,7 @@ $roleLabels = [
     'employer' => 'Employers',
     'admin' => 'Administrators',
 ];
+$statusClass = static fn (string $status): string => $status === 'active' ? 'active' : 'inactive';
 ?>
 <main class="admin-shell">
     <?php require __DIR__ . '/partials/sidebar.php'; ?>
@@ -32,7 +33,7 @@ $roleLabels = [
                 <?php endforeach; ?>
             </nav>
 
-            <button class="admin-action-button" type="button">Invite User</button>
+
         </section>
 
         <section class="admin-table-card">
@@ -52,12 +53,13 @@ $roleLabels = [
                             <th>Registration Date</th>
                             <th>Status</th>
                             <th>Role</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if ($users === []): ?>
                             <tr>
-                                <td colspan="5" class="empty-cell">No users in this role yet.</td>
+                                <td colspan="6" class="empty-cell">No users in this role yet.</td>
                             </tr>
                         <?php endif; ?>
 
@@ -72,16 +74,65 @@ $roleLabels = [
                                 <td><?= View::e($user['email']) ?></td>
                                 <td><?= View::e(date('M d, Y', strtotime($user['created_at']))) ?></td>
                                 <td>
-                                    <span class="status-pill <?= $user['status'] === 'active' ? 'active' : 'inactive' ?>">
-                                        <?= View::e($user['status']) ?>
+                                    <span class="status-pill <?= $statusClass((string) $user['status']) ?>">
+                                        <?= View::e(ucfirst((string) $user['status'])) ?>
                                     </span>
                                 </td>
                                 <td><?= View::e($user['role_name']) ?></td>
+                                <td class="text-right">
+                                    <button
+                                        class="table-icon-button js-open-user-status-modal"
+                                        type="button"
+                                        data-id="<?= (int) $user['id'] ?>"
+                                        data-name="<?= View::e($user['full_name']) ?>"
+                                        data-email="<?= View::e($user['email']) ?>"
+                                        data-status="<?= View::e((string) $user['status']) ?>"
+                                    >
+                                        Update Status
+                                    </button>
+                                    <form method="post" action="<?= View::url('/admin/user-management/user/delete') ?>" class="inline-form" onsubmit="return confirm('Remove this user? Related CVs, companies, and job postings may also be removed by database cascade rules.');">
+                                        <input type="hidden" name="id" value="<?= (int) $user['id'] ?>">
+                                        <input type="hidden" name="role" value="<?= View::e($selectedRole) ?>">
+                                        <button class="table-icon-button danger" type="submit">Remove</button>
+                                    </form>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
         </section>
+
+        <div class="reference-modal" id="user-status-modal" hidden>
+            <div class="reference-modal-backdrop js-close-user-status-modal"></div>
+            <section class="reference-modal-panel" role="dialog" aria-modal="true" aria-labelledby="user-status-modal-title">
+                <div class="reference-modal-heading">
+                    <div>
+                        <p class="eyebrow">User Access</p>
+                        <h2 id="user-status-modal-title">Update User Status</h2>
+                        <p id="user-status-modal-summary"></p>
+                    </div>
+                    <button class="modal-close-button js-close-user-status-modal" type="button">Close</button>
+                </div>
+
+                <form class="reference-form reference-modal-form" method="post" action="<?= View::url('/admin/user-management/user/status') ?>">
+                    <input type="hidden" name="id" id="user-status-modal-id">
+                    <input type="hidden" name="role" value="<?= View::e($selectedRole) ?>">
+
+                    <label>
+                        <span>Status</span>
+                        <select name="status" id="user-status-modal-status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </label>
+
+                    <div class="reference-modal-actions">
+                        <button class="secondary-button js-close-user-status-modal" type="button">Cancel</button>
+                        <button class="primary-button" type="submit">Update Status</button>
+                    </div>
+                </form>
+            </section>
+        </div>
     </section>
 </main>

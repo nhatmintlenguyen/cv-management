@@ -142,6 +142,66 @@ class AdminController extends Controller
         ]);
     }
 
+    public function updateUserStatus(): void
+    {
+        $this->requireAdmin();
+
+        $userId = (int) ($_POST['id'] ?? 0);
+        $status = (string) ($_POST['status'] ?? '');
+        $role = $this->validUserRole((string) ($_POST['role'] ?? 'job_seeker'));
+        $currentUserId = (int) ($_SESSION['user']['id'] ?? 0);
+
+        if ($userId <= 0 || ! in_array($status, ['active', 'inactive'], true)) {
+            $this->flash('errors', ['Invalid user status.']);
+            $this->redirect('/admin/user-management/user?role=' . $role);
+        }
+
+        if ($userId === $currentUserId && $status === 'inactive') {
+            $this->flash('errors', ['You cannot deactivate your own admin account.']);
+            $this->redirect('/admin/user-management/user?role=' . $role);
+        }
+
+        $userModel = new User();
+        $user = $userModel->find($userId);
+
+        if ($user === null) {
+            $this->flash('errors', ['User could not be found.']);
+            $this->redirect('/admin/user-management/user?role=' . $role);
+        }
+
+        $updated = ($user['status'] ?? '') === $status || $userModel->update($userId, ['status' => $status]);
+        $this->flash($updated ? 'success' : 'errors', $updated ? 'User status updated.' : ['Could not update this user status.']);
+        $this->redirect('/admin/user-management/user?role=' . $role);
+    }
+
+    public function deleteUser(): void
+    {
+        $this->requireAdmin();
+
+        $userId = (int) ($_POST['id'] ?? 0);
+        $role = $this->validUserRole((string) ($_POST['role'] ?? 'job_seeker'));
+        $currentUserId = (int) ($_SESSION['user']['id'] ?? 0);
+
+        if ($userId <= 0) {
+            $this->flash('errors', ['Invalid user.']);
+            $this->redirect('/admin/user-management/user?role=' . $role);
+        }
+
+        if ($userId === $currentUserId) {
+            $this->flash('errors', ['You cannot remove your own admin account.']);
+            $this->redirect('/admin/user-management/user?role=' . $role);
+        }
+
+        try {
+            (new User())->delete($userId);
+            $this->flash('success', 'User removed.');
+        } catch (PDOException) {
+            $this->flash('errors', ['Could not remove this user.']);
+        }
+
+        $this->redirect('/admin/user-management/user?role=' . $role);
+    }
+
     public function deleteJobVacancy(): void
     {
         $this->requireAdmin();
@@ -355,6 +415,11 @@ class AdminController extends Controller
         );
 
         return (int) ($row['total'] ?? 0);
+    }
+
+    private function validUserRole(string $role): string
+    {
+        return in_array($role, ['job_seeker', 'employer', 'admin'], true) ? $role : 'job_seeker';
     }
 
     private function referenceRows(string $type, string $modelClass, int $limit, int $offset): array
