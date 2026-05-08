@@ -156,11 +156,6 @@ $isSelected = static fn (string $field, mixed $value): string => (string) ($old[
             </section>
 
             <div class="builder-form-actions">
-                <button class="builder-ghost-button" type="button">
-                    <span>close</span>
-                    Cancel Draft
-                </button>
-
                 <div>
                     <button class="builder-secondary-button" type="submit">Save Progress</button>
                     <button class="builder-primary-button" type="submit" name="next_step" value="academic">

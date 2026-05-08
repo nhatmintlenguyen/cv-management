@@ -1059,16 +1059,16 @@ INSERT INTO skills (name) VALUES
   ('Basic Computer Skills');
 
 INSERT INTO skill_proficiency_levels (name, level_value) VALUES
-  ('Level 1 - Beginner', 1),
-  ('Level 2 - Basic', 2),
-  ('Level 3 - Elementary', 3),
-  ('Level 4 - Developing', 4),
-  ('Level 5 - Intermediate', 5),
-  ('Level 6 - Competent', 6),
-  ('Level 7 - Proficient', 7),
-  ('Level 8 - Advanced', 8),
-  ('Level 9 - Expert', 9),
-  ('Level 10 - Master', 10);
+  ('Beginner', 1),
+  ('Basic', 2),
+  ('Elementary', 3),
+  ('Developing', 4),
+  ('Intermediate', 5),
+  ('Competent', 6),
+  ('Proficient', 7),
+  ('Advanced', 8),
+  ('Expert', 9),
+  ('Master', 10);
 
 INSERT INTO certificate_names (name) VALUES
   ('TOEIC'),

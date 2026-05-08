@@ -142,7 +142,7 @@ $rowValue = static fn (array $row, string $field, mixed $default = ''): string =
                                         <select name="skills[<?= $index ?>][proficiency_level_id]" required>
                                             <option value="">Select proficiency</option>
                                             <?php foreach ($proficiencyLevels as $level): ?>
-                                                <option value="<?= (int) $level['id'] ?>" <?= $selected($cvSkill, 'proficiency_level_id', $level['id']) ?>><?= View::e($level['name']) ?> (<?= (int) $level['level_value'] ?>/10)</option>
+                                                <option value="<?= (int) $level['id'] ?>" <?= $selected($cvSkill, 'proficiency_level_id', $level['id']) ?>>Level <?= (int) $level['level_value'] ?> - <?= View::e($level['name']) ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </label>

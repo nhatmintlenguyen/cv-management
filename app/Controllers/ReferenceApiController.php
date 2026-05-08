@@ -81,7 +81,7 @@ class ReferenceApiController
     private function labelFor(array $row, array $config): string
     {
         if (($config['type'] ?? '') === 'proficiency') {
-            return (string) $row['name'] . ' - Level ' . (int) $row['level_value'];
+            return 'Level ' . (int) $row['level_value'] . ' - ' . (string) $row['name'];
         }
 
         return (string) ($row[$config['label']] ?? '');
