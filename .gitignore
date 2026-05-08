@@ -5,5 +5,7 @@
 /.codex/
 /ui-design/
 /storage/logs/*.log
+*service-account*.json
+project-*.json
 .DS_Store
 Thumbs.db
