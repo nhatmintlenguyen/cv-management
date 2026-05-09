@@ -18,10 +18,10 @@ $roleLabel = match ($user['role'] ?? '') {
 };
 $headline = $headline ?? $roleLabel;
 $profileCompletion = $profileCompletion ?? 0;
-$phoneNumber = $old['phone_number'] ?? $cv['phone_number'] ?? '';
-$selectedCountryId = (string) ($old['country_id'] ?? $cv['country_id'] ?? '');
-$selectedCityId = (string) ($old['city_id'] ?? $cv['city_id'] ?? '');
-$streetAddress = $old['street_address'] ?? $cv['street_address'] ?? '';
+$phoneNumber = $old['phone_number'] ?? $cv['phone_number'] ?? $user['phone_number'] ?? '';
+$selectedCountryId = (string) ($old['country_id'] ?? $cv['country_id'] ?? $user['country_id'] ?? '');
+$selectedCityId = (string) ($old['city_id'] ?? $cv['city_id'] ?? $user['city_id'] ?? '');
+$streetAddress = $old['street_address'] ?? $cv['street_address'] ?? $user['street_address'] ?? '';
 $activeTemplate = $_SESSION['selected_cv_template'] ?? 'modern';
 $cvPreviewName = str_replace(' ', '_', trim((string) $fullName) ?: 'OneCV_Profile') . '.pdf';
 ?>

@@ -57,16 +57,22 @@ class ProfileController extends Controller
         $userId = (int) $_SESSION['user']['id'];
         $data = $this->only(['full_name', 'email', 'phone_number', 'country_id', 'city_id', 'street_address']);
         $errors = $this->validateProfile($data, $userId);
+        $countryId = (int) ($data['country_id'] ?? 0);
+        $cityId = (int) ($data['city_id'] ?? 0);
         $payload = [
             'full_name' => trim((string) ($data['full_name'] ?? '')),
             'email' => strtolower(trim((string) ($data['email'] ?? ''))),
+            'phone_number' => trim((string) ($data['phone_number'] ?? '')) ?: null,
+            'country_id' => $countryId > 0 ? $countryId : null,
+            'city_id' => $cityId > 0 ? $cityId : null,
+            'street_address' => trim((string) ($data['street_address'] ?? '')) ?: null,
         ];
         $cvPayload = [
             'full_name' => $payload['full_name'],
             'email' => $payload['email'],
             'phone_number' => trim((string) ($data['phone_number'] ?? '')),
-            'country_id' => (int) ($data['country_id'] ?? 0),
-            'city_id' => (int) ($data['city_id'] ?? 0),
+            'country_id' => $countryId,
+            'city_id' => $cityId,
             'street_address' => trim((string) ($data['street_address'] ?? '')),
         ];
 

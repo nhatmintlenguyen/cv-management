@@ -52,7 +52,6 @@ $statusClass = static fn (string $status): string => $status === 'active' ? 'act
                             <th>Email</th>
                             <th>Registration Date</th>
                             <th>Status</th>
-                            <th>Role</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -78,7 +77,6 @@ $statusClass = static fn (string $status): string => $status === 'active' ? 'act
                                         <?= View::e(ucfirst((string) $user['status'])) ?>
                                     </span>
                                 </td>
-                                <td><?= View::e($user['role_name']) ?></td>
                                 <td class="text-right">
                                     <button
                                         class="table-icon-button js-open-user-status-modal"

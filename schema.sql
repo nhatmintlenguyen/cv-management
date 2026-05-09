@@ -54,10 +54,15 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   avatar_url VARCHAR(2048) NULL,
+  phone_number VARCHAR(30) NULL,
+  country_id BIGINT UNSIGNED NULL,
+  city_id BIGINT UNSIGNED NULL,
+  street_address VARCHAR(255) NULL,
   status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
+  KEY idx_users_location (country_id, city_id),
   CONSTRAINT fk_users_role
     FOREIGN KEY (role_id) REFERENCES roles(id)
     ON UPDATE CASCADE
@@ -122,6 +127,16 @@ CREATE TABLE districts (
     ON UPDATE CASCADE
     ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE users
+  ADD CONSTRAINT fk_users_country
+    FOREIGN KEY (country_id) REFERENCES countries(id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  ADD CONSTRAINT fk_users_city
+    FOREIGN KEY (city_id) REFERENCES cities(id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL;
 
 CREATE TABLE cv_categories (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
