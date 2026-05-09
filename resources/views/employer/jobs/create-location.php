@@ -53,16 +53,6 @@ $companyAvatarUrl = trim((string) ($draft['company_avatar_url'] ?? ''));
                         <input type="file" name="company_avatar" accept="image/jpeg,image/png,image/webp,image/gif">
                     </label>
 
-                    <?php if ($companyAvatarUrl !== ''): ?>
-                        <div class="builder-field builder-field-wide">
-                            <span>Uploaded Avatar URL</span>
-                            <div class="job-review-value">
-                                <img class="company-avatar-preview" src="<?= View::e($companyAvatarUrl) ?>" alt="Company avatar preview">
-                                <span><?= View::e($companyAvatarUrl) ?></span>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
                     <label class="builder-field builder-field-wide">
                         <span>Company Description</span>
                         <textarea name="company_description" rows="5" placeholder="Briefly describe the company, team, product, or workplace culture." required><?= View::e($value('company_description')) ?></textarea>
